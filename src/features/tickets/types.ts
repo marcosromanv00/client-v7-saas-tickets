@@ -71,6 +71,14 @@ export const TheaterEventSchema = z.object({
   registrationEnabled: z.boolean().default(true),
   description: z.string(),
   location: z.string().default("Sala Principal, Teatro Municipal"),
+  posterUrl: z.string().optional(),
+  genre: z.string().default("Teatro / Artes Escénicas"),
+  datesAvailable: z.array(z.object({
+    date: z.string(),
+    dayName: z.string(),
+    dayNumber: z.string(),
+  })).optional(),
+  timeSlots: z.array(z.string()).default(["17:00", "19:00", "20:30"]),
 });
 export type TheaterEvent = z.infer<typeof TheaterEventSchema>;
 

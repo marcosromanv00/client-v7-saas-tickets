@@ -19,6 +19,14 @@ export const INITIAL_EVENTS: TheaterEvent[] = [
     registrationEnabled: true,
     description: "Concierto de gala y reapertura oficial de la sala patrimonial. Acceso exclusivo para invitados especiales, autoridades y delegaciones mediante invitación directa y lista de protocolo.",
     location: "Sala Principal, Teatro Municipal",
+    posterUrl: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=800&q=80",
+    genre: "Gala Patrimonial / Clásica",
+    datesAvailable: [
+      { date: "2026-09-25", dayName: "VIE", dayNumber: "25" },
+      { date: "2026-09-26", dayName: "SÁB", dayNumber: "26" },
+      { date: "2026-09-27", dayName: "DOM", dayNumber: "27" },
+    ],
+    timeSlots: ["17:00", "19:00", "20:30"],
   },
   {
     id: "evt-sinfonica-26",
@@ -38,6 +46,14 @@ export const INITIAL_EVENTS: TheaterEvent[] = [
     registrationEnabled: true,
     description: "Presentación especial de la Orquesta Sinfónica Municipal. Entrada gratuita con reserva previa de butaca numerada. Los asientos no reclamados 10 min antes se liberan para público en espera.",
     location: "Sala Principal, Teatro Municipal",
+    posterUrl: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=800&q=80",
+    genre: "Sinfónica / Música de Cámara",
+    datesAvailable: [
+      { date: "2026-09-26", dayName: "SÁB", dayNumber: "26" },
+      { date: "2026-09-27", dayName: "DOM", dayNumber: "27" },
+      { date: "2026-10-02", dayName: "VIE", dayNumber: "02" },
+    ],
+    timeSlots: ["16:30", "18:30", "20:00"],
   },
   {
     id: "evt-titeres-27",
@@ -57,6 +73,14 @@ export const INITIAL_EVENTS: TheaterEvent[] = [
     registrationEnabled: true,
     description: "Obra de títeres gigantes y comedia musical. Acceso general gratuito por orden de llegada con aforo dinámico hasta completar capacidad.",
     location: "Sala Principal, Teatro Municipal",
+    posterUrl: "https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&w=800&q=80",
+    genre: "Teatro Familiar / Comedia",
+    datesAvailable: [
+      { date: "2026-09-27", dayName: "DOM", dayNumber: "27" },
+      { date: "2026-10-03", dayName: "SÁB", dayNumber: "03" },
+      { date: "2026-10-04", dayName: "DOM", dayNumber: "04" },
+    ],
+    timeSlots: ["14:00", "16:00", "18:00"],
   },
 ];
 

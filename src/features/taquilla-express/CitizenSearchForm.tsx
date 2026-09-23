@@ -18,11 +18,11 @@ export function CitizenSearchForm({ onSearch, onOpenQuickRegister, isLoading = f
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+    <div className="bg-[#0e1626]/90 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-xl">
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 items-center">
         <div className="relative flex-1 w-full">
           <label htmlFor="citizen-id-search" className="sr-only">Número de Cédula o Identificación</label>
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
             <Search className="w-5 h-5" />
           </div>
           <input
@@ -31,7 +31,7 @@ export function CitizenSearchForm({ onSearch, onOpenQuickRegister, isLoading = f
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Ingrese cédula o documento (ej: 1-1120-0456)..."
-            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1b2a4a] focus:bg-white text-base transition-all"
+            className="w-full pl-12 pr-4 py-3.5 bg-slate-900 border border-slate-700/80 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm transition-all"
             autoFocus
           />
         </div>
@@ -39,7 +39,7 @@ export function CitizenSearchForm({ onSearch, onOpenQuickRegister, isLoading = f
         <button
           type="submit"
           disabled={isLoading || searchTerm.trim().length < 4}
-          className="w-full sm:w-auto px-6 py-3 bg-[#1b2a4a] hover:bg-[#233858] disabled:bg-slate-300 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 shrink-0 shadow-sm"
+          className="w-full sm:w-auto px-6 py-3.5 bg-amber-500 hover:bg-amber-400 disabled:bg-slate-800 disabled:text-slate-600 text-slate-950 font-bold rounded-2xl text-xs transition-colors flex items-center justify-center gap-2 shrink-0 shadow-lg shadow-amber-500/20 cursor-pointer disabled:cursor-not-allowed"
         >
           <span>Buscar Tiquete</span>
         </button>
@@ -47,14 +47,14 @@ export function CitizenSearchForm({ onSearch, onOpenQuickRegister, isLoading = f
         <button
           type="button"
           onClick={onOpenQuickRegister}
-          className="w-full sm:w-auto px-5 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 shrink-0 shadow-sm"
+          className="w-full sm:w-auto px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-400/30 rounded-2xl font-medium text-xs transition-colors flex items-center justify-center gap-2 shrink-0 shadow-md"
         >
           <UserPlus className="w-4 h-4" />
-          <span>Registro Express en Puerta</span>
+          <span>Registro Express Walk-In</span>
         </button>
       </form>
-      <p className="mt-2 text-xs text-slate-500">
-        Búsqueda rápida para ingreso presencial. Si el ciudadano no tiene reserva previa, use el botón &ldquo;Registro Express&rdquo;.
+      <p className="mt-3 text-[11px] text-slate-400 text-left">
+        Búsqueda por cédula para validación de sala. Para ciudadanos sin reserva previa, utilice el botón &ldquo;Registro Express Walk-In&rdquo;.
       </p>
     </div>
   );

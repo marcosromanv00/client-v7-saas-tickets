@@ -5,47 +5,56 @@
   --font-serif: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 
-  /* Fachada y paleta municipal */
-  --color-theater-navy: #1b2a4a;
-  --color-theater-navy-dark: #121c32;
-  --color-theater-navy-light: #2c416e;
-  --color-theater-navy-surface: #233858;
-  --color-theater-brass: #c59b27;
-  --color-theater-brass-hover: #b0891f;
-  --color-theater-brass-light: #fef9ed;
-  --color-theater-cream: #fbf9f5;
-  --color-theater-border: #e2e8f0;
+  /* Paleta Dark Luxury Theater & Cinema Plus */
+  --color-theater-midnight: #0a0f1d;
+  --color-theater-card: #111827;
+  --color-theater-surface: #162032;
+  --color-theater-surface-hover: #1f2d47;
+  --color-theater-gold: #e5a93c;
+  --color-theater-gold-glow: #f59e0b;
+  --color-theater-plum: #381e35;
+  --color-theater-border: #1e293b;
+  --color-theater-text-muted: #94a3b8;
 }
 
 @layer base {
-  * {
-    border-color: var(--color-theater-border);
-  }
-
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: #0a0f1d;
+    color: #f8fafc;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    overflow-x: hidden;
   }
 }
 
 /* Scrollbar sutil para listas y paneles */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #0a0f1d;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #1e293b;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #334155;
 }
 
-/* Efecto de scrim direccional para Hero */
-.scrim-theater {
-  background: linear-gradient(180deg, rgba(18, 28, 50, 0.45) 0%, rgba(18, 28, 50, 0.85) 100%);
+/* Resplandor del Proscenio / Pantalla Curva */
+.stage-glow-arc {
+  box-shadow: 0 0 25px 3px rgba(229, 169, 60, 0.45);
+}
+
+.screen-cyan-glow {
+  box-shadow: 0 0 20px 2px rgba(6, 182, 212, 0.4);
+}
+
+/* Tiquete físico troquelado: notch lateral con clip-path */
+.ticket-notch-left {
+  clip-path: circle(12px at 0% 50%);
+}
+.ticket-notch-right {
+  clip-path: circle(12px at 100% 50%);
 }

@@ -1,74 +1,77 @@
 # Manual de Usuario: Sistema Cívico de Tiquetería y Gestión de Aforo
-## Teatro Municipal
+## Teatro Municipal • Dark Luxury Edition
 
-Este manual ilustrado documenta la operación de las tres capas de acceso ciudadano y el panel administrativo del Teatro Municipal.
-
----
-
-## 1. Capa 3: Cartelera Ciudadana y Reserva Previa de Butacas
-
-El portal público permite a los ciudadanos consultar la programación cultural de la temporada y reservar su localidad gratuita.
-
-![Portal Público y Cartelera](./assets/01-portal-publico-butacas.png)
-
-### Flujo de Reserva:
-1. **Selección del Evento**: En la parte superior se presentan las obras activas con fecha, hora, duración y modalidad de sala.
-2. **Plano Arquitectónico de Butacas**:
-   - Para funciones con **Butacas Numeradas**, el sistema renderiza el plano de la sala con sus dos niveles: **Planta Baja / Platea (120 butacas)** y **Segunda Planta / Balcón (70 butacas)**.
-   - Las filas **A** y **K** se encuentran reservadas de forma predeterminada para protocolo municipal y autoridades.
-   - El ciudadano hace clic en cualquier butaca disponible para seleccionarla (se ilumina en tono dorado/latón escénico).
-3. **Formulario Rápido (3 Campos)**:
-   - Nombre completo del espectador.
-   - Cédula de identidad o documento legal.
-   - Teléfono / WhatsApp de contacto opcional.
-4. **Confirmación**: Al pulsar *Confirmar Reserva*, el sistema emite el tiquete oficial al instante.
+Este manual ilustrado documenta la operación de las tres capas de acceso ciudadano y la consola de la productora del Teatro Municipal, rediseñadas con el estándar estético **Dark Luxury Cinema & Theater** y arquitectura UX Mobile-First y Panorámica de Escritorio.
 
 ---
 
-## 2. Capa 2: Acreditación Digital con Código QR y Validación en Puerta
+## 1. Experiencia Ciudadana Móvil: Cartelera, Detalle y Horarios
 
-Una vez confirmada la reserva, se despliega el pase digital oficial con código QR vectorial de alta definición.
+Los ciudadanos acceden desde su smartphone a una interfaz cinematográfica oscura inmersiva (Azul Medianoche `#0a0f1d` y acentos dorados cálidos `#f59e0b`):
 
-![Pase Oficial con Código QR](./assets/02-pase-qr-confirmacion.png)
+![Cartelera y Detalle en Móvil](./assets/01-mobile-cartelera-detail.png)
 
-### Características del Tiquete:
-- **Identificación Oficial**: Monograma y sello institucional del Teatro Municipal.
-- **Datos de Sala**: Fecha, hora exacta de la función, zona asignada y número de butaca.
-- **Código QR Dinámico**: Contiene el identificador criptográfico único para lectura en puerta.
-- **Instrucciones Cívicas**: Recordatorio de apertura de puertas (45 min antes) y política de liberación de butacas no reclamadas.
-- **Opciones de Descarga**: Botones directos para copiar el código e imprimir o guardar en PDF.
-
-### Validación en Puerta (Lector QR):
-- Los acomodadores y personal de sala cuentan con la pestaña **Lector QR en Puerta**.
-- Permite escanear mediante sensor de cámara, lector de código de barras USB o simulación rápida.
-- **Feedback Sensorial Inmediato**:
-  - *Verde*: Acceso permitido, mostrando nombre y butaca asignada.
-  - *Ámbar*: Advertencia de tiquete ya utilizado previamente con indicación de la hora exacta de primer ingreso.
-  - *Rojo*: Código inválido o desconocido.
+### Flujo de Selección:
+1. **Carrusel de Obras**: Miniaturas en carrusel horizontal para alternar entre obras de la temporada.
+2. **Tarjeta Hero con Sinopsis**: Póster teatral de alta definición, género de la obra (*Teatro Clásico*, *Danza Contemporánea*, etc.) y sinopsis cultural.
+3. **Selector de Fecha y Hora**: Tarjetas de calendario horizontal (Día de la semana + Fecha) y píldoras de hora de función (ej. `19:00 hrs`).
+4. **Botón Principal**: Al presionar *"Continuar a Selección de Butacas"*, el usuario avanza a la pantalla de selección de asientos.
 
 ---
 
-## 3. Capa 1: Taquilla Express por Cédula (Ventanilla Presencial)
+## 2. Mapa 3D de Butacas y Arco de Proscenio Iluminado
 
-Diseñada para atención ultra-rápida de espectadores presenciales, adultos mayores o ventanilla de última hora:
-- **Búsqueda Instantánea**: El operador digita la cédula del ciudadano y pulsa *Buscar*. Si cuenta con reserva, muestra los datos y un botón de un clic para **Validar e Ingresar a Sala**.
-- **Registro Express en Puerta (Walk-In)**: Si el ciudadano llega directamente sin reserva previa y hay aforo remanente, el operador pulsa *Registro Express*, completa nombre y cédula, y el sistema emite la entrada e ingresa al asistente en 2 segundos.
+La pantalla de butacas replica la experiencia visual de las aplicaciones de cine más sofisticadas, adaptada a la arquitectura del Teatro Municipal (190 asientos totales):
+
+![Selección de Butacas en Móvil](./assets/02-mobile-seat-selection.png)
+
+### Elementos del Mapa:
+- **Arco de Proscenio**: Arco curvo con resplandor dorado escénico (*ESCENARIO PRINCIPAL • TEATRO MUNICIPAL*).
+- **Selector de Nivel**: Pestañas táctiles para alternar entre **Platea (120 butacas)** y **Balcón (70 butacas)**.
+- **Modelado 3D de Butacas**: Sillones esculpidos con respaldo, cojín y apoyabrazos:
+  - *Gris grafito*: Butaca libre disponible.
+  - *Rosa/Magenta*: Butaca ocupada.
+  - *Dorado/Turquesa resplandeciente*: Butaca seleccionada por el usuario.
+  - *Borde dorado + Icono Corona*: Fila VIP / Protocolo (Filas A y K).
+- **Gaveta Inferior de Reserva**: Resumen del asiento seleccionado y formulario de acreditación inmediata (Nombre, Cédula y Teléfono).
 
 ---
 
-## 4. Capa Administrativa y Monitor de Aforo en Tiempo Real
+## 3. Pase Físico Troquelado (Notched Cinema Ticket Pass)
 
-El panel administrativo proporciona control integral al equipo directivo y de protocolo.
+Al confirmar la reserva, se despliega el tiquete digital con morfología de boleto físico tradicional:
 
-![Panel Administrativo y Aforo Dinámico](./assets/03-panel-administrativo-aforo.png)
+![Pase Físico Troquelado](./assets/03-notched-cinema-ticket.png)
 
-### Capacidades del Panel:
-1. **Monitor de Aforo Dinámico**:
-   - Contrasta en tiempo real: Capacidad total (190), Pre-reservas emitidas, Asistentes efectivamente sentados en sala (Check-In) y Disponibilidad remanente en puerta para walk-ins.
-2. **Gestión de Lista Especial y Protocolo**:
-   - Precarga de invitaciones para eventos privados (como la Gala Inaugural del Viernes 25).
-   - Soporte para invitaciones nominales o **bloques de entradas reservadas sin nombre asociado** (ej. delegaciones o regidurías).
-   - Botón *Emitir Pase* para redimir cupos asignados.
-3. **Configuración de Eventos**:
-   - Habilitación o pausa manual de reservas públicas.
-   - Alternancia de modalidad: Butacas Numeradas vs Aforo General por orden de llegada.
+### Anatomía del Boleto:
+- **Muescas Circulares Laterales**: Ranuras cóncavas simétricas que simulan el corte troquelado de imprenta.
+- **Cabecera Artística**: Póster oficial de la obra, monograma del Teatro Municipal e indicador *"Pase Válido"*.
+- **Línea Punteada de Desprendimiento**: Separación visual del talón de entrada.
+- **Doble Validación Cívica**:
+  - **Código QR vectorial de alta densidad**: Para lectura instantánea mediante el escáner de cámara en puerta.
+  - **Código de Barras alfanumérico**: Compatible con pistolas láser USB de ventanilla.
+- **Acciones Rápidas**: Botón para *"Compartir Tiquete"* vía WhatsApp/Mensajería y *"Guardar PDF"*.
+
+---
+
+## 4. Experiencia Panorámica para Productora y Dirección (Escritorio)
+
+Cuando el equipo de producción o dirección abre el sistema desde su computadora, la interfaz se expande a un diseño panorámico de 3 columnas simultáneas:
+
+![Diseño Panorámico en Escritorio](./assets/04-desktop-panoramic-view.png)
+
+- **Columna Izquierda (4 columnas)**: Póster en gran formato, sinopsis de la obra y selector de fechas/horarios.
+- **Columna Central (5 columnas)**: Plano completo de la sala con el proscenio dorado y las butacas en tiempo real.
+- **Columna Derecha (3 columnas)**: Panel flotante sticky con el resumen del boleto y formulario de emisión.
+- **Barra de Navegación Superior**: Acceso directo con un solo clic a *Cartelera y Butacas*, *Taquilla Express*, *Lector en Puerta* y *Productora & Aforo*.
+
+---
+
+## 5. Consola Administrativa de Producción y Monitor de Aforo
+
+![Consola Productora y Aforo](./assets/05-productora-admin-console.png)
+
+### Control Integral de Sala:
+1. **Monitor de Aforo Dinámico**: Visualización en vivo de aforo total (190), cupos pre-reservados, asistentes en sala y entradas walk-in remanentes.
+2. **Invitados Especiales y Protocolo**: Gestión de delegaciones (Alcaldía, Concejo, etc.) y emisión de pases VIP para filas A y K.
+3. **Parámetros de Evento**: Conmutación entre modo de *Butacas Numeradas* y *Aforo General por Orden de Llegada*, habilitación/pausa de registros.

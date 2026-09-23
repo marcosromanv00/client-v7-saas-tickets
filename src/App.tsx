@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CivicHeader, ActiveTab } from "./components/layout/CivicHeader";
 import { CivicFooter } from "./components/layout/CivicFooter";
+import { BottomNavBar } from "./components/layout/BottomNavBar";
 import { PublicEventView } from "./features/seat-reservation/PublicEventView";
 import { TaquillaExpressView } from "./features/taquilla-express/TaquillaExpressView";
 import { DoorScannerView } from "./features/qr-access/DoorScannerView";
@@ -15,8 +16,8 @@ export function App() {
   const checkedInCount = store.tickets.filter((t) => t.checkedIn).length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
-      {/* Encabezado Único Consolidado */}
+    <div className="min-h-screen flex flex-col bg-[#0a0f1d] text-slate-100 selection:bg-amber-500 selection:text-slate-950">
+      {/* Encabezado Cívico Consolidado */}
       <CivicHeader
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -31,6 +32,13 @@ export function App() {
         {activeTab === "puerta" && <DoorScannerView />}
         {activeTab === "admin" && <AdminDashboard />}
       </main>
+
+      {/* Barra de Navegación Inferior Flotante (Estilo App Móvil) */}
+      <BottomNavBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        ticketCount={store.tickets.length}
+      />
 
       {/* Pie de Página Tradicional Cívico de 4 Columnas */}
       <CivicFooter />

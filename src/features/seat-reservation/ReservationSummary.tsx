@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { Armchair, CheckCircle2, AlertCircle } from "lucide-react";
+import { Armchair, CheckCircle2, AlertCircle, Calendar, Sparkles } from "lucide-react";
 import { Seat, TheaterEvent, ZoneId } from "../tickets/types";
 
 interface ReservationSummaryProps {
   event: TheaterEvent;
   selectedSeat: Seat | null;
   selectedZone: ZoneId;
+  selectedDate: string;
+  selectedTime: string;
   onConfirmReservation: (data: {
     citizenName: string;
     citizenId: string;
@@ -13,7 +15,14 @@ interface ReservationSummaryProps {
   }) => { success: boolean; error?: string };
 }
 
-export function ReservationSummary({ event, selectedSeat, selectedZone, onConfirmReservation }: ReservationSummaryProps) {
+export function ReservationSummary({
+  event,
+  selectedSeat,
+  selectedZone,
+  selectedDate,
+  selectedTime,
+  onConfirmReservation,
+}: ReservationSummaryProps) {
   const [name, setName] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [phone, setPhone] = useState("");
@@ -28,12 +37,12 @@ export function ReservationSummary({ event, selectedSeat, selectedZone, onConfir
     setError(null);
 
     if (isNumbered && !selectedSeat) {
-      setError("Por favor seleccione una butaca en el plano para continuar.");
+      setError("Por favor elija una butaca en el plano para continuar.");
       return;
     }
 
     if (!name.trim() || idNumber.trim().length < 6) {
-      setError("Indique su nombre completo y una cédula válida (mínimo 6 caracteres).");
+      setError("Complete su nombre y número de documento (mínimo 6 caracteres).");
       return;
     }
 
@@ -51,90 +60,96 @@ export function ReservationSummary({ event, selectedSeat, selectedZone, onConfir
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
-      <div className="border-b border-slate-100 pb-4">
-        <h3 className="font-serif text-base text-[#1b2a4a] font-medium">Resumen de Reserva</h3>
-        <p className="text-xs text-slate-500 mt-0.5">{event.title}</p>
+    <div className="bg-[#11192b]/95 backdrop-blur-md rounded-3xl border border-slate-800 p-6 shadow-2xl space-y-5 text-left">
+      {/* Encabezado del Bottom Drawer / Resumen */}
+      <div className="border-b border-slate-800/80 pb-4">
+        <div className="flex items-center gap-2 text-xs font-mono text-amber-400 mb-1">
+          <Calendar className="w-3.5 h-3.5" />
+          <span>{selectedDate} • {selectedTime} hrs</span>
+        </div>
+        <h3 className="font-serif text-lg text-white font-medium line-clamp-1">{event.title}</h3>
       </div>
 
-      {/* Detalle de Butaca o Zona */}
-      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+      {/* Ubicación y Asignación de Butaca */}
+      <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-3">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-500">Ubicación asignada:</span>
-          <span className="font-medium text-slate-800">
+          <span className="text-slate-400">Butaca seleccionada:</span>
+          <span className="font-mono font-bold text-amber-400 text-sm">
             {isNumbered
               ? selectedSeat
                 ? selectedSeat.label
-                : "Ninguna butaca seleccionada"
+                : "Ninguna butaca elegida"
               : selectedZone === "PLANTA_BAJA"
-              ? "Platea (Planta Baja)"
-              : "Balcón (Segunda Planta)"}
+              ? "Platea General"
+              : "Balcón General"}
           </span>
         </div>
 
         {isNumbered && selectedSeat && (
-          <div className="flex items-center gap-2 text-xs text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200">
-            <Armchair className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Butaca reservada temporalmente mientras completa sus datos.</span>
+          <div className="flex items-center gap-2 text-xs text-amber-200 bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/30">
+            <Armchair className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Butaca apartada. Complete sus datos para recibir el pase.</span>
           </div>
         )}
 
-        <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-200">
-          <span className="text-slate-500">Costo de Entrada:</span>
-          <span className="font-serif text-emerald-700 font-semibold">Gratuita (Subvención Cívica)</span>
+        <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
+          <span className="text-slate-400">Entrada Oficial:</span>
+          <span className="font-mono text-emerald-400 font-semibold flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5" /> Gratuita (Acceso Cívico)
+          </span>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200">
+        <div className="flex items-start gap-2 p-3 bg-rose-500/10 text-rose-300 text-xs rounded-xl border border-rose-500/30">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* Formulario Rápido (3 campos máx según Anti-Slop Rule) */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Formulario Rápido de Acreditación (3 campos) */}
+      <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">Nombre Completo del Espectador</label>
+          <label className="block text-[11px] font-mono text-slate-300 mb-1">Nombre Completo del Asistente</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Ej: Laura Vargas Morales"
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1b2a4a] focus:bg-white"
+            placeholder="Ej: Carmen Mora Rojas"
+            className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">Cédula o Pasaporte</label>
+          <label className="block text-[11px] font-mono text-slate-300 mb-1">Cédula o Documento de Identidad</label>
           <input
             type="text"
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
-            placeholder="Ej: 1-1524-0321"
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1b2a4a] focus:bg-white"
+            placeholder="Ej: 1-1120-0456"
+            className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">Teléfono / WhatsApp (Opcional)</label>
+          <label className="block text-[11px] font-mono text-slate-300 mb-1">Teléfono / WhatsApp (Opcional)</label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            placeholder="Ej: 8899-7744"
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1b2a4a] focus:bg-white"
+            placeholder="Ej: 8844-1234"
+            className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
           />
         </div>
 
         <button
           type="submit"
           disabled={!canSubmit || isSubmitting}
-          className="w-full py-3 bg-[#1b2a4a] hover:bg-[#233858] disabled:bg-slate-300 text-white rounded-xl font-medium text-sm transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+          className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:from-slate-800 disabled:to-slate-800 text-slate-950 font-bold rounded-2xl text-xs transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
         >
-          <CheckCircle2 className="w-4 h-4 text-amber-400" />
+          <CheckCircle2 className="w-4 h-4" />
           <span>{isSubmitting ? "Emitiendo Tiquete..." : "Confirmar Reserva y Obtener Pase"}</span>
         </button>
       </form>

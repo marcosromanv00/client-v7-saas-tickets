@@ -1,16 +1,21 @@
 import { useState } from "react";
 import confetti from "canvas-confetti";
-import { Calendar, Clock, MapPin, Sparkles, X, ShieldAlert } from "lucide-react";
+import { X, ArrowLeft } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { TheaterSeatMap } from "./TheaterSeatMap";
-import { GeneralAdmissionView } from "./GeneralAdmissionView";
+import { DateTimeSelector } from "./DateTimeSelector";
 import { ReservationSummary } from "./ReservationSummary";
+import { GeneralAdmissionView } from "./GeneralAdmissionView";
 import { TicketPassCard } from "../qr-access/TicketPassCard";
+import { EventPosterHero } from "./EventPosterHero";
 import { Seat, Ticket, ZoneId } from "../tickets/types";
 
 export function PublicEventView() {
   const store = useTheaterStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[1]?.id || store.events[0]?.id || "");
+  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
+  const [mobileStep, setMobileStep] = useState<"detail" | "seats">("detail");
+  const [selectedDate, setSelectedDate] = useState("2026-09-25");
+  const [selectedTime, setSelectedTime] = useState("19:00");
   const [selectedSeat, setSelectedSeat] = useState<Seat | null>(null);
   const [selectedZone, setSelectedZone] = useState<ZoneId>("PLANTA_BAJA");
   const [issuedTicket, setIssuedTicket] = useState<Ticket | null>(null);
@@ -30,16 +35,16 @@ export function PublicEventView() {
       citizenPhone: data.citizenPhone,
       seatId: currentEvent.mode === "SEATED_NUMBERED" && selectedSeat ? selectedSeat.id : null,
       zone: selectedSeat ? selectedSeat.zone : selectedZone,
-      notes: "Reserva web pública de butaca",
+      notes: `Reserva web • ${selectedDate} ${selectedTime}`,
     });
 
     if (res.success && res.ticket) {
       setIssuedTicket(res.ticket);
       setSelectedSeat(null);
       try {
-        confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+        confetti({ particleCount: 90, spread: 70, origin: { y: 0.6 } });
       } catch (err) {
-        console.warn("Confetti error", err);
+        console.warn(err);
       }
       return { success: true };
     }
@@ -51,116 +56,123 @@ export function PublicEventView() {
   const balconCount = eventTickets.filter((t) => t.zone === "BALCON").length;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Selector de Obras / Cartelera */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 text-slate-100">
+      {/* Selector Rápido de Obras en Cartelera */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-4 mb-6">
         {store.events.map((evt) => {
           const isSelected = evt.id === currentEvent.id;
           return (
-            <div
+            <button
               key={evt.id}
               onClick={() => {
                 setSelectedEventId(evt.id);
                 setSelectedSeat(null);
+                setMobileStep("detail");
               }}
-              className={`p-5 rounded-2xl border cursor-pointer transition-all ${
+              className={`flex items-center gap-3 p-2.5 pr-4 rounded-2xl border transition-all shrink-0 ${
                 isSelected
-                  ? "bg-white border-[#1b2a4a] shadow-md ring-2 ring-[#1b2a4a]/20"
-                  : "bg-white/70 border-slate-200 hover:border-slate-300 hover:bg-white"
+                  ? "bg-slate-900 border-amber-500 shadow-lg shadow-amber-500/10 text-white"
+                  : "bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200"
               }`}
             >
-              <div className="flex items-center justify-between text-xs font-mono text-slate-500 mb-2">
-                <span className="flex items-center gap-1 font-semibold text-[#1b2a4a]">
-                  <Calendar className="w-3.5 h-3.5" /> {evt.date}
-                </span>
-                <span>{evt.time} hrs</span>
+              <img src={evt.posterUrl} alt={evt.title} className="w-10 h-10 rounded-xl object-cover" />
+              <div className="text-left">
+                <p className="text-xs font-serif font-medium line-clamp-1">{evt.title}</p>
+                <span className="text-[10px] font-mono text-amber-400">{evt.date} • {evt.time}</span>
               </div>
-              <h3 className="font-serif text-base font-medium text-slate-900 line-clamp-1">{evt.title}</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">{evt.description}</p>
-              <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                <span className={`px-2 py-0.5 rounded font-mono ${
-                  evt.mode === "SEATED_NUMBERED" ? "bg-amber-100 text-amber-900" : "bg-indigo-100 text-indigo-900"
-                }`}>
-                  {evt.mode === "SEATED_NUMBERED" ? "Butaca Numerada" : "Aforo General"}
-                </span>
-                {evt.isPrivate && <span className="text-rose-700 font-medium">Privado Protocolo</span>}
-              </div>
-            </div>
+            </button>
           );
         })}
       </div>
 
-      {/* Hero del Evento Seleccionado */}
-      <div className="bg-[#1b2a4a] text-white rounded-2xl p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-xs font-mono tracking-widest text-amber-300 uppercase">Cartelera Oficial del Teatro</span>
-            <h1 className="text-2xl sm:text-3xl font-serif font-medium">{currentEvent.title}</h1>
-            <p className="text-sm text-slate-300 max-w-2xl">{currentEvent.description}</p>
-          </div>
+      {/* Vista Móvil: Pantalla 1 (Detalle y Selector Fecha) vs Pantalla 2 (Elegir Butacas) */}
+      <div className="block lg:hidden">
+        {mobileStep === "detail" ? (
+          <div className="space-y-6">
+            <EventPosterHero event={currentEvent} variant="mobile" />
 
-          <div className="bg-[#233858] border border-amber-400/20 p-4 rounded-xl text-xs space-y-1.5 shrink-0">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-amber-400" />
-              <span>Duración estimada: {currentEvent.durationMinutes} minutos</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-amber-400" />
-              <span>{currentEvent.location}</span>
-            </div>
-            <div className="flex items-center gap-2 font-mono text-emerald-300 pt-1">
-              <Sparkles className="w-4 h-4" />
-              <span>Entrada Gratuita y Libre</span>
-            </div>
-          </div>
-        </div>
+            <DateTimeSelector
+              dates={currentEvent.datesAvailable || []}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+              timeSlots={currentEvent.timeSlots || []}
+              selectedTime={selectedTime}
+              onSelectTime={setSelectedTime}
+            />
 
-        {currentEvent.isPrivate && (
-          <div className="mt-4 p-3 bg-amber-500/20 border border-amber-400/40 rounded-lg flex items-center gap-2 text-xs text-amber-200">
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span>Esta función es una gala privada con invitación directa y acreditación de protocolo municipal.</span>
+            <button
+              onClick={() => setMobileStep("seats")}
+              className="w-full py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold rounded-2xl text-sm shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2"
+            >
+              <span>Continuar a Selección de Butacas</span>
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <button onClick={() => setMobileStep("detail")} className="flex items-center gap-1.5 text-xs text-amber-400 font-medium">
+                <ArrowLeft className="w-4 h-4" /> <span>Volver a la Obra</span>
+              </button>
+              <h2 className="text-base font-serif font-medium">Elegir Butacas</h2>
+              <span className="text-xs font-mono text-slate-400">{selectedTime} hrs</span>
+            </div>
+
+            {currentEvent.mode === "SEATED_NUMBERED" ? (
+              <TheaterSeatMap seats={seats} selectedSeatId={selectedSeat?.id || null} onSelectSeat={handleSelectSeat} allowVipSelection={currentEvent.isPrivate} />
+            ) : (
+              <GeneralAdmissionView event={currentEvent} selectedZone={selectedZone} onSelectZone={setSelectedZone} pbReserved={pbCount} balconReserved={balconCount} />
+            )}
+
+            <ReservationSummary event={currentEvent} selectedSeat={selectedSeat} selectedZone={selectedZone} selectedDate={selectedDate} selectedTime={selectedTime} onConfirmReservation={handleConfirmReservation} />
           </div>
         )}
       </div>
 
-      {/* Contenido Principal: Plano Interactivo o Aforo General + Resumen */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2">
+      {/* Vista de Escritorio: Expansiva Panorámica 3 Columnas (Productora / Computadora) */}
+      <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
+        {/* Columna 1: Póster y Sinopsis (4 cols) */}
+        <div className="col-span-4 space-y-6">
+          <EventPosterHero event={currentEvent} variant="desktop" />
+
+          <DateTimeSelector
+            dates={currentEvent.datesAvailable || []}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            timeSlots={currentEvent.timeSlots || []}
+            selectedTime={selectedTime}
+            onSelectTime={setSelectedTime}
+          />
+        </div>
+
+        {/* Columna 2: Plano de Butacas o Aforo General (5 cols) */}
+        <div className="col-span-5">
           {currentEvent.mode === "SEATED_NUMBERED" ? (
-            <TheaterSeatMap
-              seats={seats}
-              selectedSeatId={selectedSeat?.id || null}
-              onSelectSeat={handleSelectSeat}
-              allowVipSelection={currentEvent.isPrivate}
-            />
+            <TheaterSeatMap seats={seats} selectedSeatId={selectedSeat?.id || null} onSelectSeat={handleSelectSeat} allowVipSelection={currentEvent.isPrivate} />
           ) : (
-            <GeneralAdmissionView
-              event={currentEvent}
-              selectedZone={selectedZone}
-              onSelectZone={setSelectedZone}
-              pbReserved={pbCount}
-              balconReserved={balconCount}
-            />
+            <GeneralAdmissionView event={currentEvent} selectedZone={selectedZone} onSelectZone={setSelectedZone} pbReserved={pbCount} balconReserved={balconCount} />
           )}
         </div>
 
-        <div className="lg:col-span-1 sticky top-24">
+        {/* Columna 3: Formulario de Acreditación y Resumen (3 cols) */}
+        <div className="col-span-3 sticky top-24">
           <ReservationSummary
             event={currentEvent}
             selectedSeat={selectedSeat}
             selectedZone={selectedZone}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
             onConfirmReservation={handleConfirmReservation}
           />
         </div>
       </div>
 
-      {/* Modal de Tiquete Emitido */}
+      {/* Modal de Tiquete Notched Emitido */}
       {issuedTicket && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs">
-          <div className="relative max-w-lg w-full">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative max-w-sm w-full">
             <button
               onClick={() => setIssuedTicket(null)}
-              className="absolute -top-3 -right-3 z-10 w-9 h-9 bg-white text-slate-800 rounded-full shadow-md flex items-center justify-center hover:bg-slate-100 transition-colors"
+              className="absolute -top-3 -right-3 z-10 w-9 h-9 bg-slate-900 text-white border border-slate-700 rounded-full shadow-lg flex items-center justify-center hover:bg-slate-800 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

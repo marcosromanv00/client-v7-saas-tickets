@@ -29,7 +29,7 @@ export function TaquillaExpressView() {
       setSearchedTicket(found);
     } else {
       setSearchedTicket(null);
-      setSearchFeedback(`No se encontró reserva previa con cédula "${idQuery}".`);
+      setSearchFeedback(`No se encontró reserva con cédula "${idQuery}".`);
     }
   };
 
@@ -62,15 +62,15 @@ export function TaquillaExpressView() {
     .slice(0, 5);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 pb-28 space-y-7 text-slate-100">
       {/* Selector de Evento y Resumen Rápido */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#0e1626]/90 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-xl">
         <div>
-          <span className="text-xs font-mono uppercase text-slate-500 tracking-wider">Capa 1: Operación Presencial</span>
-          <h1 className="text-xl font-serif text-[#1b2a4a] font-medium mt-0.5">Taquilla Express e Ingreso por Cédula</h1>
+          <span className="text-[10px] font-mono uppercase text-amber-400 tracking-widest">Capa 1 • Operación Presencial</span>
+          <h1 className="text-xl font-serif text-white font-medium mt-0.5">Taquilla Express e Ingreso por Cédula</h1>
         </div>
         <div className="flex items-center gap-3">
-          <label htmlFor="taquilla-event-select" className="text-xs font-medium text-slate-600">Evento Activo:</label>
+          <label htmlFor="taquilla-event-select" className="text-xs font-mono text-slate-400">Función:</label>
           <select
             id="taquilla-event-select"
             value={selectedEventId}
@@ -79,11 +79,11 @@ export function TaquillaExpressView() {
               setSearchedTicket(null);
               setSearchFeedback(null);
             }}
-            className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-[#1b2a4a]"
+            className="px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             {store.events.map((evt) => (
               <option key={evt.id} value={evt.id}>
-                {evt.title} ({evt.date} {evt.time})
+                {evt.title} ({evt.time} hrs)
               </option>
             ))}
           </select>
@@ -92,21 +92,21 @@ export function TaquillaExpressView() {
 
       {/* Métricas rápidas de aforo para el taquillero */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-4 rounded-xl border border-slate-200">
-          <span className="text-xs text-slate-500">Capacidad Total</span>
-          <p className="text-2xl font-serif font-medium text-slate-900 mt-1">{capacity.totalCapacity}</p>
+        <div className="bg-[#111827] p-5 rounded-2xl border border-slate-800 shadow-lg">
+          <span className="text-xs text-slate-400 font-mono">Aforo Máximo</span>
+          <p className="text-2xl font-serif font-medium text-white mt-1">{capacity.totalCapacity}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-slate-200">
-          <span className="text-xs text-slate-500">Pre-reservas</span>
-          <p className="text-2xl font-serif font-medium text-indigo-900 mt-1">{capacity.preReservedCount}</p>
+        <div className="bg-[#111827] p-5 rounded-2xl border border-slate-800 shadow-lg">
+          <span className="text-xs text-slate-400 font-mono">Pre-reservas</span>
+          <p className="text-2xl font-serif font-medium text-indigo-400 mt-1">{capacity.preReservedCount}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-slate-200">
-          <span className="text-xs text-slate-500">En Sala (Ingresados)</span>
-          <p className="text-2xl font-serif font-medium text-emerald-600 mt-1">{capacity.checkedInCount}</p>
+        <div className="bg-[#111827] p-5 rounded-2xl border border-slate-800 shadow-lg">
+          <span className="text-xs text-slate-400 font-mono">En Sala (Ingresados)</span>
+          <p className="text-2xl font-serif font-medium text-emerald-400 mt-1">{capacity.checkedInCount}</p>
         </div>
-        <div className="bg-white p-4 rounded-xl border border-slate-200">
-          <span className="text-xs text-slate-500">Disponibles Walk-in</span>
-          <p className="text-2xl font-serif font-medium text-amber-600 mt-1">{capacity.availableRemaining}</p>
+        <div className="bg-[#111827] p-5 rounded-2xl border border-slate-800 shadow-lg">
+          <span className="text-xs text-slate-400 font-mono">Remanente Walk-In</span>
+          <p className="text-2xl font-serif font-medium text-amber-400 mt-1">{capacity.availableRemaining}</p>
         </div>
       </div>
 
@@ -126,16 +126,16 @@ export function TaquillaExpressView() {
       )}
 
       {searchFeedback && (
-        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-amber-900">
-            <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs text-amber-300">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
             <span>{searchFeedback}</span>
           </div>
           <button
             onClick={() => setIsQuickRegisterOpen(true)}
-            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded text-xs font-medium transition-colors"
+            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition-colors"
           >
-            Registrar como Walk-In
+            Emitir como Walk-In
           </button>
         </div>
       )}

@@ -1,68 +1,46 @@
-# Documento de Diseño de UI/UX: Teatro Municipal (Sistema de Tiquetería)
+# Documento de Diseño de UI/UX: Teatro Municipal (Rediseño Dark Luxury Cinema)
 
 ---
 
-## 1. Arquetipo de Referencia y Benchmark en Producción
-- **Arquetipo Seleccionado**: Arquetipo 2 (**High-End Editorial & Civic Craft**) fusionado con **Warm Cultural Heritage**.
-- **Inspiración y Benchmarking**:
-  1. *Théâtre du Châtelet / Opéra National de Paris / Philharmonie*: Composición editorial limpia, tipografía serena y respeto por el patrimonio público.
-  2. *Linear / Stripe*: Máxima densidad de información sin saturación visual, micro-interacciones táctiles y transiciones instantáneas.
-  3. *Fachada del Teatro Municipal*: Tono azul navy pastel sobrio, molduras neoclásicas, contrastes con latón cálido y marfil arquitectónico.
+## 1. Arquetipo de Referencia y Benchmarking Visual
+
+- **Arquetipo Seleccionado**: **Dark Luxury Theater & High-End Cinema App** (inspirado en las interfaces móviles de cine premium de referencia internacional: *Cinema Plus+, Apple TV, Linear, Opéra Garnier*).
+- **Características Clave**:
+  1. **Fondo Midnight Profundo**: `#0a0f1d` y `#111827` con degradados sutiles y scrims fotográficos de alto impacto.
+  2. **Arco de Escenario Iluminado**: Proscenio curvo superior con resplandor cálido de latón/oro (`#e5a93c`, `box-shadow: 0 0 25px rgba(229, 169, 60, 0.4)`).
+  3. **Butacas Esculpidas (Iconografía 3D de Cine)**: Representación de cojín, reposabrazos y respaldo para cada butaca individual.
+  4. **Selector de Fechas por Tarjetas**: Días en tarjetas elevadas (ej. "VIE 25", "SÁB 26") con cápsulas de horario de función (`19:00`).
+  5. **Tiquete Físico Troquelado (Notched Ticket Pass)**: Silueta clásica de billete con hendiduras semicirculares laterales, línea punteada de desgarro, portada artística, código QR nítido y código de barras inferior.
+  6. **Barra de Navegación Inferior Flotante**: Estilo iOS/Android con acceso rápido a Cartelera, Plano de Butacas, Mis Tiquetes y Conmutador a Consola de Productora/Puerta.
 
 ---
 
-## 2. Paleta de Colores & Psicología Cívica (Regla 60-30-10)
+## 2. Paleta de Colores & Psicología (Regla 60-30-10)
 
-- **Color Dominante (60%) - Lienzo Cívico**:
-  - Claro: `#f8fafc` (Slate 50) y blanco puro `#ffffff` en áreas de lectura.
-  - Oscuro / Fachada Patrimonial: `#141e2e` (Navy institucional nocturno profundo) y `#1e293b`.
-- **Color Secundario / Superficie (30%) - Azul Navy Pastel de Fachada**:
-  - `#233858` / `#2d466e` (Azul navy pastel empolvado, representativo de la fachada del teatro).
-  - `#e2e8f0` / `#cbd5e1` para bordes sutiles de 1px.
-- **Color de Acento Focal (10%) - Latón Escénico / Oro Teatral**:
-  - `#c59b27` / `#d4af37` (Latón cepillado de barandas y luces de escenario) para llamados a la acción, butacas seleccionadas e insignias institucionales sobrias.
-  - `#10b981` (Esmeralda discreto para estado de tiquetes validados).
-  - `#e11d48` (Carmesí teatral para alertas de aforo o butacas ocupadas).
-
-> **Cumplimiento Anti-Slop**:
-> - 100% Cero "AI purple" o degradados neón estridentes.
-> - Cero `#000000` puro; uso de negros con textura mineral como `#0f172a`.
-> - Cumplimiento estricto WCAG AAA en ratios de contraste.
+- **Base Dominante (60%) - Dark Luxury Midnight**:
+  - Lienzo: `#0a0f1d` (Azul medianoche abisal)
+  - Superficies de Tarjetas / Bottom Sheet: `#11192b` y `#162238` con bordes difusos `border-slate-800/80`
+- **Soporte y Contrastes (30%) - Azul Patrimonial & Pizarra Escénica**:
+  - Butacas Disponibles: `#1e2b45` con ribete `#334566`
+  - Butacas Reservadas: `#2e1b30` / `#4a2238` (Ciruela oscuro teatral)
+  - Textos Principales: `#f8fafc` (Blanco tiza de alta legibilidad WCAG AAA)
+  - Textos Secundarios: `#94a3b8` (Pizarra suave)
+- **Acento Focal (10%) - Latón Escénico / Oro Teatral & Esmeralda**:
+  - Acento Principal: `#e5a93c` / `#f59e0b` (Dorado de marquesina teatral y butacas seleccionadas)
+  - Resplandor de Proscenio: `rgba(229, 169, 60, 0.5)`
+  - Confirmación / Éxito: `#10b981` (Esmeralda para check-in y entradas válidas)
 
 ---
 
-## 3. Tipografía & Escala Jerárquica Serena
+## 3. Arquitectura Responsive Híbrida
 
-Para cumplir con la directiva de **Tipografía Serena, Liviana y Aireada** de `anti-slop-ux`:
-- **Display & Encabezados**: Familia sans-serif de precisión (`Outfit` o `Geist`) con pesos moderados `400` y `500` (Medium). Límite estricto de peso `600` (Semibold) para titulares. **Prohibido `font-extrabold` (800)**.
-- **Acentos Editoriales / Monograma**: Fuente Serif clásica refinada (`Playfair Display` o `Newsreader`) en peso ligero `400` para sellos patrimoniales y citas.
-- **Cuerpo y Datos de Taquilla**: Sans-serif neutral con altura de línea amplia (`leading-relaxed`) y números monoespaciados legibles para butacas y cédulas (`font-mono`).
-
----
-
-## 4. Auditoría y Cumplimiento Anti-Slop UI/UX
-
-- [x] **Zero-Badges**: Ninguna píldora o badge decorativo flotando sin función sobre los encabezados H1/H2.
-- [x] **Header Único**: Un solo encabezado consolidado con el escudo municipal, nombre del teatro y navegación limpia; prohibidas las barras superiores accesorias (top-bars).
-- [x] **Footer Tradicional a 4 Columnas**:
-  1. Identidad Institucional y Acreditación de Cultura Municipal.
-  2. Cartelera y Programación de Temporada.
-  3. Logística de Sala, Aforo y Protocolos de Acceso.
-  4. Sede Física Verificable, Teléfono, Parqueo y Enlace a Waze/Maps.
-- [x] **Zero Card-Soup**: En lugar de cuadrículas interminables de tarjetas idénticas, se priorizan layouts asimétricos, listas horizontales escaneables y planos arquitectónicos interactivos.
-- [x] **Formularios Ágiles (Máx 3 campos)**: Nombre completo, Número de Cédula y Teléfono/Correo para confirmación de tiquete.
-
----
-
-## 5. Implementación de las 10 Heurísticas de Nielsen
-
-1. **Visibilidad del Estado**: Monitor de aforo dinámico con barras de capacidad en tiempo real (Disponible vs Reservado vs Ingresado).
-2. **Correspondencia con el Mundo Real**: Plano de butacas que reproduce fielmente el escenario al frente, el pasillo central, las filas A-J de Planta Baja y el Balcón Superior.
-3. **Control y Libertad**: Botón para cambiar o deseleccionar butacas antes de confirmar; opción de anular o reasignar tiquete en panel administrativo.
-4. **Consistencia**: Mismos códigos de color para butacas: Gris (Disponible), Dorado/Latón (Seleccionada), Azul Navy (VIP Protocolo), Pizarra (Ocupada).
-5. **Prevención de Errores**: Bloqueo de butacas ya seleccionadas en tiempo real y validación de formato de cédula antes de emitir.
-6. **Reconocimiento antes que Recuerdo**: Panel lateral que resume en todo momento: Evento, Hora, Butaca elegida y Zona.
-7. **Flexibilidad y Eficiencia**: Modos diferenciados para el ciudadano (reserva pausada con plano) y el acomodador en puerta (escaneo instantáneo o búsqueda por cédula en 2 segundos).
-8. **Minimalismo**: Espaciado generoso (`py-16`, `gap-6`), sin ruido visual ni adornos vacíos.
-9. **Recuperación de Errores**: Mensajes explicativos con sugerencias inmediatas si el tiquete ya fue usado o si el aforo se llenó.
-10. **Ayuda y Estado**: Instrucciones claras de llegada (15 minutos antes de función) impresas directamente en el tiquete digital y en pantalla.
+- **En Dispositivos Móviles**: Experiencia de App Nativa a pantalla completa:
+  - Navegación táctil fluida con bottom-sheet deslizable.
+  - Conmutador de niveles por pestañas táctiles: **Platea (120 butacas)** y **Balcón Superior (70 butacas)**.
+  - Barra de navegación inferior flotante con blur de fondo (`backdrop-blur-md`).
+- **En Pantallas de Escritorio (Productora / Computadora)**:
+  - Layout panorámico cinematográfico:
+    - Columna izquierda: Póster y sinopsis del evento.
+    - Columna central: Plano arquitectónico amplio de la sala con escenario iluminado.
+    - Columna derecha: Panel de confirmación, cupos y tiquete emitido.
+  - Acceso instantáneo a la Consola de la Productora (Monitor de aforo en vivo, taquilla express y precarga de lista especial).

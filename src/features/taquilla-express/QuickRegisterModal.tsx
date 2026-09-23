@@ -35,82 +35,82 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <div className="px-6 py-4 bg-[#1b2a4a] text-white flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div className="bg-[#111827] rounded-3xl shadow-2xl max-w-md w-full border border-slate-800 overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-slate-100">
+        <div className="px-6 py-4 bg-[#162032] border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <UserCheck className="w-5 h-5 text-amber-400" />
-            <h3 className="font-serif text-base font-medium">Registro Express en Puerta</h3>
+            <h3 className="font-serif text-base font-medium text-white">Registro Express en Puerta</h3>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-300 hover:text-white p-1 rounded-md transition-colors"
+            className="text-slate-400 hover:text-white p-1 rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs text-slate-600">
-            <p className="font-medium text-slate-800">{event.title}</p>
-            <p>Emisión inmediata por orden de llegada con check-in automático.</p>
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+          <div className="bg-slate-900/90 p-3 rounded-2xl border border-slate-800 text-slate-300">
+            <p className="font-medium text-white">{event.title}</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">Emisión inmediata por orden de llegada con check-in automático.</p>
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200">
+            <div className="flex items-center gap-2 p-3 bg-rose-500/10 text-rose-300 rounded-xl border border-rose-500/30">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Nombre Completo del Asistente</label>
+            <label className="block font-mono text-slate-300 mb-1">Nombre Completo del Asistente</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ej: Carmen Mora Rojas"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1b2a4a] focus:bg-white"
+              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Cédula o Documento de Identidad</label>
+            <label className="block font-mono text-slate-300 mb-1">Cédula o Documento de Identidad</label>
             <input
               type="text"
               value={idNumber}
               onChange={(e) => setIdNumber(e.target.value)}
               placeholder="Ej: 1-0987-0654"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#1b2a4a] focus:bg-white"
+              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">Zona Asignada</label>
+            <label className="block font-mono text-slate-300 mb-1.5">Zona Asignada</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setZone("PLANTA_BAJA")}
-                className={`py-2 px-3 text-xs font-medium rounded-lg border text-center transition-all ${
+                className={`py-2.5 px-3 rounded-xl border text-center transition-all ${
                   zone === "PLANTA_BAJA"
-                    ? "bg-[#1b2a4a] text-white border-[#1b2a4a]"
-                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    ? "bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-md shadow-amber-500/20"
+                    : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
                 }`}
               >
-                Planta Baja (Platea)
+                Platea (Planta Baja)
               </button>
               <button
                 type="button"
                 onClick={() => setZone("BALCON")}
-                className={`py-2 px-3 text-xs font-medium rounded-lg border text-center transition-all ${
+                className={`py-2.5 px-3 rounded-xl border text-center transition-all ${
                   zone === "BALCON"
-                    ? "bg-[#1b2a4a] text-white border-[#1b2a4a]"
-                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
+                    ? "bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-md shadow-amber-500/20"
+                    : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
                 }`}
               >
-                Segunda Planta (Balcón)
+                Balcón (2da Planta)
               </button>
             </div>
           </div>
@@ -119,13 +119,13 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-slate-600 hover:text-slate-800"
+              className="px-4 py-2 text-slate-400 hover:text-white font-medium"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-medium shadow-sm transition-colors"
+              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-colors"
             >
               Emitir e Ingresar Ahora
             </button>
