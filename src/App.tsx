@@ -6,6 +6,7 @@ import { PublicEventView } from "./features/seat-reservation/PublicEventView";
 import { TaquillaExpressView } from "./features/taquilla-express/TaquillaExpressView";
 import { DoorScannerView } from "./features/qr-access/DoorScannerView";
 import { AdminDashboard } from "./features/admin/AdminDashboard";
+import { Toaster } from "sonner";
 import { useTheaterStore } from "./features/tickets/useTheaterStore";
 
 export function App() {
@@ -39,6 +40,9 @@ export function App() {
         onTabChange={setActiveTab}
         ticketCount={store.tickets.length}
       />
+
+      {/* Notificaciones Toasts de Alta Gama */}
+      <Toaster position="top-center" richColors theme="dark" closeButton />
 
       {/* Pie de Página Tradicional Cívico de 4 Columnas */}
       <CivicFooter />
