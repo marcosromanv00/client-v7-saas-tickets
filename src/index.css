@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* Fachada y paleta municipal */
+  --color-theater-navy: #1b2a4a;
+  --color-theater-navy-dark: #121c32;
+  --color-theater-navy-light: #2c416e;
+  --color-theater-navy-surface: #233858;
+  --color-theater-brass: #c59b27;
+  --color-theater-brass-hover: #b0891f;
+  --color-theater-brass-light: #fef9ed;
+  --color-theater-cream: #fbf9f5;
+  --color-theater-border: #e2e8f0;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-theater-border);
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Scrollbar sutil para listas y paneles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Efecto de scrim direccional para Hero */
+.scrim-theater {
+  background: linear-gradient(180deg, rgba(18, 28, 50, 0.45) 0%, rgba(18, 28, 50, 0.85) 100%);
+}
