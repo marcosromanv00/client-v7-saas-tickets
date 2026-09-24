@@ -43,7 +43,7 @@ export const AdminUserManagement: React.FC = () => {
   if (!isSuperAdmin) {
     return (
       <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-        <Lock className="w-10 h-10 text-[#004ea2]/50 dark:text-blue-500/50 mx-auto mb-3" />
+        <Lock className="w-10 h-10 text-teatro-blue/50 dark:text-blue-500/50 mx-auto mb-3" />
         <p>Solo el Superadministrador tiene permisos para gestionar cuentas de acceso.</p>
       </div>
     );
@@ -51,9 +51,9 @@ export const AdminUserManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-[#0b1a30] border border-slate-200 dark:border-[#1e355b] rounded-2xl p-5 shadow-sm transition-colors">
+      <div className="bg-white dark:bg-[#0b1a30] border border-slate-200 dark:border-teatro-navy-border rounded-2xl p-5 shadow-sm transition-colors">
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 rounded-xl bg-[#ebf3fc] dark:bg-[#004ea2]/20 text-[#004ea2] dark:text-blue-400 border border-[#004ea2]/30">
+          <div className="p-2 rounded-xl bg-teatro-blue-light dark:bg-teatro-blue/20 text-teatro-blue dark:text-blue-400 border border-teatro-blue/30">
             <UserPlus className="w-5 h-5" />
           </div>
           <div>
@@ -72,24 +72,24 @@ export const AdminUserManagement: React.FC = () => {
         <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div>
             <label className="text-[11px] font-medium text-slate-700 dark:text-slate-300 block mb-1">Nombre Completo</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Carlos Puerta Norte" className="w-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2]" />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Carlos Puerta Norte" className="w-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue" />
           </div>
           <div>
             <label className="text-[11px] font-medium text-slate-700 dark:text-slate-300 block mb-1">Correo Institucional</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="carlos@teatromunicipal.cr" className="w-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2]" />
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="carlos@teatromunicipal.cr" className="w-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue" />
           </div>
           <div>
             <label className="text-[11px] font-medium text-slate-700 dark:text-slate-300 block mb-1">Contraseña Inicial</label>
-            <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Clave temporal" className="w-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2]" />
+            <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Clave temporal" className="w-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue" />
           </div>
           <div>
             <label className="text-[11px] font-medium text-slate-700 dark:text-slate-300 block mb-1">Rol Operativo</label>
             <div className="flex gap-2">
-              <select value={role} onChange={(e) => setRole(e.target.value as UserRole)} className="flex-1 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-2 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#004ea2]">
+              <select value={role} onChange={(e) => setRole(e.target.value as UserRole)} className="flex-1 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg px-2 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-teatro-blue">
                 <option value="DELEGATED_ADMIN">Admin Delegado (Taquilla/Puerta)</option>
                 <option value="PRODUCER">Productora General</option>
               </select>
-              <button type="submit" className="px-4 py-2 bg-[#004ea2] hover:bg-[#003c80] text-white font-semibold text-xs rounded-lg transition-all shadow-xs shrink-0 cursor-pointer">
+              <button type="submit" className="px-4 py-2 bg-teatro-blue hover:bg-teatro-blue-hover text-white font-semibold text-xs rounded-lg transition-all shadow-xs shrink-0 cursor-pointer">
                 Crear
               </button>
             </div>
@@ -97,10 +97,10 @@ export const AdminUserManagement: React.FC = () => {
         </form>
       </div>
 
-      <div className="bg-white dark:bg-[#0b1a30] border border-slate-200 dark:border-[#1e355b] rounded-2xl overflow-hidden shadow-sm transition-colors">
-        <div className="p-4 border-b border-slate-200 dark:border-[#1e355b] flex items-center justify-between">
+      <div className="bg-white dark:bg-[#0b1a30] border border-slate-200 dark:border-teatro-navy-border rounded-2xl overflow-hidden shadow-sm transition-colors">
+        <div className="p-4 border-b border-slate-200 dark:border-teatro-navy-border flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-[#004ea2] dark:text-blue-400" />
+            <Shield className="w-4 h-4 text-teatro-blue dark:text-blue-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">Cuentas con Privilegios Administrativos ({adminUsers.length})</span>
           </div>
           <span className="text-[11px] text-slate-500 dark:text-slate-400">Superadmin: {currentUser?.name}</span>
@@ -127,17 +127,17 @@ export const AdminUserManagement: React.FC = () => {
                   <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
                     <td className="py-3 px-4 text-slate-900 dark:text-white font-semibold">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] text-[#004ea2] dark:text-blue-300 font-bold border border-slate-300 dark:border-slate-700">
+                        <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] text-teatro-blue dark:text-blue-300 font-bold border border-slate-300 dark:border-slate-700">
                           {u.name.slice(0, 2).toUpperCase()}
                         </div>
                         <span>{u.name}</span>
-                        {isCurrent && <span className="text-[10px] bg-[#ebf3fc] dark:bg-[#004ea2]/20 text-[#004ea2] dark:text-blue-300 px-1.5 py-0.5 rounded border border-[#004ea2]/30 font-semibold">Tú</span>}
+                        {isCurrent && <span className="text-[10px] bg-teatro-blue-light dark:bg-teatro-blue/20 text-teatro-blue dark:text-blue-300 px-1.5 py-0.5 rounded border border-teatro-blue/30 font-semibold">Tú</span>}
                       </div>
                     </td>
                     <td className="py-3 px-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">{u.email}</td>
                     <td className="py-3 px-4">
                       {isSuper ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#fdf2f4] dark:bg-red-950/40 text-[#c8102e] dark:text-red-300 border border-[#c8102e]/30">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-muni-red-light dark:bg-red-950/40 text-muni-red dark:text-red-300 border border-muni-red/30">
                           Superadmin (Marco)
                         </span>
                       ) : isProd ? (
@@ -145,7 +145,7 @@ export const AdminUserManagement: React.FC = () => {
                           Productora General
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#ebf3fc] dark:bg-[#004ea2]/20 text-[#004ea2] dark:text-blue-300 border border-[#004ea2]/30">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teatro-blue-light dark:bg-teatro-blue/20 text-teatro-blue dark:text-blue-300 border border-teatro-blue/30">
                           Admin Delegado
                         </span>
                       )}

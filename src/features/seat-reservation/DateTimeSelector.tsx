@@ -42,7 +42,7 @@ export function DateTimeSelector({
               onClick={() => onSelectDate(d.date)}
               className={`flex flex-col items-center justify-center min-w-16 py-3 px-3 rounded-2xl border transition-all duration-150 cursor-pointer ${
                 isSelected
-                  ? "bg-[#004ea2] border-[#003c80] text-white font-bold shadow-md shadow-blue-900/20 scale-105"
+                  ? "bg-teatro-blue border-teatro-blue-hover text-white font-bold shadow-md shadow-blue-900/20 scale-105"
                   : "bg-slate-50 dark:bg-[#071324] border-slate-200 dark:border-[#1a3357] text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700"
               }`}
             >
@@ -69,7 +69,7 @@ export function DateTimeSelector({
               onClick={() => onSelectTime(time)}
               className={`px-4 py-2 rounded-xl text-xs font-mono transition-all duration-150 cursor-pointer ${
                 isSelected
-                  ? "bg-[#004ea2]/15 text-[#004ea2] dark:text-blue-400 border border-[#004ea2] font-semibold"
+                  ? "bg-teatro-blue/15 text-teatro-blue dark:text-blue-400 border border-teatro-blue font-semibold"
                   : "bg-slate-50 dark:bg-[#071324] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-[#1a3357] hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >

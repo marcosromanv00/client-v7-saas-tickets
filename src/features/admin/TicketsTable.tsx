@@ -19,8 +19,8 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({ tickets, currentEven
   });
 
   return (
-    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-[#1e355b] p-6 shadow-sm space-y-4 text-left transition-colors">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-[#1e355b] pb-3">
+    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border p-6 shadow-sm space-y-4 text-left transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-teatro-navy-border pb-3">
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Registro de Tiquetes Emitidos</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">Auditoría de acreditaciones para esta función ({eventTickets.length} registros)</p>
@@ -29,7 +29,7 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({ tickets, currentEven
         <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-[#071324] p-1 rounded-xl text-xs border border-slate-200 dark:border-[#1a3357]">
           <button
             onClick={() => setTicketFilter("ALL")}
-            className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${ticketFilter === "ALL" ? "bg-[#004ea2] text-white shadow-xs" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}
+            className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${ticketFilter === "ALL" ? "bg-teatro-blue text-white shadow-xs" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}
           >
             Todos
           </button>
@@ -41,7 +41,7 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({ tickets, currentEven
           </button>
           <button
             onClick={() => setTicketFilter("PENDING")}
-            className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${ticketFilter === "PENDING" ? "bg-[#c59223] text-white shadow-xs" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}
+            className={`px-3 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${ticketFilter === "PENDING" ? "bg-teatro-gold text-white shadow-xs" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"}`}
           >
             Pendientes ({tickets.filter((t) => t.eventId === currentEvent.id && !t.checkedIn).length})
           </button>
@@ -65,7 +65,7 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({ tickets, currentEven
               <tr key={tkt.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
                 <td className="p-3 font-semibold text-slate-900 dark:text-white">{tkt.citizenName}</td>
                 <td className="p-3 font-mono text-slate-500 dark:text-slate-400">{tkt.citizenId}</td>
-                <td className="p-3 font-mono text-[#004ea2] dark:text-blue-400 font-bold">{tkt.seatLabel || (tkt.zone === "PLANTA_BAJA" ? "Platea" : "Balcón")}</td>
+                <td className="p-3 font-mono text-teatro-blue dark:text-blue-400 font-bold">{tkt.seatLabel || (tkt.zone === "PLANTA_BAJA" ? "Platea" : "Balcón")}</td>
                 <td className="p-3">
                   {tkt.isVipGuest ? (
                     <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-800 text-[10px] font-mono font-semibold">Protocolo</span>
@@ -88,7 +88,7 @@ export const TicketsTable: React.FC<TicketsTableProps> = ({ tickets, currentEven
                   {!tkt.checkedIn && (
                     <button
                       onClick={() => onCheckIn(tkt.id)}
-                      className="px-3 py-1 bg-[#c8102e] hover:bg-[#a60c25] text-white font-semibold rounded-lg text-[11px] transition-colors shadow-xs cursor-pointer"
+                      className="px-3 py-1 bg-muni-red hover:bg-muni-red-hover text-white font-semibold rounded-lg text-[11px] transition-colors shadow-xs cursor-pointer"
                     >
                       Check-In
                     </button>

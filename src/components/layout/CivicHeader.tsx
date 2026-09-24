@@ -43,11 +43,11 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
             className="flex items-center gap-2.5 cursor-pointer group select-none"
             title="Ir a inicio de cartelera"
           >
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#ebf3fc] dark:bg-[#004ea2]/20 border border-[#004ea2]/30 dark:border-blue-500/30 flex items-center justify-center text-[#004ea2] dark:text-blue-400 shadow-xs group-hover:scale-105 group-hover:bg-[#004ea2] group-hover:text-white dark:group-hover:bg-blue-600 transition-all">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-teatro-blue-light dark:bg-teatro-blue/20 border border-teatro-blue/30 dark:border-blue-500/30 flex items-center justify-center text-teatro-blue dark:text-blue-400 shadow-xs group-hover:scale-105 group-hover:bg-teatro-blue group-hover:text-white dark:group-hover:bg-blue-600 transition-all">
               <TicketIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-[#004ea2] dark:group-hover:text-blue-400 transition-colors block leading-tight">
+              <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-teatro-blue dark:group-hover:text-blue-400 transition-colors block leading-tight">
                 Teatro Municipal de Alajuela
               </span>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 tracking-normal hidden sm:block leading-none mt-0.5">
@@ -62,7 +62,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
               onClick={() => onTabChange("public")}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === "public"
-                  ? "bg-[#004ea2] text-white shadow-xs"
+                  ? "bg-teatro-blue text-white shadow-xs"
                   : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
               }`}
             >
@@ -74,10 +74,10 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
                 onClick={onOpenCitizenDrawer}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
               >
-                <TicketIcon className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" />
+                <TicketIcon className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" />
                 <span>Mis Entradas</span>
                 {userTicketsCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-[#c8102e] text-white font-bold font-mono">
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-muni-red text-white font-bold font-mono">
                     {userTicketsCount}
                   </span>
                 )}
@@ -111,7 +111,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
                   onClick={() => onTabChange("admin")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     activeTab === "admin"
-                      ? "bg-[#004ea2]/15 text-[#004ea2] dark:text-blue-300 font-semibold"
+                      ? "bg-teatro-blue/15 text-teatro-blue dark:text-blue-300 font-semibold"
                       : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
@@ -128,17 +128,17 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
             {currentUser ? (
               <div className="flex items-center gap-2 bg-slate-100 dark:bg-[#0c1e36] border border-slate-200 dark:border-[#1a3357] rounded-2xl p-1 pr-2.5">
                 <button onClick={isCitizen ? onOpenCitizenDrawer : undefined} className="flex items-center gap-2 text-xs text-slate-800 dark:text-slate-100 px-2 py-1">
-                  <div className="w-6 h-6 rounded-full bg-[#004ea2] text-white flex items-center justify-center font-bold text-[10px]">{currentUser.name.slice(0, 2).toUpperCase()}</div>
-                  <span className="font-medium max-w-[110px] truncate hidden sm:inline">{currentUser.name}</span>
+                  <div className="w-6 h-6 rounded-full bg-teatro-blue text-white flex items-center justify-center font-bold text-[10px]">{currentUser.name.slice(0, 2).toUpperCase()}</div>
+                  <span className="font-medium max-w-27.5 truncate hidden sm:inline">{currentUser.name}</span>
                 </button>
-                <button onClick={logout} title="Cerrar Sesión" className="p-1 text-slate-400 hover:text-[#c8102e] rounded-lg transition-colors cursor-pointer">
+                <button onClick={logout} title="Cerrar Sesión" className="p-1 text-slate-400 hover:text-muni-red rounded-lg transition-colors cursor-pointer">
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
               <button
                 onClick={onOpenLoginModal}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#c8102e] hover:bg-[#a60c25] text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muni-red hover:bg-muni-red-hover text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
               >
                 <User className="w-3.5 h-3.5" />
                 <span>Acceso / Mi Cuenta</span>
@@ -168,10 +168,10 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
           {currentUser && isCitizen && (
             <button
               onClick={() => { onOpenCitizenDrawer(); setMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-[#004ea2] dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
+              className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-teatro-blue dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
             >
               <span>Mis Entradas</span>
-              <span className="font-mono text-[10px] bg-[#c8102e] text-white px-2 py-0.5 rounded-full">{userTicketsCount}</span>
+              <span className="font-mono text-[10px] bg-muni-red text-white px-2 py-0.5 rounded-full">{userTicketsCount}</span>
             </button>
           )}
           {hasStaffRole && (
@@ -179,7 +179,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
               <span className="text-[10px] font-mono uppercase text-slate-400 px-3">Módulos Administrativos</span>
               <button onClick={() => { onTabChange("taquilla"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-amber-600 dark:text-amber-400">Taquilla Express</button>
               <button onClick={() => { onTabChange("puerta"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-teal-600 dark:text-teal-400">Lector en Puerta</button>
-              <button onClick={() => { onTabChange("admin"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-[#004ea2] dark:text-blue-400">Aforo & Admins</button>
+              <button onClick={() => { onTabChange("admin"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-teatro-blue dark:text-blue-400">Aforo & Admins</button>
             </div>
           )}
         </div>

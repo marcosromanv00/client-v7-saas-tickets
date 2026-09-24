@@ -1,160 +1,161 @@
-import React, { useState } from "react";
-import { ScanLine, Camera, KeyRound, ShieldAlert, Check } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ScanLine, Camera, KeyRound, ShieldAlert, Check, Zap } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { DoorValidationResult, ValidationOutcome } from "./DoorValidationResult";
+import { DoorEventHeader } from "./DoorEventHeader";
 import { Ticket } from "../tickets/types";
 
 export function DoorScannerView() {
   const store = useTheaterStore();
   const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
-  const [manualCode, setManualCode] = useState("");
+  const [inputCode, setInputCode] = useState("");
   const [validationOutcome, setValidationOutcome] = useState<ValidationOutcome>(null);
   const [activeTicket, setActiveTicket] = useState<Ticket | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [cameraActive, setCameraActive] = useState(false);
 
+  // Ejecución automática de liberación 15 minutos antes según reloj real
+  useEffect(() => {
+    store.checkAndReleaseUnclaimed();
+  }, [selectedEventId]);
+
   const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
   const eventTickets = store.tickets.filter((t) => t.eventId === currentEvent.id);
   const checkedInCount = eventTickets.filter((t) => t.checkedIn).length;
 
-  const processScan = (code: string) => {
-    const cleanCode = code.trim();
-    if (!cleanCode) return;
+  const processScan = (rawCode: string) => {
+    const code = rawCode.trim();
+    if (!code) return;
 
-    const existingTicket = store.tickets.find((t) => t.qrCodeValue === cleanCode);
-    if (!existingTicket) {
-      setValidationOutcome("INVALID_QR");
-      setActiveTicket(null);
-      setErrorMessage(`El código "${cleanCode}" no fue encontrado en la base de datos.`);
-      return;
-    }
-
-    if (existingTicket.checkedIn) {
-      setValidationOutcome("ALREADY_CHECKED_IN");
-      setActiveTicket(existingTicket);
-      return;
-    }
-
-    const res = store.checkInTicket(existingTicket.id);
-    if (res.success && res.ticket) {
+    const res = store.checkInByCode(code);
+    if (res.status === "VALID" && res.ticket) {
       setValidationOutcome("SUCCESS");
+      setActiveTicket(res.ticket);
+    } else if (res.status === "RELEASED_NO_SHOW" && res.ticket) {
+      setValidationOutcome("RELEASED_NO_SHOW");
+      setActiveTicket(res.ticket);
+    } else if (res.status === "ALREADY_CHECKED_IN" && res.ticket) {
+      setValidationOutcome("ALREADY_CHECKED_IN");
       setActiveTicket(res.ticket);
     } else {
       setValidationOutcome("INVALID_QR");
       setActiveTicket(null);
-      setErrorMessage(res.error || "Error al validar.");
+      setErrorMessage(res.error || `El código "${code}" no fue encontrado en la base de datos.`);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.toUpperCase();
+    setInputCode(val);
+
+    // Auto-validación instantánea al teclear exactamente 4 caracteres (ej. "AL14", "TM08")
+    if (val.trim().length === 4 && /^[A-Z]{2}[0-9]{2}$/.test(val.trim())) {
+      processScan(val.trim());
+      setInputCode("");
     }
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    processScan(manualCode);
-    setManualCode("");
+    processScan(inputCode);
+    setInputCode("");
   };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
-      {/* Título de la Capa */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-[#1e355b] shadow-sm">
-        <div>
-          <span className="text-[10px] font-mono uppercase text-[#004ea2] dark:text-blue-400 tracking-widest font-semibold">Capa 2 • Acreditación y Puerta</span>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white mt-0.5">Control de Acceso y Lector QR</h1>
-        </div>
+      <DoorEventHeader
+        events={store.events}
+        selectedEventId={selectedEventId}
+        onSelectEventId={setSelectedEventId}
+        currentEvent={currentEvent}
+      />
 
-        <div className="flex items-center gap-3">
-          <label htmlFor="door-event-select" className="text-xs font-mono text-slate-500 dark:text-slate-400">Función:</label>
-          <select
-            id="door-event-select"
-            value={selectedEventId}
-            onChange={(e) => setSelectedEventId(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#004ea2]"
-          >
-            {store.events.map((evt) => (
-              <option key={evt.id} value={evt.id}>
-                {evt.title} ({evt.time} hrs)
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Visor del Escáner y Simulación */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Lado Izquierdo: Visor de Cámara */}
-        <div className="bg-white dark:bg-[#0b1a30] rounded-3xl p-6 border border-slate-200 dark:border-[#1e355b] flex flex-col items-center justify-center relative min-h-80 shadow-sm">
-          <div className="relative w-60 h-60 border-2 border-dashed border-[#004ea2]/40 dark:border-blue-400/40 rounded-3xl flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-[#071324]">
+        {/* Visor de Cámara */}
+        <div className="bg-white dark:bg-[#0b1a30] rounded-3xl p-6 border border-slate-200 dark:border-teatro-navy-border flex flex-col items-center justify-center relative min-h-80 shadow-sm">
+          <div className="relative w-60 h-60 border-2 border-dashed border-teatro-blue/40 dark:border-blue-400/40 rounded-3xl flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-[#071324]">
             <div className="absolute inset-0 flex items-center justify-center">
-              <ScanLine className="w-48 h-48 text-[#004ea2]/50 dark:text-blue-400/60 animate-pulse" />
+              <ScanLine className="w-48 h-48 text-teatro-blue/50 dark:text-blue-400/60 animate-pulse" />
             </div>
-            <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#004ea2] dark:border-blue-400 rounded-tl-sm" />
-            <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[#004ea2] dark:border-blue-400 rounded-tr-sm" />
-            <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[#004ea2] dark:border-blue-400 rounded-bl-sm" />
-            <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[#004ea2] dark:border-blue-400 rounded-br-sm" />
-
             <div className="z-10 text-center px-4">
-              <Camera className="w-8 h-8 text-[#004ea2] dark:text-blue-400 mx-auto mb-2" />
-              <p className="text-xs text-slate-600 dark:text-slate-300">Apunte la cámara al código QR del tiquete del espectador</p>
+              <Camera className="w-8 h-8 text-teatro-blue dark:text-blue-400 mx-auto mb-2" />
+              <p className="text-xs text-slate-600 dark:text-slate-300">Enfoque el QR o digite el código de 4 caracteres</p>
             </div>
           </div>
 
           <div className="mt-4 flex items-center gap-3">
             <button
               onClick={() => setCameraActive(!cameraActive)}
-              className="px-4 py-2 text-xs bg-slate-100 dark:bg-[#071324] hover:bg-slate-200 dark:hover:bg-slate-800 text-[#004ea2] dark:text-blue-400 rounded-xl border border-slate-200 dark:border-[#1a3357] transition-colors font-semibold cursor-pointer"
+              className="px-4 py-2 text-xs bg-slate-100 dark:bg-[#071324] hover:bg-slate-200 dark:hover:bg-slate-800 text-teatro-blue dark:text-blue-400 rounded-xl border border-slate-200 dark:border-[#1a3357] transition-colors font-semibold cursor-pointer"
             >
-              {cameraActive ? "Pausar Cámara Óptica" : "Activar Sensor de Cámara"}
+              {cameraActive ? "Pausar Cámara" : "Activar Sensor Óptico"}
             </button>
           </div>
         </div>
 
-        {/* Lado Derecho: Entrada Manual e Inyección de Prueba Rápida */}
+        {/* Entrada Rápida de 4 Caracteres (Auto-Submit) & Simulación */}
         <div className="space-y-4">
-          <div className="bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-[#1e355b] shadow-sm">
-            <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-semibold text-xs font-mono">
-              <KeyRound className="w-4 h-4 text-[#004ea2] dark:text-blue-400" />
-              <span>Validación Manual o Lector de Barra USB</span>
+          <div className="bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-teatro-navy-border shadow-sm">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-slate-900 dark:text-white font-semibold text-xs font-mono">
+                <KeyRound className="w-4 h-4 text-teatro-blue dark:text-blue-400" />
+                <span>Código Rápido (2 Letras + 2 Dígitos)</span>
+              </div>
+              <span className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 font-mono font-semibold">
+                <Zap className="w-3 h-3" /> Auto-valida
+              </span>
             </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+              Escriba el código corto (ej: <strong>AL14</strong>). Se valida automáticamente al escribir el 4to caracter.
+            </p>
             <form onSubmit={handleManualSubmit} className="space-y-3">
               <input
                 type="text"
-                value={manualCode}
-                onChange={(e) => setManualCode(e.target.value)}
-                placeholder="Pegue o digite el código (ej: TM-evt-gala-25...)"
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500"
+                value={inputCode}
+                onChange={handleInputChange}
+                maxLength={40}
+                placeholder="Ej. AL14 o pegue QR..."
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-sm font-mono tracking-wider uppercase text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue"
               />
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#004ea2] hover:bg-[#003c80] text-white font-semibold rounded-xl text-xs transition-colors shadow-xs cursor-pointer"
+                className="w-full py-2.5 bg-teatro-blue hover:bg-teatro-blue-hover text-white font-semibold rounded-xl text-xs transition-colors shadow-xs cursor-pointer"
               >
                 Procesar e Ingresar
               </button>
             </form>
           </div>
 
-          <div className="bg-white dark:bg-[#0b1a30] p-5 rounded-3xl border border-slate-200 dark:border-[#1e355b] text-xs shadow-sm">
+          <div className="bg-white dark:bg-[#0b1a30] p-5 rounded-3xl border border-slate-200 dark:border-teatro-navy-border text-xs shadow-sm">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-semibold text-slate-900 dark:text-white">Simulación Rápida de Escáner</span>
-              <span className="text-[10px] text-[#004ea2] dark:text-blue-400 font-mono font-semibold">{eventTickets.length} pases emitidos</span>
+              <span className="font-semibold text-slate-900 dark:text-white">Pases Emitidos para esta Función</span>
+              <span className="text-[10px] text-teatro-blue dark:text-blue-400 font-mono font-semibold">{eventTickets.length} pases</span>
             </div>
-            <p className="text-slate-500 dark:text-slate-400 text-[11px] mb-3">Haga clic en cualquier tiquete para simular el escaneo:</p>
             <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
               {eventTickets.slice(0, 6).map((tkt) => (
                 <button
                   key={tkt.id}
-                  onClick={() => processScan(tkt.qrCodeValue)}
-                  className="w-full text-left p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-[#004ea2] dark:hover:border-blue-500 hover:bg-[#ebf3fc] dark:hover:bg-[#004ea2]/15 flex items-center justify-between transition-colors cursor-pointer"
+                  onClick={() => processScan(tkt.shortCode || tkt.qrCodeValue)}
+                  className="w-full text-left p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-teatro-blue dark:hover:border-blue-500 hover:bg-teatro-blue-light dark:hover:bg-teatro-blue/15 flex items-center justify-between transition-colors cursor-pointer"
                 >
-                  <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-teatro-blue dark:text-blue-400 border border-slate-200 dark:border-slate-700">
+                      {tkt.shortCode || "QR"}
+                    </span>
                     <span className="font-semibold text-slate-800 dark:text-slate-200">{tkt.citizenName}</span>
-                    <span className="text-[10px] text-[#004ea2] dark:text-blue-400 ml-1.5 font-mono">({tkt.seatLabel || tkt.zone})</span>
+                    <span className="text-[10px] text-slate-400 font-mono">({tkt.seatLabel || tkt.zone})</span>
                   </div>
-                  {tkt.checkedIn ? (
+                  {tkt.status === "RELEASED_NO_SHOW" ? (
+                    <span className="text-[10px] text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-950/40 px-2 py-0.5 rounded-full font-mono font-semibold">
+                      Liberado
+                    </span>
+                  ) : tkt.checkedIn ? (
                     <span className="text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full font-mono flex items-center gap-0.5 font-semibold">
                       <Check className="w-3 h-3" /> En Sala
                     </span>
                   ) : (
                     <span className="text-[10px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-mono">
-                      Escanear
+                      Validar
                     </span>
                   )}
                 </button>
@@ -165,10 +166,12 @@ export function DoorScannerView() {
       </div>
 
       {/* Monitor de Aforo en Puerta */}
-      <div className="bg-white dark:bg-[#0b1a30] p-4 rounded-2xl border border-slate-200 dark:border-[#1e355b] flex items-center justify-between text-xs shadow-xs">
+      <div className="bg-white dark:bg-[#0b1a30] p-4 rounded-2xl border border-slate-200 dark:border-teatro-navy-border flex items-center justify-between text-xs shadow-xs">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-[#c59223] dark:text-amber-400" />
-          <span className="text-slate-600 dark:text-slate-300 font-medium">Entrada Principal y Protocolo activos.</span>
+          <ShieldAlert className="w-4 h-4 text-teatro-gold dark:text-amber-400" />
+          <span className="text-slate-600 dark:text-slate-300 font-medium">
+            Puerta y Acreditación. Corte de butacas no registradas a los 15 min antes.
+          </span>
         </div>
         <div className="font-mono text-slate-600 dark:text-slate-300">
           <span>Ingresados a Sala: </span>
@@ -180,6 +183,7 @@ export function DoorScannerView() {
       <DoorValidationResult
         outcome={validationOutcome}
         ticket={activeTicket}
+        event={currentEvent}
         errorMessage={errorMessage}
         onDismiss={() => {
           setValidationOutcome(null);

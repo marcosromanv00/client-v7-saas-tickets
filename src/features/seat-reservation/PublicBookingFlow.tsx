@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { Seat, TheaterEvent, Ticket } from "../tickets/types";
 import { Step1ShowSelection } from "./Step1ShowSelection";
@@ -37,7 +38,10 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
       if (prev.includes(seat.id)) {
         return prev.filter((id) => id !== seat.id);
       }
-      if (prev.length >= 6) return prev; // Límite máximo de 6 butacas por reserva
+      if (prev.length >= 2) {
+        toast.info("Límite cívico: Máximo 2 entradas por persona por función.");
+        return prev;
+      }
       return [...prev, seat.id];
     });
   };
@@ -49,6 +53,7 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
     citizenPhone?: string;
   }) => {
     const created: Ticket[] = [];
+    let lastError: string | undefined;
 
     // Emitir tiquete para cada butaca seleccionada
     selectedSeatIds.forEach((seatId) => {
@@ -57,6 +62,7 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
         eventId: selectedEvent.id,
         citizenName: data.citizenName,
         citizenId: data.citizenId,
+        citizenEmail: data.citizenEmail,
         citizenPhone: data.citizenPhone,
         seatId: seatId,
         zone: seatObj?.zone || "PLANTA_BAJA",
@@ -64,6 +70,8 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
       });
       if (res.success && res.ticket) {
         created.push(res.ticket);
+      } else if (res.error) {
+        lastError = res.error;
       }
     });
 
@@ -78,6 +86,8 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           colors: ["#004ea2", "#c8102e", "#c59223", "#ffffff"],
         });
       } catch {}
+    } else if (lastError) {
+      toast.error(lastError);
     }
   };
 
@@ -90,13 +100,13 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-16 text-slate-900 dark:text-slate-100 transition-colors">
       {/* BARRA DE PROGRESO DE APP NATIVA */}
-      <div className="flex items-center justify-between max-w-2xl mx-auto mb-4 px-3 sm:px-5 py-2 bg-white dark:bg-[#0b1a30] rounded-2xl border border-slate-200 dark:border-[#1e355b] text-xs shadow-xs">
+      <div className="flex items-center justify-between max-w-2xl mx-auto mb-4 px-3 sm:px-5 py-2 bg-white dark:bg-[#0b1a30] rounded-2xl border border-slate-200 dark:border-teatro-navy-border text-xs shadow-xs">
         <button
           type="button"
           onClick={() => setCurrentStep("show")}
           className="flex items-center gap-1.5 cursor-pointer"
         >
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "show" ? "bg-[#004ea2] text-white" : "bg-emerald-600 text-white"}`}>1</span>
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "show" ? "bg-teatro-blue text-white" : "bg-emerald-600 text-white"}`}>1</span>
           <span className={`hidden sm:inline ${currentStep === "show" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Obra</span>
         </button>
         <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
@@ -105,18 +115,18 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           onClick={() => selectedEvent && setCurrentStep("seats")}
           className="flex items-center gap-1.5 cursor-pointer"
         >
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "seats" ? "bg-[#004ea2] text-white" : currentStep === "checkout" || currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>2</span>
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "seats" ? "bg-teatro-blue text-white" : currentStep === "checkout" || currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>2</span>
           <span className={`hidden sm:inline ${currentStep === "seats" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Butacas</span>
         </button>
         <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
         <div className="flex items-center gap-1.5">
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "checkout" ? "bg-[#004ea2] text-white" : currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>3</span>
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "checkout" ? "bg-teatro-blue text-white" : currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>3</span>
           <span className={`hidden sm:inline ${currentStep === "checkout" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Datos</span>
         </div>
         <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
         <div className="flex items-center gap-1.5">
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "success" ? "bg-[#c8102e] text-white shadow-xs" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>4</span>
-          <span className={`hidden sm:inline ${currentStep === "success" ? "font-bold text-[#c8102e] dark:text-red-400" : "text-slate-500"}`}>Boleto</span>
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "success" ? "bg-muni-red text-white shadow-xs" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>4</span>
+          <span className={`hidden sm:inline ${currentStep === "success" ? "font-bold text-muni-red dark:text-red-400" : "text-slate-500"}`}>Boleto</span>
         </div>
       </div>
 

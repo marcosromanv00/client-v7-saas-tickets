@@ -69,7 +69,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               onClick={() => onTabChange("admin")}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
                 activeTab === "admin"
-                  ? "bg-[#004ea2] dark:bg-blue-600 text-white shadow-xs"
+                  ? "bg-teatro-blue dark:bg-blue-600 text-white shadow-xs"
                   : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               }`}
             >

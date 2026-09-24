@@ -32,13 +32,13 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
       <div className="relative w-full max-w-md bg-white dark:bg-[#071324] border-l border-slate-200 dark:border-[#192f52] text-slate-900 dark:text-slate-100 h-full overflow-y-auto flex flex-col z-10 shadow-2xl transition-colors">
         <div className="p-5 border-b border-slate-200 dark:border-[#192f52] flex items-center justify-between bg-slate-50 dark:bg-[#0b1a30]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#004ea2] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+            <div className="w-10 h-10 rounded-full bg-teatro-blue text-white flex items-center justify-center font-bold text-sm shadow-xs">
               {currentUser.name.slice(0, 2).toUpperCase()}
             </div>
             <div>
               <h2 className="font-bold text-sm text-slate-900 dark:text-white">{currentUser.name}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">{currentUser.email}</p>
-              {currentUser.citizenId && <p className="text-[10px] text-[#004ea2] dark:text-blue-400 font-mono font-semibold">Cédula: {currentUser.citizenId}</p>}
+              {currentUser.citizenId && <p className="text-[10px] text-teatro-blue dark:text-blue-400 font-mono font-semibold">Cédula: {currentUser.citizenId}</p>}
             </div>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
@@ -49,7 +49,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
         <div className="flex-1 p-5 space-y-6">
           <div className="bg-slate-50 dark:bg-[#0b1a30] border border-slate-200 dark:border-[#192f52] rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Bell className="w-4 h-4 text-[#004ea2] dark:text-blue-400" />
+              <Bell className="w-4 h-4 text-teatro-blue dark:text-blue-400" />
               <h3 className="text-xs font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-wider">Notificaciones y Alertas de Eventos</h3>
             </div>
             <div className="space-y-3 text-xs">
@@ -59,7 +59,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
                   type="checkbox"
                   checked={prefs.whatsapp}
                   onChange={(e) => updateNotifications({ whatsapp: e.target.checked })}
-                  className="rounded border-slate-300 dark:border-slate-700 text-[#004ea2] focus:ring-0 w-4 h-4 accent-[#004ea2]"
+                  className="rounded border-slate-300 dark:border-slate-700 text-teatro-blue focus:ring-0 w-4 h-4 accent-teatro-blue"
                 />
               </label>
               <label className="flex items-center justify-between cursor-pointer">
@@ -68,7 +68,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
                   type="checkbox"
                   checked={prefs.email}
                   onChange={(e) => updateNotifications({ email: e.target.checked })}
-                  className="rounded border-slate-300 dark:border-slate-700 text-[#004ea2] focus:ring-0 w-4 h-4 accent-[#004ea2]"
+                  className="rounded border-slate-300 dark:border-slate-700 text-teatro-blue focus:ring-0 w-4 h-4 accent-teatro-blue"
                 />
               </label>
               <label className="flex items-center justify-between cursor-pointer">
@@ -77,7 +77,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
                   type="checkbox"
                   checked={prefs.sms}
                   onChange={(e) => updateNotifications({ sms: e.target.checked })}
-                  className="rounded border-slate-300 dark:border-slate-700 text-[#004ea2] focus:ring-0 w-4 h-4 accent-[#004ea2]"
+                  className="rounded border-slate-300 dark:border-slate-700 text-teatro-blue focus:ring-0 w-4 h-4 accent-teatro-blue"
                 />
               </label>
             </div>
@@ -86,7 +86,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
           <div>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <TicketIcon className="w-4 h-4 text-[#004ea2] dark:text-blue-400" />
+                <TicketIcon className="w-4 h-4 text-teatro-blue dark:text-blue-400" />
                 <h3 className="text-xs font-semibold text-slate-900 dark:text-slate-200 uppercase tracking-wider">Mis Tiquetes Registrados ({userTickets.length})</h3>
               </div>
             </div>
@@ -107,7 +107,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
                     <div key={ticket.id} className="p-3 bg-slate-50 dark:bg-[#0b1a30] border border-slate-200 dark:border-[#192f52] rounded-xl flex items-center justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-[#004ea2] dark:text-blue-400 text-xs">Butaca {ticket.seatLabel || ticket.seatId}</span>
+                          <span className="font-bold text-teatro-blue dark:text-blue-400 text-xs">Butaca {ticket.seatLabel || ticket.seatId}</span>
                           <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${isUsed ? "bg-slate-200 dark:bg-slate-800 text-slate-500" : "bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"}`}>
                             {isUsed ? "Ingresado" : "Confirmado"}
                           </span>
@@ -122,7 +122,7 @@ export const CitizenAccountDrawer: React.FC<CitizenDrawerProps> = ({ isOpen, onC
                             onSelectTicketForQr(ticket);
                             onClose();
                           }}
-                          className="p-2 bg-[#ebf3fc] dark:bg-[#004ea2]/20 hover:bg-[#004ea2]/25 text-[#004ea2] dark:text-blue-300 rounded-lg border border-[#004ea2]/30 transition-colors flex items-center gap-1.5 text-xs cursor-pointer"
+                          className="p-2 bg-teatro-blue-light dark:bg-teatro-blue/20 hover:bg-teatro-blue/25 text-teatro-blue dark:text-blue-300 rounded-lg border border-teatro-blue/30 transition-colors flex items-center gap-1.5 text-xs cursor-pointer"
                           title="Ver Pase QR"
                         >
                           <QrCode className="w-4 h-4" />
