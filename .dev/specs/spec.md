@@ -1,19 +1,34 @@
 # Especificación de Requisitos y Contratos del Sistema (SDD)
 ## Teatro Municipal - Sistema de Tiquetería y Gestión de Aforo
-### Módulo: Entradas, Liberación 15 Min, Código Rápido, Brazaletes y Marco Legal
+### Módulo: Boletería Presencial, Sugerencia Inteligente de Grupos, Auto-Registro QR, Pantalla de Acomodadores y Corte Web de 20 Minutos
 
 ---
 
 ## 1. Contexto y Objetivos de Negocio
 
-El Teatro Municipal de Alajuela requiere optimizar la experiencia ciudadana y el control operativo de puerta para la Temporada 2026. Los nuevos requisitos abordan:
-1. **Límite de 2 entradas por usuario**: Evitar el acaparamiento y democratizar el acceso cívico mediante validación estricta por Cédula (`citizenId`).
-2. **Liberación automática 15 minutos antes de la función**: Toda entrada con butaca asignada no registrada (sin check-in) a falta de 15 minutos para la hora de inicio se libera a favor de los asistentes en espera (walk-ins).
-3. **Acomodo Híbrido Inteligente**: Combinación de reserva previa numerada con relleno asistido de sala por orden de llegada (desde la primera fila hacia atrás) para maximizar el aforo efectivo.
-4. **Sistema de Brazaletes de 1 Color por Evento**: Cada función maneja un color oficial único (Azul Rey, Plateado, Rojo, Negro, etc.), administrable desde la consola del teatro, garantizando que el personal de puerta entregue y verifique el color correcto evitando reutilizaciones.
-5. **Código Rápido de 4 Caracteres (2 letras + 2 dígitos)**: Acceso ultrarrápido sin depender exclusivamente de lectura óptica de cámara, con auto-procesamiento al ingresar los 4 caracteres.
-6. **Botón FAB de Verificación**: Acceso instantáneo con 1 clic desde cualquier pantalla del sistema a la consola de validación de puerta.
-7. **Marco Legal y Términos Cívicos**: Modal y cláusulas de aceptación obligatoria alineadas con la Ley N° 8968 de Costa Rica y la normativa patrimonial municipal.
+El Teatro Municipal de Alajuela requiere optimizar la operación presencial para las funciones de la Temporada 2026, estableciendo un protocolo de atención de dos mesas de recepción, personal de sala (acomodadores) y reglas estrictas de corte de aforo:
+
+1. **Corte de Reservaciones Web a 20 Minutos**:
+   - A falta de 20 minutos para el inicio de una función, la reserva web pública para usuarios remotos se bloquea automáticamente.
+   - La cartelera pública muestra un aviso cívico indicando que las reservas web están cerradas y guía a los interesados a la mesa de registro físico en el teatro.
+2. **Mesa 1: Registro Presencial & Walk-in (1 hora antes)**:
+   - Atiende a las personas que no reservaron con anticipación.
+   - Permite visualizar la **matriz interactiva de butacas** de los 3 niveles del teatro.
+   - Incorpora un **Asistente Modal de Distribución Inteligente de Grupos**: el operador coloca la cantidad de asistentes (ej: 4), nombre y cédula del responsable, y el algoritmo sugiere la mejor distribución en sala (priorizando sentarlos juntos en una fila; si no es posible, dividirlos en bloques contiguos balanceados en filas cercanas hacia el frente).
+   - El operador puede confirmar la sugerencia directamente o ajustar asientos en la matriz con un clic antes de emitir en lote los boletos con check-in automático.
+   - Brinda un botón para proyectar o imprimir el **código QR de Auto-Registro en Mesa** para que los asistentes en fila se registren ellos mismos desde su teléfono si lo prefieren.
+3. **Auto-Registro Presencial en Mesa (Vía QR)**:
+   - Los ciudadanos escanean el QR físico en la mesa (`?mode=walkin-kiosk` o modal dedicado) y pueden registrarse en el lugar, incluso dentro de los últimos 20 minutos, recibiendo su pase con check-in automático inmediato.
+4. **Mesa 2: Verificación Rápida de Reservas Previas**:
+   - Opera la vista de **Puerta** (`DoorScannerView`): escaneo óptico de QR y búsqueda por Cédula o Código Rápido de 4 caracteres para acreditar a quienes reservaron con antelación.
+5. **Sala: Interfaz de Acomodadores en Tiempo Real**:
+   - Nueva vista operativa para los acomodadores dentro de la sala.
+   - Muestra un feed en vivo de los espectadores que van ingresando (Nombre, Butacas Asignadas, Nivel/Fila, Hora de Ingreso).
+   - Incluye buscador rápido por nombre, cédula o butaca para orientar a asistentes extraviados.
+   - Muestra el mapa de sala con estado de ocupación en vivo (Ocupada vs Reservada pendiente vs Libre).
+   - Permite marcar opcionalmente al espectador como *"Ubicado / En Asiento"*.
+6. **Sincronización en Tiempo Real Multi-Pantalla**:
+   - Protocolo de sincronización instantánea entre pestañas y dispositivos mediante `BroadcastChannel("tm_theater_sync")` y listeners de eventos `storage`.
 
 ---
 
@@ -21,120 +36,156 @@ El Teatro Municipal de Alajuela requiere optimizar la experiencia ciudadana y el
 
 ```typescript
 import { z } from "zod";
+import { ZoneIdSchema, SeatSchema } from "./types";
 
-// Colores Oficiales de Brazaletes
-export const BraceletColorSchema = z.object({
-  id: z.string(),
-  name: z.string(), // "Azul Rey", "Plateado", "Rojo", "Negro"
-  hex: z.string(), // "#004ea2", "#94a3b8", "#c8102e", "#09090b"
-  description: z.string(),
-});
-export type BraceletColor = z.infer<typeof BraceletColorSchema>;
-
-// Estado del Tiquete
-export const TicketStatusSchema = z.enum([
-  "ACTIVE",             // Emitido y válido para ingresar
-  "CHECKED_IN",          // Ingresado a sala
-  "RELEASED_NO_SHOW",    // Liberado por inasistencia (15 min antes)
-  "CANCELLED",          // Cancelado administrativamente
-]);
-export type TicketStatus = z.infer<typeof TicketStatusSchema>;
-
-// Tiquete con Código Rápido de 4 Caracteres
-export const TicketSchema = z.object({
-  id: z.string(),
-  eventId: z.string(),
+// Solicitud de Distribución Inteligente de Grupos Walk-in
+export const GroupSuggestionRequestSchema = z.object({
+  headcount: z.number().int().min(1).max(10),
   citizenName: z.string().min(2, "El nombre debe contener al menos 2 caracteres"),
   citizenId: z.string().min(6, "Cédula o documento debe tener al menos 6 caracteres"),
-  citizenPhone: z.string().optional(),
-  citizenEmail: z.string().email().optional(),
+  zonePreference: ZoneIdSchema.optional(),
+});
+export type GroupSuggestionRequest = z.infer<typeof GroupSuggestionRequestSchema>;
+
+// Resultado del Algoritmo de Sugerencia
+export const GroupSuggestionSubgroupSchema = z.object({
+  row: z.string(),
+  zone: ZoneIdSchema,
+  seats: z.array(SeatSchema),
+  description: z.string(),
+});
+export type GroupSuggestionSubgroup = z.infer<typeof GroupSuggestionSubgroupSchema>;
+
+export const GroupSuggestionResultSchema = z.object({
+  requestedCount: z.number(),
+  allocatedCount: z.number(),
+  isContiguous: z.boolean(),
+  subgroups: z.array(GroupSuggestionSubgroupSchema),
+  selectedSeatIds: z.array(z.string()),
+  explanation: z.string(),
+  hasSufficientSeats: z.boolean(),
+});
+export type GroupSuggestionResult = z.infer<typeof GroupSuggestionResultSchema>;
+
+// Criterio de Corte Temporal
+export const CutoffStatusSchema = z.object({
+  isWebLocked: z.boolean(),          // true si faltan <= 20 min o ya inició
+  isReleaseActive: z.boolean(),      // true si faltan <= 15 min o ya inició
+  minutesRemaining: z.number(),      // Minutos hasta la hora del evento
+  statusText: z.string(),
+});
+export type CutoffStatus = z.infer<typeof CutoffStatusSchema>;
+
+// Entrada para el Feed de Acomodadores
+export const UsherFeedEntrySchema = z.object({
+  ticketId: z.string(),
+  citizenName: z.string(),
+  citizenId: z.string(),
   seatId: z.string().nullable(),
   seatLabel: z.string().nullable(),
-  zone: z.enum(["PLATEA_BAJA", "NIVEL_MEDIO", "BALCON_ALTO", "PLANTA_BAJA", "BALCON"]),
-  qrCodeValue: z.string(),
-  shortCode: z.string().length(4), // Ej: "AL14", "TM08" (2 letras + 2 dígitos)
-  isVipGuest: z.boolean().default(false),
-  checkedIn: z.boolean().default(false),
-  checkedInAt: z.string().nullable().default(null),
-  status: TicketStatusSchema.default("ACTIVE"),
-  releasedAt: z.string().nullable().default(null),
-  createdAt: z.string(),
-  notes: z.string().optional(),
+  zone: ZoneIdSchema,
+  checkedInAt: z.string(),
+  isSeated: z.boolean().default(false),
+  seatedAt: z.string().nullable().default(null),
 });
-export type Ticket = z.infer<typeof TicketSchema>;
-
-// Evento de Teatro con Color de Brazalete
-export const TheaterEventSchema = z.object({
-  id: z.string(),
-  title: z.string().min(3),
-  tagline: z.string(),
-  date: z.string(), // YYYY-MM-DD
-  time: z.string(), // HH:MM
-  durationMinutes: z.number().int().positive(),
-  mode: z.enum(["SEATED_NUMBERED", "GENERAL_ADMISSION"]),
-  status: z.enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"]),
-  braceletColorId: z.string().default("azul-rey"), // Enlace a color de brazalete
-  braceletColorName: z.string().default("Azul Rey"),
-  totalCapacity: z.number().int().default(220),
-  registrationEnabled: z.boolean().default(true),
-  description: z.string(),
-  location: z.string().default("Sala Principal, Teatro Municipal"),
-  posterUrl: z.string().optional(),
-  genre: z.string().default("Teatro / Artes Escénicas"),
-});
-export type TheaterEvent = z.infer<typeof TheaterEventSchema>;
+export type UsherFeedEntry = z.infer<typeof UsherFeedEntrySchema>;
 ```
 
 ---
 
-## 3. Casos Borde y Reglas de Negocio
+## 3. Algoritmos Puros y Reglas de Negocio
 
-1. **Límite de 2 Entradas por Cédula**:
-   - En `Step2SeatSelection`, el arreglo `selectedSeatIds` tiene longitud máxima de 2.
-   - En `theaterStore.bookTicket`, se contabilizan los tiquetes existentes (`status !== "RELEASED_NO_SHOW" && status !== "CANCELLED"`). Si `existentes + solicitados > 2`, la transacción falla con error: *"La cédula [X] ya alcanzó el límite máximo de 2 entradas para este evento."*
+### 3.1. Algoritmo de Corte Temporal de 20 Minutos (`isWebBookingLocked`)
+```typescript
+/**
+ * Evalúa si faltan 20 minutos o menos para una función.
+ * Si retorna true, la boletería web pública no permite nuevas reservas remotas.
+ */
+export function evaluateEventCutoff(
+  eventDate: string,
+  eventTime: string,
+  cutoffMinutes: number = 20,
+  currentTime: Date = new Date()
+): CutoffStatus {
+  const [hours, minutes] = eventTime.split(":").map(Number);
+  const [year, month, day] = eventDate.split("-").map(Number);
+  const eventStart = new Date(year, month - 1, day, hours, minutes, 0);
 
-2. **Corte y Liberación de 15 Minutos**:
-   - Regla: Si `(eventStartDateTime - now) <= 15 minutos` y el boleto no tiene `checkedIn === true`, se actualiza su estado a `RELEASED_NO_SHOW` y su butaca pasa inmediatamente a `AVAILABLE`.
-   - Si el espectador presenta un boleto liberado en puerta, el lector de acceso muestra el resultado `OUTCOME_RELEASED_NO_SHOW`: *"Entrada liberada por inasistencia (corte a 15 min antes de función). Su butaca fue reasignada."*
+  const diffMs = eventStart.getTime() - currentTime.getTime();
+  const minutesRemaining = Math.floor(diffMs / (60 * 1000));
 
-3. **Acomodo Híbrido (Relleno desde el Frente)**:
-   - Algoritmo de selección: Recorre filas ordenadas prioritariamente:
-     1. Nivel 1 (Platea Baja): Fila A -> Fila B -> Fila C -> Fila D.
-     2. Nivel 2 (Nivel Medio): Fila E -> F -> G -> H -> I -> J.
-     3. Nivel 3 (Balcón): Fila K -> L -> M -> N -> O.
-   - Retorna la primera butaca en estado `AVAILABLE` para asignación inmediata de walk-in en taquilla/puerta.
+  const isWebLocked = minutesRemaining <= cutoffMinutes;
+  const isReleaseActive = minutesRemaining <= 15;
 
-4. **Código Rápido de 4 Caracteres**:
-   - Formato: 2 letras mayúsculas [A-Z] + 2 dígitos [0-9] (ej: `AL14`, `TM25`, `CR89`).
-   - El verificador de puerta escucha el input manual y, al detectar exactamente 4 caracteres válidos, dispara la validación instantánea sin necesidad de tecla Enter.
+  let statusText = "Boletería Web Abierta";
+  if (minutesRemaining <= 0) {
+    statusText = "Función Iniciada";
+  } else if (isReleaseActive) {
+    statusText = "Butacas Liberadas en Taquilla (A falta de 15 min)";
+  } else if (isWebLocked) {
+    statusText = "Boletería Web Cerrada (Solicite en Taquilla Física)";
+  }
 
-5. **FAB de Verificación**:
-   - Botón flotante accesible en todas las vistas (`App.tsx`), fija en la esquina inferior derecha (`z-40`), con feedback sensorial y tooltip que redirige de inmediato a la pestaña `puerta`.
+  return {
+    isWebLocked,
+    isReleaseActive,
+    minutesRemaining,
+    statusText,
+  };
+}
+```
 
-6. **Términos y Privacidad (Ley N° 8968)**:
-   - Checkbox obligatorio en el checkout: *"He leído y acepto los Términos y Condiciones y la Política de Privacidad de la Municipalidad de Alajuela (Liberación de entradas 15 min antes por inasistencia)."*
-   - Modal interactivo cívico consultable en cualquier momento desde el pie de página o desde el enlace del formulario.
+### 3.2. Algoritmo de Sugerencia Inteligente de Grupos (`suggestGroupSeating`)
+1. **Filtrado**: Identificar butacas en estado `AVAILABLE`.
+2. **Prioridad de Filas**:
+   - Nivel 1 Platea Baja: Filas A $\to$ B $\to$ C $\to$ D.
+   - Nivel 2 Nivel Medio: Filas E $\to$ F $\to$ G $\to$ H $\to$ I $\to$ J.
+   - Nivel 3 Balcón Alto: Filas K $\to$ L $\to$ M $\to$ N $\to$ O.
+3. **Fase A (Bloque Contiguo Total)**:
+   - Buscar en cada fila si existen $K$ asientos con números consecutivos contiguos libres (ej. B-05, B-06, B-07, B-08).
+   - Si se encuentra, retornar el bloque más cercano al proscenio.
+4. **Fase B (Partición Balanceada en Filas Cercanas)**:
+   - Si no caben juntos en una sola fila, dividir $K$ en particiones óptimas contiguas (ej. para 4 personas: $2 + 2$; para 5: $3 + 2$; para 6: $3 + 3$).
+   - Asignar los subgrupos en las filas disponibles más cercanas posibles hacia el frente.
+5. **Fase C (Reserva Asistida)**:
+   - Si la disponibilidad es muy dispersa, tomar las mejores $K$ butacas individuales ordenadas por jerarquía.
 
 ---
 
-## 4. Criterios de Aceptación (Given-When-Then)
+## 4. Casos Borde y Manejo de Errores
 
-### Escenario 1: Límite de 2 Entradas por Usuario
-- **Given** que un ciudadano reserva en la web pública,
-- **When** intenta seleccionar una 3ra butaca en el mapa,
-- **Then** el sistema bloquea la selección e indica que el límite cívico es de 2 entradas por persona.
+| Caso Borde | Comportamiento Esperado |
+| :--- | :--- |
+| **Aforo remanente menor al grupo** | Si el usuario pide 4 butacas y solo quedan 2 libres en toda la sala, el modal alerta de inmediato: *"Aforo insuficiente: solo restan 2 butacas libres"*, sugiriendo asignar las 2 disponibles. |
+| **Intento de reserva web a falta de 19 minutos** | El botón de selección de butacas se desactiva en la cartelera web con una insignia ámbar *"Boletería Web Cerrada"* y un banner explicativo hacia la mesa física. |
+| **Auto-registro QR en mesa dentro de los 20 minutos** | El parámetro de URL `?mode=walkin-kiosk` desactiva la restricción de 20 minutos, emitiendo boletos walk-in y marcándolos con check-in inmediato. |
+| **Asistente cambia de parecer en ventanilla** | Tras generarse la sugerencia en el modal, las butacas se destacan en la matriz; el operador puede deseleccionar una y marcar otra butaca disponible en la matriz antes de pulsar *"Emitir Boletos"*. |
+| **Concurrencia entre Mesa 1 y Mesa 2** | La sincronización por `BroadcastChannel` actualiza el estado de butacas y tickets en menos de 50ms entre pantallas abiertas, evitando dobles asignaciones. |
 
-### Escenario 2: Liberación a 15 Minutos y Reasignación Híbrida
-- **Given** un tiquete con butaca reservada sin check-in cuando faltan 15 minutos o menos para la función,
-- **When** se evalúa el reloj del sistema,
-- **Then** el tiquete pasa a "RELEASED_NO_SHOW", la butaca se libera a "AVAILABLE" y el taquillero puede asignarla a un walk-in con la acción "Asignar siguiente mejor butaca".
+---
 
-### Escenario 3: Verificación con Código Rápido de 4 Caracteres
-- **Given** que el acomodador en puerta tiene el lector de acceso,
-- **When** digita los 4 caracteres ("AL14") sin presionar Enter,
-- **Then** el sistema valida el boleto, muestra el color de brazalete correspondiente al evento y confirma el check-in.
+## 5. Criterios de Aceptación (Given-When-Then / Gherkin)
 
-### Escenario 4: Botón FAB Persistente
-- **Given** que el usuario u operador está en cualquier módulo (Inicio, Taquilla, etc.),
-- **When** hace clic en el botón flotante FAB,
-- **Then** navega instantáneamente al visor de Control de Acceso y Lector QR.
+### Escenario 1: Bloqueo de 20 Minutos en Cartelera Web
+- **Given** una obra programada para las 19:00 horas del día de hoy.
+- **When** el reloj del sistema o simulador marca las 18:41 (a 19 minutos del inicio).
+- **Then** el selector de horario en la cartelera web muestra la insignia *"Boletería Web Cerrada (a menos de 20 min)"*.
+- **And** el botón de continuar a selección de butacas queda bloqueado con un mensaje cívico orientando a la taquilla física del teatro.
+
+### Escenario 2: Sugerencia Inteligente de Asientos Contiguos en la Misma Fila
+- **Given** la función activa tiene disponibles las butacas B-05, B-06, B-07, B-08 en Platea Baja.
+- **When** el operador de taquilla abre el modal de grupos, ingresa 4 personas, nombre *"Carlos Murillo"* y cédula *"1-0987-0654"*.
+- **Then** el modal sugiere un bloque único: *"4 personas juntas en Platea Baja (Fila B: 05, 06, 07, 08)"*.
+- **And** al confirmar, se emiten 4 boletos con check-in automático y se actualiza la matriz a estado `OCCUPIED`.
+
+### Escenario 3: Partición Balanceada en Filas Cercanas cuando no caben juntos
+- **Given** no existe ninguna fila con 4 asientos libres juntos, pero hay 2 asientos libres en fila C y 2 en fila D.
+- **When** el operador solicita sugerencia para 4 personas.
+- **Then** el algoritmo sugiere: *"Subgrupo 1: 2 personas en Fila C (C-03, C-04) • Subgrupo 2: 2 personas en Fila D (D-03, D-04)"*.
+- **And** el operador puede ajustar visualmente o confirmar la sugerencia.
+
+### Escenario 4: Monitoreo en Vivo para Acomodadores
+- **Given** un acomodador con la vista "Acomodadores (Sala)" abierta.
+- **When** se registra un nuevo asistente o grupo en la mesa de taquilla o puerta.
+- **Then** la lista de acomodadores se actualiza en tiempo real mostrando el nombre del titular y las butacas asignadas con un pulso visual animado.
+- **And** el acomodador puede pulsar *"Marcar como Ubicado"* para registrar que los asistentes ya tomaron sus asientos.
