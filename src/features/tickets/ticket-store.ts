@@ -1,4 +1,4 @@
-import { TheaterEvent, Ticket, SpecialGuestEntry, ZoneId } from "./types";
+import { TheaterEvent, Ticket, SpecialGuestEntry, ZoneId, Seat } from "./types";
 import { generateInitialSeats } from "./theater-layout";
 import { TheaterState } from "./ticket-store-types";
 import { loadInitialState, STORAGE_KEY } from "./initial-state";
@@ -56,6 +56,19 @@ export const theaterStore = {
       action: "EVENT_CONFIG_UPDATED",
       targetEntity: updated.id,
       details: `Parámetros de evento actualizados: ${updated.title}`,
+    });
+  },
+
+  updateEventSeats: (eventId: string, newSeats: Seat[]) => {
+    state = { ...state, seatsByEvent: { ...state.seatsByEvent, [eventId]: newSeats } };
+    notify();
+    logAuditEvent({
+      actorId: "usr-admin",
+      actorName: "Consola Administrativa",
+      actorRole: "PRODUCER",
+      action: "EVENT_CONFIG_UPDATED",
+      targetEntity: eventId,
+      details: `Matriz de sala actualizada (${newSeats.length} butacas)`,
     });
   },
 
@@ -171,17 +184,12 @@ export const theaterStore = {
   },
 
   addSpecialGuest: (guest: SpecialGuestEntry) => {
-    state = {
-      ...state,
-      specialGuests: [guest, ...state.specialGuests],
-    };
+    state = { ...state, specialGuests: [guest, ...state.specialGuests] };
     notify();
   },
 
   resetStore: () => {
-    if (typeof localStorage !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    if (typeof localStorage !== "undefined") localStorage.removeItem(STORAGE_KEY);
     state = loadInitialState();
     notify();
   },

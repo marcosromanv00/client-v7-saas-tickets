@@ -53,21 +53,21 @@ export function DoorScannerView() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-100">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
       {/* Título de la Capa */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-[#0e1626]/90 backdrop-blur-md p-6 rounded-3xl border border-slate-800 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-[#1e355b] shadow-sm">
         <div>
-          <span className="text-[10px] font-mono uppercase text-amber-400 tracking-widest">Capa 2 • Acreditación y Puerta</span>
-          <h1 className="text-xl font-serif text-white font-medium mt-0.5">Control de Acceso y Lector QR</h1>
+          <span className="text-[10px] font-mono uppercase text-[#004ea2] dark:text-blue-400 tracking-widest font-semibold">Capa 2 • Acreditación y Puerta</span>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white mt-0.5">Control de Acceso y Lector QR</h1>
         </div>
 
         <div className="flex items-center gap-3">
-          <label htmlFor="door-event-select" className="text-xs font-mono text-slate-400">Función:</label>
+          <label htmlFor="door-event-select" className="text-xs font-mono text-slate-500 dark:text-slate-400">Función:</label>
           <select
             id="door-event-select"
             value={selectedEventId}
             onChange={(e) => setSelectedEventId(e.target.value)}
-            className="px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="px-3.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#004ea2]"
           >
             {store.events.map((evt) => (
               <option key={evt.id} value={evt.id}>
@@ -81,27 +81,26 @@ export function DoorScannerView() {
       {/* Visor del Escáner y Simulación */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Lado Izquierdo: Visor de Cámara */}
-        <div className="bg-[#111827] rounded-3xl p-6 border border-slate-800 text-white flex flex-col items-center justify-center relative min-h-80 shadow-2xl">
-          <div className="relative w-60 h-60 border-2 border-dashed border-amber-400/40 rounded-3xl flex items-center justify-center overflow-hidden bg-slate-950/60">
-            {/* Retícula de Enfoque */}
+        <div className="bg-white dark:bg-[#0b1a30] rounded-3xl p-6 border border-slate-200 dark:border-[#1e355b] flex flex-col items-center justify-center relative min-h-80 shadow-sm">
+          <div className="relative w-60 h-60 border-2 border-dashed border-[#004ea2]/40 dark:border-blue-400/40 rounded-3xl flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-[#071324]">
             <div className="absolute inset-0 flex items-center justify-center">
-              <ScanLine className="w-48 h-48 text-amber-400/60 animate-pulse" />
+              <ScanLine className="w-48 h-48 text-[#004ea2]/50 dark:text-blue-400/60 animate-pulse" />
             </div>
-            <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-amber-400 rounded-tl-sm" />
-            <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-amber-400 rounded-tr-sm" />
-            <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-amber-400 rounded-bl-sm" />
-            <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-amber-400 rounded-br-sm" />
+            <div className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#004ea2] dark:border-blue-400 rounded-tl-sm" />
+            <div className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[#004ea2] dark:border-blue-400 rounded-tr-sm" />
+            <div className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[#004ea2] dark:border-blue-400 rounded-bl-sm" />
+            <div className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[#004ea2] dark:border-blue-400 rounded-br-sm" />
 
             <div className="z-10 text-center px-4">
-              <Camera className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-              <p className="text-xs text-slate-300">Apunte la cámara al código QR del tiquete del espectador</p>
+              <Camera className="w-8 h-8 text-[#004ea2] dark:text-blue-400 mx-auto mb-2" />
+              <p className="text-xs text-slate-600 dark:text-slate-300">Apunte la cámara al código QR del tiquete del espectador</p>
             </div>
           </div>
 
           <div className="mt-4 flex items-center gap-3">
             <button
               onClick={() => setCameraActive(!cameraActive)}
-              className="px-4 py-2 text-xs bg-slate-900 hover:bg-slate-800 text-amber-400 rounded-xl border border-slate-700 transition-colors font-medium"
+              className="px-4 py-2 text-xs bg-slate-100 dark:bg-[#071324] hover:bg-slate-200 dark:hover:bg-slate-800 text-[#004ea2] dark:text-blue-400 rounded-xl border border-slate-200 dark:border-[#1a3357] transition-colors font-semibold cursor-pointer"
             >
               {cameraActive ? "Pausar Cámara Óptica" : "Activar Sensor de Cámara"}
             </button>
@@ -110,10 +109,9 @@ export function DoorScannerView() {
 
         {/* Lado Derecho: Entrada Manual e Inyección de Prueba Rápida */}
         <div className="space-y-4">
-          {/* Ingreso manual de código */}
-          <div className="bg-[#111827] p-6 rounded-3xl border border-slate-800 shadow-xl">
-            <div className="flex items-center gap-2 mb-3 text-white font-medium text-xs font-mono">
-              <KeyRound className="w-4 h-4 text-amber-400" />
+          <div className="bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-[#1e355b] shadow-sm">
+            <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-semibold text-xs font-mono">
+              <KeyRound className="w-4 h-4 text-[#004ea2] dark:text-blue-400" />
               <span>Validación Manual o Lector de Barra USB</span>
             </div>
             <form onSubmit={handleManualSubmit} className="space-y-3">
@@ -122,41 +120,40 @@ export function DoorScannerView() {
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
                 placeholder="Pegue o digite el código (ej: TM-evt-gala-25...)"
-                className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500"
               />
               <button
                 type="submit"
-                className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl text-xs transition-colors shadow-lg shadow-amber-500/20"
+                className="w-full py-2.5 bg-[#004ea2] hover:bg-[#003c80] text-white font-semibold rounded-xl text-xs transition-colors shadow-xs cursor-pointer"
               >
                 Procesar e Ingresar
               </button>
             </form>
           </div>
 
-          {/* Botones de Prueba Rápida con Tiquetes Existentes */}
-          <div className="bg-[#111827] p-5 rounded-3xl border border-slate-800 text-xs shadow-xl">
+          <div className="bg-white dark:bg-[#0b1a30] p-5 rounded-3xl border border-slate-200 dark:border-[#1e355b] text-xs shadow-sm">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-medium text-white">Simulación Rápida de Escáner</span>
-              <span className="text-[10px] text-amber-400 font-mono">{eventTickets.length} pases emitidos</span>
+              <span className="font-semibold text-slate-900 dark:text-white">Simulación Rápida de Escáner</span>
+              <span className="text-[10px] text-[#004ea2] dark:text-blue-400 font-mono font-semibold">{eventTickets.length} pases emitidos</span>
             </div>
-            <p className="text-slate-400 text-[11px] mb-3">Haga clic en cualquier tiquete para simular el escaneo:</p>
+            <p className="text-slate-500 dark:text-slate-400 text-[11px] mb-3">Haga clic en cualquier tiquete para simular el escaneo:</p>
             <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
               {eventTickets.slice(0, 6).map((tkt) => (
                 <button
                   key={tkt.id}
                   onClick={() => processScan(tkt.qrCodeValue)}
-                  className="w-full text-left p-2.5 rounded-xl border border-slate-800/80 hover:border-amber-400 hover:bg-amber-500/10 flex items-center justify-between transition-colors"
+                  className="w-full text-left p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-[#004ea2] dark:hover:border-blue-500 hover:bg-[#ebf3fc] dark:hover:bg-[#004ea2]/15 flex items-center justify-between transition-colors cursor-pointer"
                 >
                   <div>
-                    <span className="font-medium text-slate-200">{tkt.citizenName}</span>
-                    <span className="text-[10px] text-amber-400 ml-1.5 font-mono">({tkt.seatLabel || tkt.zone})</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{tkt.citizenName}</span>
+                    <span className="text-[10px] text-[#004ea2] dark:text-blue-400 ml-1.5 font-mono">({tkt.seatLabel || tkt.zone})</span>
                   </div>
                   {tkt.checkedIn ? (
-                    <span className="text-[10px] text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full font-mono flex items-center gap-0.5">
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full font-mono flex items-center gap-0.5 font-semibold">
                       <Check className="w-3 h-3" /> En Sala
                     </span>
                   ) : (
-                    <span className="text-[10px] text-slate-300 bg-slate-800 px-2 py-0.5 rounded-full font-mono">
+                    <span className="text-[10px] text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-mono">
                       Escanear
                     </span>
                   )}
@@ -168,15 +165,15 @@ export function DoorScannerView() {
       </div>
 
       {/* Monitor de Aforo en Puerta */}
-      <div className="bg-[#111827] p-4 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+      <div className="bg-white dark:bg-[#0b1a30] p-4 rounded-2xl border border-slate-200 dark:border-[#1e355b] flex items-center justify-between text-xs shadow-xs">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-amber-400" />
-          <span className="text-slate-300">Entrada Principal y Protocolo activos.</span>
+          <ShieldAlert className="w-4 h-4 text-[#c59223] dark:text-amber-400" />
+          <span className="text-slate-600 dark:text-slate-300 font-medium">Entrada Principal y Protocolo activos.</span>
         </div>
-        <div className="font-mono text-slate-300">
+        <div className="font-mono text-slate-600 dark:text-slate-300">
           <span>Ingresados a Sala: </span>
-          <strong className="text-emerald-400 text-sm">{checkedInCount}</strong>
-          <span className="text-slate-500"> / {currentEvent.totalCapacity}</span>
+          <strong className="text-emerald-600 dark:text-emerald-400 text-sm">{checkedInCount}</strong>
+          <span className="text-slate-400"> / {currentEvent.totalCapacity}</span>
         </div>
       </div>
 

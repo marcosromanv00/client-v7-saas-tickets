@@ -75,7 +75,7 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           particleCount: 110,
           spread: 80,
           origin: { y: 0.6 },
-          colors: ["#f43f5e", "#c59b27", "#38bdf8"],
+          colors: ["#004ea2", "#c8102e", "#c59223", "#ffffff"],
         });
       } catch {}
     }
@@ -88,7 +88,38 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28 text-[#171717]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-16 text-slate-900 dark:text-slate-100 transition-colors">
+      {/* BARRA DE PROGRESO DE APP NATIVA */}
+      <div className="flex items-center justify-between max-w-2xl mx-auto mb-4 px-3 sm:px-5 py-2 bg-white dark:bg-[#0b1a30] rounded-2xl border border-slate-200 dark:border-[#1e355b] text-xs shadow-xs">
+        <button
+          type="button"
+          onClick={() => setCurrentStep("show")}
+          className="flex items-center gap-1.5 cursor-pointer"
+        >
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "show" ? "bg-[#004ea2] text-white" : "bg-emerald-600 text-white"}`}>1</span>
+          <span className={`hidden sm:inline ${currentStep === "show" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Obra</span>
+        </button>
+        <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
+        <button
+          type="button"
+          onClick={() => selectedEvent && setCurrentStep("seats")}
+          className="flex items-center gap-1.5 cursor-pointer"
+        >
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "seats" ? "bg-[#004ea2] text-white" : currentStep === "checkout" || currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>2</span>
+          <span className={`hidden sm:inline ${currentStep === "seats" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Butacas</span>
+        </button>
+        <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
+        <div className="flex items-center gap-1.5">
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "checkout" ? "bg-[#004ea2] text-white" : currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>3</span>
+          <span className={`hidden sm:inline ${currentStep === "checkout" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Datos</span>
+        </div>
+        <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
+        <div className="flex items-center gap-1.5">
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "success" ? "bg-[#c8102e] text-white shadow-xs" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>4</span>
+          <span className={`hidden sm:inline ${currentStep === "success" ? "font-bold text-[#c8102e] dark:text-red-400" : "text-slate-500"}`}>Boleto</span>
+        </div>
+      </div>
+
       {currentStep === "show" && (
         <Step1ShowSelection
           events={store.events}

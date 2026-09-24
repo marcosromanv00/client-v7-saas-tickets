@@ -9,16 +9,18 @@ describe("Teatro Municipal - Sistema de Tiquetería y Aforo", () => {
     theaterStore.resetStore();
   });
 
-  describe("1. Distribución Espacial del Teatro (190 Butacas)", () => {
-    it("debe generar exactamente 190 butacas (120 en Planta Baja y 70 en Balcón)", () => {
+  describe("1. Distribución Espacial del Teatro (220 Butacas Oficiales)", () => {
+    it("debe generar exactamente 220 butacas (62 Platea Baja, 96 Nivel Medio y 62 Balcón)", () => {
       const seats = generateInitialSeats(["A"], ["K"]);
-      expect(seats.length).toBe(190);
+      expect(seats.length).toBe(220);
 
-      const pbSeats = seats.filter((s) => s.zone === "PLANTA_BAJA");
-      const balconSeats = seats.filter((s) => s.zone === "BALCON");
+      const pbSeats = seats.filter((s) => s.zone === "PLATEA_BAJA");
+      const nmSeats = seats.filter((s) => s.zone === "NIVEL_MEDIO");
+      const balconSeats = seats.filter((s) => s.zone === "BALCON_ALTO");
 
-      expect(pbSeats.length).toBe(120);
-      expect(balconSeats.length).toBe(70);
+      expect(pbSeats.length).toBe(62);
+      expect(nmSeats.length).toBe(96);
+      expect(balconSeats.length).toBe(62);
     });
 
     it("debe marcar correctamente las filas VIP de protocolo (Fila A y Fila K)", () => {
@@ -36,9 +38,9 @@ describe("Teatro Municipal - Sistema de Tiquetería y Aforo", () => {
       const seats = generateInitialSeats(["A"], ["K"]);
       const stats = calculateSeatStats(seats);
 
-      expect(stats.total).toBe(190);
-      expect(stats.available).toBe(190);
-      expect(stats.vip).toBe(26); // 12 en fila A + 14 en fila K = 26 butacas VIP
+      expect(stats.total).toBe(220);
+      expect(stats.available).toBe(220);
+      expect(stats.vip).toBe(26); // 14 en fila A + 12 en fila K = 26 butacas VIP
     });
   });
 
@@ -79,10 +81,10 @@ describe("Teatro Municipal - Sistema de Tiquetería y Aforo", () => {
 
       const report = computeDynamicCapacity(event, tickets, [], seats);
 
-      expect(report.totalCapacity).toBe(190);
+      expect(report.totalCapacity).toBe(220);
       expect(report.preReservedCount).toBe(2);
       expect(report.checkedInCount).toBe(1);
-      expect(report.availableRemaining).toBe(188);
+      expect(report.availableRemaining).toBe(218);
     });
   });
 

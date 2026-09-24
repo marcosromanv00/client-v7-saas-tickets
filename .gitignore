@@ -24,5 +24,10 @@ tsconfig.tsbuildinfo
 *.sln
 *.sw?
 
-# Agent artifacts
-.dev/agents/artifacts/
+# Internal development files & agent specs
+.dev/
+
+# Environment files
+.env
+.env.local
+.env.*.local
