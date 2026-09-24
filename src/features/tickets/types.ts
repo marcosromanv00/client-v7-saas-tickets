@@ -29,19 +29,39 @@ export const SeatSchema = z.object({
 });
 export type Seat = z.infer<typeof SeatSchema>;
 
+export const BraceletColorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  hex: z.string(),
+  description: z.string().optional(),
+});
+export type BraceletColor = z.infer<typeof BraceletColorSchema>;
+
+export const TicketStatusSchema = z.enum([
+  "ACTIVE",
+  "CHECKED_IN",
+  "RELEASED_NO_SHOW",
+  "CANCELLED",
+]);
+export type TicketStatus = z.infer<typeof TicketStatusSchema>;
+
 export const TicketSchema = z.object({
   id: z.string(),
   eventId: z.string(),
   citizenName: z.string().min(2, "El nombre debe contener al menos 2 caracteres"),
   citizenId: z.string().min(6, "Cédula o documento debe tener al menos 6 caracteres"),
   citizenPhone: z.string().optional(),
+  citizenEmail: z.string().optional(),
   seatId: z.string().nullable(),
   seatLabel: z.string().nullable(),
   zone: ZoneIdSchema,
   qrCodeValue: z.string(),
+  shortCode: z.string().default(""), // 2 letras + 2 dígitos ej: "AL14"
   isVipGuest: z.boolean().default(false),
   checkedIn: z.boolean().default(false),
   checkedInAt: z.string().nullable().default(null),
+  status: TicketStatusSchema.default("ACTIVE"),
+  releasedAt: z.string().nullable().default(null),
   createdAt: z.string(),
   notes: z.string().optional(),
 });
@@ -69,6 +89,9 @@ export const TheaterEventSchema = z.object({
   mode: EventModeSchema,
   status: EventStatusSchema,
   isPrivate: z.boolean().default(false),
+  braceletColorId: z.string().default("azul-rey"),
+  braceletColorName: z.string().default("Azul Rey"),
+  braceletColorHex: z.string().default("#004ea2"),
   totalCapacity: z.number().int().default(220),
   plantaBajaCapacity: z.number().int().default(158),
   balconCapacity: z.number().int().default(62),
