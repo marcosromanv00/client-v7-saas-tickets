@@ -5,6 +5,7 @@ import { BottomNavBar } from "./components/layout/BottomNavBar";
 import { PublicEventView } from "./features/seat-reservation/PublicEventView";
 import { TaquillaExpressView } from "./features/taquilla-express/TaquillaExpressView";
 import { DoorScannerView } from "./features/qr-access/DoorScannerView";
+import { AcomodadoresLiveView } from "./features/acomodadores/AcomodadoresLiveView";
 import { AdminDashboard } from "./features/admin/AdminDashboard";
 import { LoginModal } from "./features/auth/LoginModal";
 import { CitizenAccountDrawer } from "./features/auth/CitizenAccountDrawer";
@@ -38,6 +39,7 @@ export function App() {
         )}
         {activeTab === "taquilla" && <TaquillaExpressView />}
         {activeTab === "puerta" && <DoorScannerView />}
+        {activeTab === "sala" && <AcomodadoresLiveView />}
         {activeTab === "admin" && (
           <AdminDashboard onOpenLoginModal={() => setIsLoginModalOpen(true)} />
         )}
