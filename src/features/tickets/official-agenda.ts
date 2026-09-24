@@ -58,7 +58,7 @@ export const OFFICIAL_AGENDA_EVENTS: TheaterEvent[] = [
     title: "Una Sola Voz: Tótem en Concierto",
     tagline: "Vanguardia sonora y fusión folclórica costarricense contemporánea",
     date: "2026-10-10", time: "19:00", durationMinutes: 90, genre: "Fusión Folclórica / Rock", isPrivate: false,
-    description: "Propuesta sonora innovadora que une la percusión tradicional y raíces autóctonas con sintetizadores y cuerdas eléctricas, ofreciendo una experiencia inmersiva para toda la comunidad.",
+    description: "Propuesta musical que une la percusión tradicional y raíces autóctonas costarricenses con arreglos contemporáneos de cuerdas para la comunidad alajuelense.",
     posterUrl: "/posters/sinfonica.jpg",
   }),
 

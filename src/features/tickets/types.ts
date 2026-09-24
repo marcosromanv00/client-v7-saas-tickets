@@ -60,6 +60,8 @@ export const TicketSchema = z.object({
   isVipGuest: z.boolean().default(false),
   checkedIn: z.boolean().default(false),
   checkedInAt: z.string().nullable().default(null),
+  isSeated: z.boolean().optional(),
+  seatedAt: z.string().nullable().optional(),
   status: TicketStatusSchema.default("ACTIVE"),
   releasedAt: z.string().nullable().default(null),
   createdAt: z.string(),

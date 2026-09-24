@@ -46,6 +46,8 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
     });
   };
 
+  const isKioskMode = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode") === "walkin-kiosk";
+
   const handleCheckoutSubmit = (data: {
     citizenName: string;
     citizenId: string;
@@ -66,10 +68,17 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
         citizenPhone: data.citizenPhone,
         seatId: seatId,
         zone: seatObj?.zone || "PLANTA_BAJA",
-        notes: `Función ${selectedDate} ${selectedTime}`,
+        notes: isKioskMode
+          ? `Auto-registro presencial en mesa (${selectedDate} ${selectedTime})`
+          : `Función ${selectedDate} ${selectedTime}`,
       });
       if (res.success && res.ticket) {
-        created.push(res.ticket);
+        if (isKioskMode) {
+          store.checkInTicket(res.ticket.id);
+          created.push({ ...res.ticket, checkedIn: true, checkedInAt: new Date().toISOString() });
+        } else {
+          created.push(res.ticket);
+        }
       } else if (res.error) {
         lastError = res.error;
       }
@@ -99,6 +108,12 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 pb-16 text-slate-900 dark:text-slate-100 transition-colors">
+      {isKioskMode && (
+        <div className="max-w-2xl mx-auto mb-3 px-4 py-2 bg-blue-50 dark:bg-[#071324] border border-teatro-blue/30 rounded-2xl flex items-center justify-between text-xs text-teatro-blue dark:text-blue-400 font-semibold">
+          <span>🏛️ Auto-Registro en Mesa de Taquilla Física</span>
+          <span className="text-[10px] bg-blue-100 dark:bg-blue-950 px-2 py-0.5 rounded-full">Check-in Inmediato</span>
+        </div>
+      )}
       {/* BARRA DE PROGRESO DE APP NATIVA */}
       <div className="flex items-center justify-between max-w-2xl mx-auto mb-4 px-3 sm:px-5 py-2 bg-white dark:bg-[#0b1a30] rounded-2xl border border-slate-200 dark:border-teatro-navy-border text-xs shadow-xs">
         <button

@@ -9,7 +9,9 @@ export interface TheaterStoreHook extends TheaterState {
   updateBraceletCatalog: typeof theaterStore.updateBraceletCatalog;
   checkAndReleaseUnclaimed: typeof theaterStore.checkAndReleaseUnclaimed;
   bookTicket: typeof theaterStore.bookTicket;
+  batchBookGroup: typeof theaterStore.batchBookGroup;
   checkInTicket: typeof theaterStore.checkInTicket;
+  toggleTicketSeated: typeof theaterStore.toggleTicketSeated;
   checkInByCode: typeof theaterStore.checkInByCode;
   checkInByQr: typeof theaterStore.checkInByQr;
   addSpecialGuest: typeof theaterStore.addSpecialGuest;
@@ -32,7 +34,9 @@ export function useTheaterStore(): TheaterStoreHook {
     updateBraceletCatalog: theaterStore.updateBraceletCatalog,
     checkAndReleaseUnclaimed: theaterStore.checkAndReleaseUnclaimed,
     bookTicket: theaterStore.bookTicket,
+    batchBookGroup: theaterStore.batchBookGroup,
     checkInTicket: theaterStore.checkInTicket,
+    toggleTicketSeated: theaterStore.toggleTicketSeated,
     checkInByCode: theaterStore.checkInByCode,
     checkInByQr: theaterStore.checkInByQr,
     addSpecialGuest: theaterStore.addSpecialGuest,

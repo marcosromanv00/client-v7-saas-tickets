@@ -5,13 +5,15 @@ import { logAuditEvent } from "../auth/audit-logger";
 import { releaseUnclaimedTicketsForState } from "./ticket-release-utils";
 import { findTicketByAnyCode, evaluateTicketForCheckIn } from "./ticket-verification-utils";
 import { executeBooking, BookTicketPayload } from "./ticket-booking-handler";
+import { executeBatchBooking, BatchBookGroupPayload } from "./batch-booking-handler";
+import { theaterSync } from "./sync-channel";
 
 export type { TheaterState } from "./ticket-store-types";
 
 let state: TheaterState = loadInitialState();
 const listeners = new Set<() => void>();
 
-function notify() {
+function notify(broadcastType?: "TICKET_BOOKED" | "TICKET_CHECKED_IN" | "TICKET_SEATED") {
   if (typeof localStorage !== "undefined") {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -19,8 +21,17 @@ function notify() {
       console.warn("Storage write error", e);
     }
   }
+  if (broadcastType) {
+    theaterSync.broadcast(broadcastType);
+  }
   listeners.forEach((l) => l());
 }
+
+// Sincronización multi-pestaña
+theaterSync.subscribe(() => {
+  state = loadInitialState();
+  listeners.forEach((l) => l());
+});
 
 export const theaterStore = {
   getSnapshot: (): TheaterState => state,
@@ -119,8 +130,36 @@ export const theaterStore = {
       tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)),
       seatsByEvent: { ...state.seatsByEvent, [ticket.eventId]: [...seats] },
     };
-    notify();
+    notify("TICKET_CHECKED_IN");
     return { success: true, ticket: updated, status: "VALID" };
+  },
+
+  batchBookGroup: (payload: BatchBookGroupPayload) => {
+    const { updatedState, result } = executeBatchBooking(state, payload);
+    if (result.success) {
+      state = updatedState;
+      notify("TICKET_CHECKED_IN");
+    }
+    return result;
+  },
+
+  toggleTicketSeated: (ticketId: string): { success: boolean; isSeated: boolean } => {
+    const ticket = state.tickets.find((t) => t.id === ticketId);
+    if (!ticket) return { success: false, isSeated: false };
+
+    const newSeated = !ticket.isSeated;
+    const updated: Ticket = {
+      ...ticket,
+      isSeated: newSeated,
+      seatedAt: newSeated ? new Date().toISOString() : null,
+    };
+
+    state = {
+      ...state,
+      tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)),
+    };
+    notify("TICKET_SEATED");
+    return { success: true, isSeated: newSeated };
   },
 
   checkInByCode: (code: string): { success: boolean; error?: string; ticket?: Ticket; status?: string } => {
