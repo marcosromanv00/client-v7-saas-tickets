@@ -33,9 +33,9 @@ export function CivicHeader({ activeTab, onTabChange, checkedInCount, totalCapac
               <Landmark className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-serif text-base sm:text-lg tracking-wide text-white font-medium">Teatro Municipal</span>
-                <span className="text-[10px] font-mono tracking-widest text-amber-400 uppercase px-1.5 py-0.5 rounded-full bg-amber-400/10 border border-amber-400/20">Patrimonio</span>
+              <div className="flex items-center gap-2.5">
+                <span className="font-serif text-lg tracking-wide text-white font-medium">Teatro Municipal</span>
+                <span className="text-[11px] font-mono tracking-widest text-amber-400/80 uppercase font-medium">1890</span>
               </div>
               <p className="text-[11px] text-slate-400 tracking-normal hidden sm:block">Plataforma Cívica de Tiquetería y Aforo</p>
             </div>

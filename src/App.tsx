@@ -17,7 +17,7 @@ export function App() {
   const checkedInCount = store.tickets.filter((t) => t.checkedIn).length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0f1d] text-slate-100 selection:bg-amber-500 selection:text-slate-950">
+    <div className="min-h-screen flex flex-col bg-[#070b16] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1d1538]/50 via-[#070b16] to-[#070b16] text-slate-100 selection:bg-amber-500 selection:text-slate-950">
       {/* Encabezado Cívico Consolidado */}
       <CivicHeader
         activeTab={activeTab}

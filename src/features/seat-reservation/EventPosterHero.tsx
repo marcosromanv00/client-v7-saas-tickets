@@ -8,16 +8,18 @@ interface EventPosterHeroProps {
 export function EventPosterHero({ event, variant = "mobile" }: EventPosterHeroProps) {
   if (variant === "desktop") {
     return (
-      <div className="space-y-4">
-        <div className="relative rounded-3xl overflow-hidden border border-slate-800 shadow-2xl h-80">
+      <div className="bg-[#11192b]/90 backdrop-blur-md rounded-3xl border border-slate-800 p-5 shadow-2xl space-y-4">
+        <div className="relative rounded-2xl overflow-hidden border border-slate-800 shadow-xl aspect-[16/10]">
           <img src={event.posterUrl} alt={event.title} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1d] via-[#0a0f1d]/50 to-transparent" />
-          <div className="absolute bottom-4 left-5 right-5">
-            <span className="text-[10px] font-mono text-amber-300 uppercase tracking-widest">{event.genre}</span>
-            <h1 className="text-xl font-serif font-medium text-white">{event.title}</h1>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1d] via-[#0a0f1d]/40 to-transparent" />
+          <div className="absolute bottom-3 left-4 right-4">
+            <span className="text-[10px] font-mono text-amber-300 uppercase tracking-widest px-2 py-0.5 rounded-full bg-slate-950/70 border border-amber-400/30">
+              {event.genre}
+            </span>
+            <h1 className="text-lg font-serif font-medium text-white mt-1.5 line-clamp-1">{event.title}</h1>
           </div>
         </div>
-        <p className="text-xs text-slate-300 leading-relaxed bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+        <p className="text-xs text-slate-300 leading-relaxed line-clamp-3">
           {event.description}
         </p>
       </div>

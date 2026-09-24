@@ -74,22 +74,18 @@ export function ReservationSummary({
       animate={{ opacity: 1, y: 0 }}
       className="bg-[#11192b]/95 backdrop-blur-md rounded-3xl border border-slate-800 p-6 shadow-2xl space-y-5 text-left"
     >
-      <div className="border-b border-slate-800/80 pb-4">
-        <div className="flex items-center gap-2 text-xs font-mono text-amber-400 mb-1">
-          <Calendar className="w-3.5 h-3.5" />
-          <span>{selectedDate} • {selectedTime} hrs</span>
-        </div>
-        <h3 className="font-serif text-lg text-white font-medium line-clamp-1">{event.title}</h3>
-      </div>
-
-      <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 space-y-3">
+      {/* Resumen de Butaca Seleccionada */}
+      <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-400">Butaca seleccionada:</span>
+          <span className="text-slate-400 flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-amber-400" />
+            <span className="font-mono text-slate-300">{selectedDate} • {selectedTime} hrs</span>
+          </span>
           <span className={`font-mono font-bold text-sm ${selectedSeat ? "text-cyan-400" : "text-amber-400"}`}>
             {isNumbered
               ? selectedSeat
                 ? selectedSeat.label
-                : "Ninguna butaca elegida"
+                : "Elegir Butaca"
               : selectedZone === "PLANTA_BAJA"
               ? "Platea General"
               : "Balcón General"}

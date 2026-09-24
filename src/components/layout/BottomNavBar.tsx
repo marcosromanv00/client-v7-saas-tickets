@@ -10,7 +10,7 @@ interface BottomNavBarProps {
 
 export function BottomNavBar({ activeTab, onTabChange, ticketCount }: BottomNavBarProps) {
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 p-3 sm:p-4 pointer-events-none flex justify-center">
+    <div className="fixed bottom-0 inset-x-0 z-40 p-3 sm:p-4 pointer-events-none flex justify-center lg:hidden">
       <motion.nav
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

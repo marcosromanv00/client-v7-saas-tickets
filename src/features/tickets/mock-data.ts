@@ -19,7 +19,7 @@ export const INITIAL_EVENTS: TheaterEvent[] = [
     registrationEnabled: true,
     description: "Concierto de gala y reapertura oficial de la sala patrimonial. Acceso exclusivo para invitados especiales, autoridades y delegaciones mediante invitación directa y lista de protocolo.",
     location: "Sala Principal, Teatro Municipal",
-    posterUrl: "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=800&q=80",
+    posterUrl: "/posters/gala-inaugural.jpg",
     genre: "Gala Patrimonial / Clásica",
     datesAvailable: [
       { date: "2026-09-25", dayName: "VIE", dayNumber: "25" },
@@ -46,7 +46,7 @@ export const INITIAL_EVENTS: TheaterEvent[] = [
     registrationEnabled: true,
     description: "Presentación especial de la Orquesta Sinfónica Municipal. Entrada gratuita con reserva previa de butaca numerada. Los asientos no reclamados 10 min antes se liberan para público en espera.",
     location: "Sala Principal, Teatro Municipal",
-    posterUrl: "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=800&q=80",
+    posterUrl: "/posters/sinfonica.jpg",
     genre: "Sinfónica / Música de Cámara",
     datesAvailable: [
       { date: "2026-09-26", dayName: "SÁB", dayNumber: "26" },
@@ -73,7 +73,7 @@ export const INITIAL_EVENTS: TheaterEvent[] = [
     registrationEnabled: true,
     description: "Obra de títeres gigantes y comedia musical. Acceso general gratuito por orden de llegada con aforo dinámico hasta completar capacidad.",
     location: "Sala Principal, Teatro Municipal",
-    posterUrl: "https://images.unsplash.com/photo-1514306191717-452ec28c7814?auto=format&fit=crop&w=800&q=80",
+    posterUrl: "/posters/titeres.jpg",
     genre: "Teatro Familiar / Comedia",
     datesAvailable: [
       { date: "2026-09-27", dayName: "DOM", dayNumber: "27" },

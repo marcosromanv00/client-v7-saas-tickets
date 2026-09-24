@@ -3,13 +3,18 @@ import { INITIAL_EVENTS, INITIAL_SPECIAL_GUESTS, INITIAL_TICKETS } from "./mock-
 import { generateInitialSeats } from "./theater-layout";
 import { Seat } from "./types";
 
-export const STORAGE_KEY = "tm_theater_state_v1";
+export const STORAGE_KEY = "tm_theater_state_v2_luxury";
 
 export function loadInitialState(): TheaterState {
   if (typeof localStorage !== "undefined") {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Garantizar que los pósteres apunten siempre a los archivos locales
+        parsed.events = INITIAL_EVENTS;
+        return parsed;
+      }
     } catch (err) {
       console.warn("Could not read from localStorage, fallback to initial data", err);
     }

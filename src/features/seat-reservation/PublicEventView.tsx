@@ -136,12 +136,20 @@ export function PublicEventView() {
         </AnimatePresence>
       </div>
 
-      {/* Vista de Escritorio: Expansiva Panorámica 3 Columnas (Productora / Computadora) */}
+      {/* Vista de Escritorio: Gran Sala de Butacas Unificada + Panel Lateral */}
       <div className="hidden lg:grid grid-cols-12 gap-8 items-start">
-        {/* Columna 1: Póster y Sinopsis (4 cols) */}
-        <div className="col-span-4 space-y-6">
-          <EventPosterHero event={currentEvent} variant="desktop" />
+        {/* Columna Principal: Gran Sala de Butacas (8 cols) */}
+        <div className="col-span-12 lg:col-span-7 xl:col-span-8">
+          {currentEvent.mode === "SEATED_NUMBERED" ? (
+            <TheaterSeatMap seats={seats} selectedSeatId={selectedSeat?.id || null} onSelectSeat={handleSelectSeat} allowVipSelection={currentEvent.isPrivate} />
+          ) : (
+            <GeneralAdmissionView event={currentEvent} selectedZone={selectedZone} onSelectZone={setSelectedZone} pbReserved={pbCount} balconReserved={balconCount} />
+          )}
+        </div>
 
+        {/* Columna Lateral: Cartelera, Horario y Acreditación (4 cols) */}
+        <div className="col-span-12 lg:col-span-5 xl:col-span-4 space-y-6 sticky top-24">
+          <EventPosterHero event={currentEvent} variant="desktop" />
           <DateTimeSelector
             dates={currentEvent.datesAvailable || []}
             selectedDate={selectedDate}
@@ -150,19 +158,6 @@ export function PublicEventView() {
             selectedTime={selectedTime}
             onSelectTime={setSelectedTime}
           />
-        </div>
-
-        {/* Columna 2: Plano de Butacas o Aforo General (5 cols) */}
-        <div className="col-span-5">
-          {currentEvent.mode === "SEATED_NUMBERED" ? (
-            <TheaterSeatMap seats={seats} selectedSeatId={selectedSeat?.id || null} onSelectSeat={handleSelectSeat} allowVipSelection={currentEvent.isPrivate} />
-          ) : (
-            <GeneralAdmissionView event={currentEvent} selectedZone={selectedZone} onSelectZone={setSelectedZone} pbReserved={pbCount} balconReserved={balconCount} />
-          )}
-        </div>
-
-        {/* Columna 3: Formulario de Acreditación y Resumen (3 cols) */}
-        <div className="col-span-3 sticky top-24">
           <ReservationSummary
             event={currentEvent}
             selectedSeat={selectedSeat}
