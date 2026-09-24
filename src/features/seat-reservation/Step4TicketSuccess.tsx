@@ -39,7 +39,7 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
             height: 36,
             displayValue: true,
             background: "transparent",
-            lineColor: "#94a3b8",
+            lineColor: "#171717",
             fontSize: 10,
             font: "monospace",
             margin: 0,
@@ -71,63 +71,63 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
   return (
     <div className="max-w-md mx-auto space-y-6 animate-in fade-in zoom-in-95 duration-500 pb-12">
       <div className="text-center space-y-1">
-        <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto mb-2">
+        <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mx-auto mb-2 shadow-xs">
           <CheckCircle2 className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-serif text-white font-medium">¡Reserva Confirmada!</h2>
-        <p className="text-xs text-zinc-400">Presenta este pase digital en la puerta de acceso</p>
+        <h2 className="text-xl font-serif text-[#171717] font-medium">¡Reserva Confirmada!</h2>
+        <p className="text-xs text-[#737373]">Presenta este pase digital en la puerta de acceso</p>
       </div>
 
       {/* BOLETO DIGITAL DE COLECCIÓN CON TROQUELADO LATERAL */}
-      <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-[#161122] shadow-2xl">
+      <div className="relative rounded-3xl overflow-hidden border border-[#e5e1d9] bg-white shadow-lg">
         <div className="relative h-44 w-full overflow-hidden">
           <img src={event.posterUrl} alt={event.title} className="w-full h-full object-cover brightness-75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#161122] via-[#161122]/40 to-transparent" />
-          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-amber-300 border border-amber-400/30">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#171717] via-[#171717]/40 to-transparent" />
+          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-[#b58a3a] border border-[#b58a3a]/40 font-semibold">
             Teatro Municipal 1890
           </div>
           <div className="absolute bottom-3 left-4 right-4">
-            <span className="text-[10px] font-mono uppercase text-rose-400 tracking-wider block">{event.genre}</span>
+            <span className="text-[10px] font-mono uppercase text-amber-200 tracking-wider block font-semibold">{event.genre}</span>
             <h3 className="font-serif text-base text-white font-medium line-clamp-1">{event.title}</h3>
           </div>
         </div>
 
-        <div className="relative flex items-center justify-between px-3 py-2 bg-[#161122]">
-          <div className="w-5 h-5 rounded-full bg-[#0e0a16] -ml-5.5 border-r border-white/10" />
-          <div className="flex-1 border-b-2 border-dashed border-zinc-700/60 mx-2" />
-          <div className="w-5 h-5 rounded-full bg-[#0e0a16] -mr-5.5 border-l border-white/10" />
+        <div className="relative flex items-center justify-between px-3 py-2 bg-white">
+          <div className="w-5 h-5 rounded-full bg-[#f7f5f1] -ml-5.5 border-r border-[#e5e1d9]" />
+          <div className="flex-1 border-b-2 border-dashed border-[#d5d0c7] mx-2" />
+          <div className="w-5 h-5 rounded-full bg-[#f7f5f1] -mr-5.5 border-l border-[#e5e1d9]" />
         </div>
 
-        <div className="p-6 pt-2 space-y-4 bg-[#161122]">
+        <div className="p-6 pt-2 space-y-4 bg-white">
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase block">Espectador</span>
-              <span className="text-white font-medium line-clamp-1">{primaryTicket.citizenName}</span>
+              <span className="text-[10px] font-mono text-[#737373] uppercase block">Espectador</span>
+              <span className="text-[#171717] font-medium line-clamp-1">{primaryTicket.citizenName}</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase block">Identificación</span>
-              <span className="text-zinc-300 font-mono">{primaryTicket.citizenId}</span>
+              <span className="text-[10px] font-mono text-[#737373] uppercase block">Identificación</span>
+              <span className="text-[#171717] font-mono">{primaryTicket.citizenId}</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase block">Fecha y Hora</span>
-              <span className="text-white font-mono">{event.date} • {event.time} hrs</span>
+              <span className="text-[10px] font-mono text-[#737373] uppercase block">Fecha y Hora</span>
+              <span className="text-[#171717] font-mono font-medium">{event.date} • {event.time} hrs</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-zinc-500 uppercase block">Butacas Asignadas</span>
-              <span className="text-rose-400 font-mono font-bold text-sm">
+              <span className="text-[10px] font-mono text-[#737373] uppercase block">Butacas Asignadas</span>
+              <span className="text-[#6d174f] font-mono font-bold text-sm">
                 {tickets.map((t) => t.seatLabel || t.seatId).join(", ")}
               </span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/10 flex flex-col items-center justify-center space-y-3">
+          <div className="pt-3 border-t border-[#e5e1d9] flex flex-col items-center justify-center space-y-3">
             {qrUrl && (
-              <div className="p-2 rounded-2xl bg-white shadow-md">
+              <div className="p-2 rounded-2xl bg-white border border-[#e5e1d9] shadow-xs">
                 <img src={qrUrl} alt="QR de Ingreso" className="w-28 h-28" />
               </div>
             )}
             <svg ref={barcodeRef} className="w-full max-w-[200px]" />
-            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{primaryTicket.id}</span>
+            <span className="text-[10px] font-mono text-[#737373] uppercase tracking-widest">{primaryTicket.id}</span>
           </div>
         </div>
       </div>
@@ -136,16 +136,16 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
         <button
           type="button"
           onClick={handlePrint}
-          className="py-3 px-4 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/10 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          className="py-3 px-4 bg-white hover:bg-stone-50 text-[#171717] border border-[#e5e1d9] rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
         >
-          <Printer className="w-3.5 h-3.5" /> Imprimir
+          <Printer className="w-3.5 h-3.5 text-[#6d174f]" /> Imprimir
         </button>
         <button
           type="button"
           onClick={handleShare}
-          className="py-3 px-4 bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-white/10 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          className="py-3 px-4 bg-white hover:bg-stone-50 text-[#171717] border border-[#e5e1d9] rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
         >
-          <Share2 className="w-3.5 h-3.5" /> Compartir
+          <Share2 className="w-3.5 h-3.5 text-[#6d174f]" /> Compartir
         </button>
       </div>
 
@@ -153,16 +153,16 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
         <button
           type="button"
           onClick={onOpenMyTickets}
-          className="w-full py-3 bg-zinc-900/80 hover:bg-zinc-800 text-rose-300 border border-rose-500/20 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          className="w-full py-3 bg-[#fbf7ee] hover:bg-amber-100/60 text-[#855e14] border border-[#b58a3a]/30 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
         >
-          <TicketIcon className="w-3.5 h-3.5 text-rose-400" /> Ver en Mis Entradas
+          <TicketIcon className="w-3.5 h-3.5 text-[#b58a3a]" /> Ver en Mis Entradas
         </button>
       )}
 
       <button
         type="button"
         onClick={onResetToStart}
-        className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 text-white font-bold rounded-2xl text-xs shadow-lg shadow-rose-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+        className="w-full py-3.5 bg-[#6d174f] hover:bg-[#54103c] text-white font-bold rounded-2xl text-xs shadow-md shadow-[#6d174f]/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
         <span>Explorar Otra Función en Cartelera</span>
         <ArrowRight className="w-4 h-4" />

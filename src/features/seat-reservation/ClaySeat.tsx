@@ -13,13 +13,13 @@ export function ClaySeat({ seat, isSelected, onSelect, disabled = false }: ClayS
   const isOccupied = seat.status === "OCCUPIED" || seat.status === "RESERVED";
   const isVip = seat.isVip;
 
-  let stateClass = "clay-seat-available text-zinc-300";
+  let stateClass = "clay-seat-available text-stone-700";
   if (isSelected) {
     stateClass = "clay-seat-selected text-white font-bold";
   } else if (isOccupied) {
-    stateClass = "clay-seat-occupied text-zinc-600";
+    stateClass = "clay-seat-occupied text-stone-400";
   } else if (isVip) {
-    stateClass = "clay-seat-vip text-amber-300";
+    stateClass = "clay-seat-vip text-[#855e14] font-semibold";
   }
 
   const isClickable = isAvailable && !disabled;
@@ -50,12 +50,12 @@ export function ClaySeat({ seat, isSelected, onSelect, disabled = false }: ClayS
         <div
           className={`w-1 h-3 rounded-full transition-colors ${
             isSelected
-              ? "bg-rose-400"
+              ? "bg-[#92216b]"
               : isOccupied
-              ? "bg-zinc-800"
+              ? "bg-stone-300"
               : isVip
-              ? "bg-amber-600/70"
-              : "bg-zinc-700/80"
+              ? "bg-[#b58a3a]/70"
+              : "bg-stone-300"
           }`}
         />
 
@@ -70,19 +70,19 @@ export function ClaySeat({ seat, isSelected, onSelect, disabled = false }: ClayS
         <div
           className={`w-1 h-3 rounded-full transition-colors ${
             isSelected
-              ? "bg-rose-400"
+              ? "bg-[#92216b]"
               : isOccupied
-              ? "bg-zinc-800"
+              ? "bg-stone-300"
               : isVip
-              ? "bg-amber-600/70"
-              : "bg-zinc-700/80"
+              ? "bg-[#b58a3a]/70"
+              : "bg-stone-300"
           }`}
         />
       </div>
 
       {/* Corona / Distintivo VIP */}
       {isVip && !isSelected && (
-        <span className="absolute -top-1 right-0 w-1.5 h-1.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400/80" />
+        <span className="absolute -top-1 right-0 w-1.5 h-1.5 rounded-full bg-[#b58a3a] shadow-xs shadow-[#b58a3a]/50" />
       )}
     </motion.button>
   );
