@@ -189,3 +189,90 @@ export function evaluateEventCutoff(
 - **When** se registra un nuevo asistente o grupo en la mesa de taquilla o puerta.
 - **Then** la lista de acomodadores se actualiza en tiempo real mostrando el nombre del titular y las butacas asignadas con un pulso visual animado.
 - **And** el acomodador puede pulsar *"Marcar como Ubicado"* para registrar que los asistentes ya tomaron sus asientos.
+
+---
+
+## 6. Módulo: Padrón Dinámico de Acreditación y Verificación de Entradas
+
+### 6.1 Contexto y Necesidad
+Para la Gran Reapertura Oficial y eventos con listas protocolares o asistentes que no portan QR digital, la recepción requiere verificar el acceso velozmente por **Nombre**, **Cédula** o **Puesto/Butaca**, sin fricción visual y con retroalimentación inmediata.
+
+### 6.2 Principio Rector de Diseño UX
+**Paneles informativos comprimidos y no saturantes**: Todo panel de control o métricas debe presentar la información esencial en formato de alta densidad pero con armonía visual, líneas delgadas, micro-tipografía legible y respiración, evitando bloques gigantes que desplacen el foco operativo.
+
+### 6.3 Contratos de Datos Zod
+
+```typescript
+import { z } from "zod";
+import { ZoneIdSchema } from "./types";
+
+export const AttendeeTypeSchema = z.enum(["TICKET", "SPECIAL_GUEST"]);
+export type AttendeeType = z.infer<typeof AttendeeTypeSchema>;
+
+export const AttendeeCheckInStatusSchema = z.enum(["PENDING", "CHECKED_IN", "RELEASED_NO_SHOW"]);
+export type AttendeeCheckInStatus = z.infer<typeof AttendeeCheckInStatusSchema>;
+
+export const AttendeeItemSchema = z.object({
+  id: z.string(),
+  type: AttendeeTypeSchema,
+  name: z.string(),
+  citizenId: z.string().nullable(),
+  seatLabel: z.string().nullable(),
+  seatId: z.string().nullable(),
+  zone: ZoneIdSchema.nullable(),
+  shortCode: z.string().optional(),
+  status: AttendeeCheckInStatusSchema,
+  checkedInAt: z.string().nullable(),
+  isVip: z.boolean(),
+  notes: z.string().optional(),
+  ticketsCount: z.number().int().min(1).default(1),
+  redeemedCount: z.number().int().min(0).default(0),
+});
+export type AttendeeItem = z.infer<typeof AttendeeItemSchema>;
+
+export const AttendeeFilterStateSchema = z.object({
+  searchQuery: z.string(),
+  statusFilter: z.enum(["ALL", "PENDING", "CHECKED_IN", "RELEASED_NO_SHOW"]),
+  zoneFilter: z.enum(["ALL", "PLATEA_BAJA", "NIVEL_MEDIO", "BALCON_ALTO"]),
+  categoryFilter: z.enum(["ALL", "VIP_ONLY", "REGULAR_ONLY"]),
+  sortBy: z.enum(["SMART_PENDING_FIRST", "NAME_ASC", "SEAT_ASC"]),
+});
+export type AttendeeFilterState = z.infer<typeof AttendeeFilterStateSchema>;
+
+export const AttendeeMetricsSchema = z.object({
+  totalExpected: z.number().int().nonnegative(),
+  checkedInCount: z.number().int().nonnegative(),
+  pendingCount: z.number().int().nonnegative(),
+  vipCount: z.number().int().nonnegative(),
+  attendancePercentage: z.number().min(0).max(100),
+});
+export type AttendeeMetrics = z.infer<typeof AttendeeMetricsSchema>;
+```
+
+### 6.4 Criterios de Aceptación (Given-When-Then)
+
+#### Escenario 5: Búsqueda Reactiva por Nombre, Cédula o Puesto
+- **Given** el operador de puerta tiene cargada la lista del evento "Gran Reapertura Oficial".
+- **When** digita "Valverde", "0456" o "A-08" en el campo de búsqueda.
+- **Then** la lista se filtra de forma instantánea mostrando únicamente las coincidencias que cumplan con dicho criterio.
+- **And** si no hay coincidencias, se muestra un estado vacío amigable con opción de limpiar filtros o registrar in-situ.
+
+#### Escenario 6: Acreditación Rápida con 1 Clic y Deshacer
+- **Given** un asistente pendiente aparece en la lista.
+- **When** el operador pulsa el botón *"Ingresar"*.
+- **Then** el asistente cambia instantáneamente a estado `CHECKED_IN` con badge verde y se resalta su butaca para orientación verbal.
+- **And** aparece una notificación toast no invasiva con botón *"Deshacer"* durante 5 segundos para revertir en caso de error.
+- **And** se transmite el evento por `theaterSync` hacia la pantalla de Acomodadores.
+
+#### Escenario 7: Orden Inteligente de Operación
+- **Given** una lista con 150 asistentes (algunos ingresados y otros pendientes).
+- **When** el modo de orden está en "Inteligente" (predeterminado).
+- **Then** los asistentes en estado `PENDING` se posicionan al inicio ordenados alfabéticamente para agilizar su localización.
+- **And** los asistentes ya ingresados (`CHECKED_IN`) se agrupan al final con estilo sutil atenuado.
+
+#### Escenario 8: Registro Rápido In-situ desde la Lista
+- **Given** una persona o delegado llega al evento sin reservación previa.
+- **When** el operador presiona el botón *"Registrar Asistente In-situ"*.
+- **Then** se abre un modal compacto para registrar nombre, cédula y asignar una butaca disponible o cupo de pie.
+- **And** al confirmar, se acredita de inmediato y se refleja en las métricas en tiempo real.
+
