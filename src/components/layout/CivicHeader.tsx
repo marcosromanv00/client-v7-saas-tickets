@@ -1,5 +1,6 @@
 import React from "react";
-import { Landmark, Ticket as TicketIcon, ScanLine, UserCheck, ShieldCheck, Menu, X } from "lucide-react";
+import { Landmark, Ticket as TicketIcon, ScanLine, UserCheck, ShieldCheck, Menu, X, User, LogOut, Shield } from "lucide-react";
+import { useAuthStore } from "../../features/auth/useAuthStore";
 
 export type ActiveTab = "public" | "taquilla" | "puerta" | "admin";
 
@@ -8,10 +9,20 @@ interface CivicHeaderProps {
   onTabChange: (tab: ActiveTab) => void;
   checkedInCount: number;
   totalCapacity: number;
+  onOpenLoginModal: () => void;
+  onOpenCitizenDrawer: () => void;
 }
 
-export function CivicHeader({ activeTab, onTabChange, checkedInCount, totalCapacity }: CivicHeaderProps) {
+export function CivicHeader({
+  activeTab,
+  onTabChange,
+  checkedInCount,
+  totalCapacity,
+  onOpenLoginModal,
+  onOpenCitizenDrawer,
+}: CivicHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const { currentUser, isCitizen, logout } = useAuthStore();
 
   const navItems = [
     { id: "public" as ActiveTab, label: "Cartelera y Butacas", icon: TicketIcon },
@@ -63,13 +74,48 @@ export function CivicHeader({ activeTab, onTabChange, checkedInCount, totalCapac
             })}
           </nav>
 
-          {/* Indicador de Aforo en Vivo & Botón Móvil */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-[11px]">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-xs shadow-emerald-400" />
-              <span className="text-slate-400 hidden sm:inline">Sala:</span>
+          {/* Aforo en Vivo & Acceso de Usuario */}
+          <div className="flex items-center gap-2.5">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-[11px]">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-slate-400">Sala:</span>
               <span className="font-mono font-medium text-amber-400">{checkedInCount} / {totalCapacity}</span>
             </div>
+
+            {/* Botón de Acceso / Usuario */}
+            {currentUser ? (
+              <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-700/80 rounded-2xl p-1 pr-2">
+                {isCitizen ? (
+                  <button
+                    onClick={onOpenCitizenDrawer}
+                    className="flex items-center gap-2 text-xs text-amber-300 hover:text-amber-200 px-2 py-1 transition-colors"
+                  >
+                    <User className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="font-medium max-w-[100px] truncate">{currentUser.name}</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 text-xs text-amber-400 px-2 py-1">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span className="font-medium max-w-[110px] truncate">{currentUser.name}</span>
+                  </div>
+                )}
+                <button
+                  onClick={logout}
+                  title="Cerrar Sesión"
+                  className="p-1 text-slate-400 hover:text-rose-400 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={onOpenLoginModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-medium text-slate-200 transition-colors"
+              >
+                <User className="w-3.5 h-3.5 text-amber-400" />
+                <span>Acceso</span>
+              </button>
+            )}
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

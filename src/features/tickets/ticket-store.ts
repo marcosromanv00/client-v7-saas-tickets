@@ -2,6 +2,7 @@ import { TheaterEvent, Ticket, SpecialGuestEntry, ZoneId } from "./types";
 import { generateInitialSeats } from "./theater-layout";
 import { TheaterState } from "./ticket-store-types";
 import { loadInitialState, STORAGE_KEY } from "./initial-state";
+import { logAuditEvent } from "../auth/audit-logger";
 
 export type { TheaterState } from "./ticket-store-types";
 
@@ -32,6 +33,14 @@ export const theaterStore = {
       events: state.events.map((e) => (e.id === eventId ? { ...e, registrationEnabled: enabled } : e)),
     };
     notify();
+    logAuditEvent({
+      actorId: "usr-admin",
+      actorName: "Consola Administrativa",
+      actorRole: "PRODUCER",
+      action: "EVENT_CONFIG_UPDATED",
+      targetEntity: eventId,
+      details: enabled ? "Registros públicos habilitados" : "Registros públicos pausados",
+    });
   },
 
   updateEvent: (updated: TheaterEvent) => {
@@ -40,6 +49,14 @@ export const theaterStore = {
       events: state.events.map((e) => (e.id === updated.id ? updated : e)),
     };
     notify();
+    logAuditEvent({
+      actorId: "usr-admin",
+      actorName: "Consola Administrativa",
+      actorRole: "PRODUCER",
+      action: "EVENT_CONFIG_UPDATED",
+      targetEntity: updated.id,
+      details: `Parámetros de evento actualizados: ${updated.title}`,
+    });
   },
 
   bookTicket: (payload: {
@@ -100,6 +117,14 @@ export const theaterStore = {
       },
     };
     notify();
+    logAuditEvent({
+      actorId: "public-system",
+      actorName: payload.citizenName,
+      actorRole: "CITIZEN",
+      action: "TICKET_BOOKED",
+      targetEntity: newTicket.id,
+      details: `Boleto emitido para ${payload.citizenName} (Cédula: ${payload.citizenId}) en ${newTicket.seatLabel || newTicket.zone}`,
+    });
     return { success: true, ticket: newTicket };
   },
 
@@ -128,6 +153,14 @@ export const theaterStore = {
       seatsByEvent: { ...state.seatsByEvent, [ticket.eventId]: [...seats] },
     };
     notify();
+    logAuditEvent({
+      actorId: "staff-gate",
+      actorName: "Control de Acceso Puerta",
+      actorRole: "DELEGATED_ADMIN",
+      action: "TICKET_CHECKIN",
+      targetEntity: ticketId,
+      details: `Acceso confirmado a sala: ${ticket.citizenName} (Butaca: ${ticket.seatLabel || ticket.zone})`,
+    });
     return { success: true, ticket: updated };
   },
 
