@@ -38,15 +38,15 @@ export const DoorEventHeader: React.FC<DoorEventHeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <label htmlFor="door-event-select" className="text-xs font-mono text-slate-500 dark:text-slate-400">
+      <div className="flex items-center gap-2 min-w-0 max-w-full">
+        <label htmlFor="door-event-select" className="text-xs font-mono text-slate-500 dark:text-slate-400 shrink-0">
           Función:
         </label>
         <select
           id="door-event-select"
           value={selectedEventId}
           onChange={(e) => onSelectEventId(e.target.value)}
-          className="px-3.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teatro-blue"
+          className="max-w-48 sm:max-w-xs truncate px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teatro-blue"
         >
           {events.map((evt) => (
             <option key={evt.id} value={evt.id}>
