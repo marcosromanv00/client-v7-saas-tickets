@@ -36,10 +36,10 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in">
-      <div className="bg-white dark:bg-[#0b1a30] rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-[#1e355b] overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-slate-100 transition-colors">
-        <div className="px-6 py-4 bg-slate-50 dark:bg-[#071324] border-b border-slate-200 dark:border-[#1e355b] flex items-center justify-between">
+      <div className="bg-white dark:bg-[#0b1a30] rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-teatro-navy-border overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-slate-100 transition-colors">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-[#071324] border-b border-slate-200 dark:border-teatro-navy-border flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-[#004ea2] dark:text-blue-400" />
+            <UserCheck className="w-5 h-5 text-teatro-blue dark:text-blue-400" />
             <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Registro Express en Puerta</h3>
           </div>
           <button
@@ -70,7 +70,7 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ej: Carmen Mora Rojas"
-              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue dark:focus:border-blue-500 transition-colors"
               required
             />
           </div>
@@ -82,7 +82,7 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
               value={idNumber}
               onChange={(e) => setIdNumber(e.target.value)}
               placeholder="Ej: 1-0987-0654"
-              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue dark:focus:border-blue-500 transition-colors"
               required
             />
           </div>
@@ -95,7 +95,7 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
                 onClick={() => setZone("PLANTA_BAJA")}
                 className={`py-2.5 px-3 rounded-xl border text-center font-semibold transition-all cursor-pointer ${
                   zone === "PLANTA_BAJA"
-                    ? "bg-[#004ea2] text-white border-[#003c80] shadow-xs"
+                    ? "bg-teatro-blue text-white border-teatro-blue-hover shadow-xs"
                     : "bg-slate-50 dark:bg-[#071324] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
@@ -106,7 +106,7 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
                 onClick={() => setZone("BALCON")}
                 className={`py-2.5 px-3 rounded-xl border text-center font-semibold transition-all cursor-pointer ${
                   zone === "BALCON"
-                    ? "bg-[#004ea2] text-white border-[#003c80] shadow-xs"
+                    ? "bg-teatro-blue text-white border-teatro-blue-hover shadow-xs"
                     : "bg-slate-50 dark:bg-[#071324] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
@@ -125,7 +125,7 @@ export function QuickRegisterModal({ isOpen, onClose, event, onRegister }: Quick
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-[#c8102e] hover:bg-[#a60c25] text-white font-semibold rounded-xl shadow-md shadow-red-900/20 transition-colors cursor-pointer"
+              className="px-5 py-2.5 bg-muni-red hover:bg-muni-red-hover text-white font-semibold rounded-xl shadow-md shadow-red-900/20 transition-colors cursor-pointer"
             >
               Emitir e Ingresar Ahora
             </button>

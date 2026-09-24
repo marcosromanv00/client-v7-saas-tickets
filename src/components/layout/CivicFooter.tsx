@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { ArrowUp, MapPin, Phone, Mail, Clock, Shield } from "lucide-react";
+import { LegalTermsModal } from "../legal/LegalTermsModal";
 
 interface CivicFooterProps {
   onSelectAdminTab?: (tab: "taquilla" | "puerta" | "admin") => void;
 }
 
 export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) => {
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState<"terms" | "privacy">("terms");
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -18,7 +22,7 @@ export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) =>
           <div className="space-y-4">
             <div className="space-y-1">
               <h3 className="text-base text-white font-semibold tracking-tight">Teatro Municipal de Alajuela</h3>
-              <p className="text-xs text-[#c59223] font-medium font-mono">Municipalidad de Alajuela</p>
+              <p className="text-xs text-teatro-gold font-medium font-mono">Municipalidad de Alajuela</p>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
               Monumento Histórico y Cultural de la Provincia de Alajuela. Un escenario cívico dedicado al patrimonio, la cultura y las artes escénicas.
@@ -30,7 +34,7 @@ export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) =>
 
           {/* Columna 2: Servicios y Programación */}
           <div className="space-y-4">
-            <h3 className="text-sm text-white font-semibold tracking-tight uppercase tracking-wider">Temporada 2026</h3>
+            <h3 className="text-sm text-white font-semibold uppercase tracking-wider">Temporada 2026</h3>
             <ul className="space-y-2.5 text-xs text-slate-400">
               <li>Agenda de Reapertura Teatral</li>
               <li>Entre Héroes y Amigos (40 Años)</li>
@@ -42,10 +46,10 @@ export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) =>
 
           {/* Columna 3: Normativa y Operación de Sala */}
           <div className="space-y-4">
-            <h3 className="text-sm text-white font-semibold tracking-tight uppercase tracking-wider">Operación y Acceso</h3>
+            <h3 className="text-sm text-white font-semibold uppercase tracking-wider">Operación y Acceso</h3>
             <div className="space-y-2.5 text-xs text-slate-400">
               <div className="flex items-start gap-2">
-                <Clock className="w-4 h-4 text-[#c59223] mt-0.5 shrink-0" />
+                <Clock className="w-4 h-4 text-teatro-gold mt-0.5 shrink-0" />
                 <span>Apertura de puertas: 45 min antes de función. Se reserva el derecho de admisión al iniciar la obra.</span>
               </div>
               <p>Capacidad autorizada: 190 butacas (120 en Platea y 70 en Balcón Histórico).</p>
@@ -54,27 +58,52 @@ export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) =>
 
           {/* Columna 4: Sede Física & Contacto Verificable */}
           <div className="space-y-4">
-            <h3 className="text-sm text-white font-semibold tracking-tight uppercase tracking-wider">Sede & Contacto Cívico</h3>
+            <h3 className="text-sm text-white font-semibold uppercase tracking-wider">Sede & Contacto Cívico</h3>
             <div className="space-y-2.5 text-xs text-slate-400">
               <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-[#c59223] mt-0.5 shrink-0" />
+                <MapPin className="w-4 h-4 text-teatro-gold mt-0.5 shrink-0" />
                 <span>Costado Oeste del Parque Central, Alajuela, Costa Rica.</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-[#c59223] shrink-0" />
+                <Phone className="w-4 h-4 text-teatro-gold shrink-0" />
                 <span>Boletería: 2431-3961 / 8524-7247</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-[#c59223] shrink-0" />
+                <Mail className="w-4 h-4 text-teatro-gold shrink-0" />
                 <span>cultura@munialajuela.go.cr</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Colophon */}
+        {/* Colophon & Enlaces Legales */}
         <div className="mt-16 pt-8 border-t border-slate-800 dark:border-[#10203a] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Teatro Municipal de Alajuela • Municipalidad de Alajuela.</p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
+            <p>© {new Date().getFullYear()} Teatro Municipal de Alajuela • Municipalidad de Alajuela.</p>
+            <span className="hidden sm:inline text-slate-700">•</span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setLegalTab("terms");
+                  setIsLegalModalOpen(true);
+                }}
+                className="hover:text-slate-300 underline underline-offset-2 transition-colors cursor-pointer"
+              >
+                Términos y Condiciones
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLegalTab("privacy");
+                  setIsLegalModalOpen(true);
+                }}
+                className="hover:text-slate-300 underline underline-offset-2 transition-colors cursor-pointer"
+              >
+                Política de Privacidad
+              </button>
+            </div>
+          </div>
           <div className="flex items-center gap-6">
             {onSelectAdminTab && (
               <button
@@ -82,7 +111,7 @@ export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) =>
                 onClick={() => onSelectAdminTab("admin")}
                 className="text-slate-400 hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
               >
-                <Shield className="w-3.5 h-3.5 text-[#c59223]" /> Portal de Operadores
+                <Shield className="w-3.5 h-3.5 text-teatro-gold" /> Portal de Operadores
               </button>
             )}
             <button
@@ -95,6 +124,12 @@ export const CivicFooter: React.FC<CivicFooterProps> = ({ onSelectAdminTab }) =>
           </div>
         </div>
       </div>
+
+      <LegalTermsModal
+        isOpen={isLegalModalOpen}
+        onClose={() => setIsLegalModalOpen(false)}
+        defaultTab={legalTab}
+      />
     </footer>
   );
 };

@@ -72,16 +72,16 @@ export function ReservationSummary({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-[#1e355b] p-6 shadow-sm space-y-5 text-left transition-colors"
+      className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border p-6 shadow-sm space-y-5 text-left transition-colors"
     >
       {/* Resumen de Butaca Seleccionada */}
       <div className="bg-slate-50 dark:bg-[#071324] p-3.5 rounded-2xl border border-slate-200 dark:border-[#1a3357] space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" />
+            <Calendar className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" />
             <span className="font-mono text-slate-700 dark:text-slate-300">{selectedDate} • {selectedTime} hrs</span>
           </span>
-          <span className="font-mono font-bold text-sm text-[#004ea2] dark:text-blue-400">
+          <span className="font-mono font-bold text-sm text-teatro-blue dark:text-blue-400">
             {isNumbered
               ? selectedSeat
                 ? selectedSeat.label
@@ -93,8 +93,8 @@ export function ReservationSummary({
         </div>
 
         {isNumbered && selectedSeat && (
-          <div className="flex items-center gap-2 text-xs text-[#004ea2] dark:text-blue-300 bg-[#ebf3fc] dark:bg-[#004ea2]/15 p-2.5 rounded-xl border border-[#004ea2]/25 dark:border-blue-500/30">
-            <Armchair className="w-4 h-4 text-[#004ea2] dark:text-blue-400 shrink-0" />
+          <div className="flex items-center gap-2 text-xs text-teatro-blue dark:text-blue-300 bg-teatro-blue-light dark:bg-teatro-blue/15 p-2.5 rounded-xl border border-teatro-blue/25 dark:border-blue-500/30">
+            <Armchair className="w-4 h-4 text-teatro-blue dark:text-blue-400 shrink-0" />
             <span>Butaca apartada. Complete sus datos para emitir su boleto.</span>
           </div>
         )}
@@ -122,7 +122,7 @@ export function ReservationSummary({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ej: Carmen Mora Rojas"
-            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
+            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue dark:focus:border-blue-500 transition-colors"
             required
           />
         </div>
@@ -134,7 +134,7 @@ export function ReservationSummary({
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
             placeholder="Ej: 1-1120-0456"
-            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
+            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue dark:focus:border-blue-500 transition-colors"
             required
           />
         </div>
@@ -146,7 +146,7 @@ export function ReservationSummary({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Ej: 8844-1234"
-            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
+            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-teatro-blue dark:focus:border-blue-500 transition-colors"
           />
         </div>
 
@@ -154,7 +154,7 @@ export function ReservationSummary({
           whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={!canSubmit || isSubmitting}
-          className="w-full py-3.5 bg-[#c8102e] hover:bg-[#a60c25] disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white font-semibold rounded-2xl text-xs transition-all shadow-md shadow-red-900/20 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+          className="w-full py-3.5 bg-muni-red hover:bg-muni-red-hover disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white font-semibold rounded-2xl text-xs transition-all shadow-md shadow-red-900/20 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
         >
           <CheckCircle2 className="w-4 h-4" />
           <span>{isSubmitting ? "Emitiendo Tiquete..." : "Confirmar Reserva y Obtener Pase"}</span>

@@ -1,8 +1,10 @@
-import { TheaterEvent, Ticket, SpecialGuestEntry, ZoneId, Seat } from "./types";
-import { generateInitialSeats } from "./theater-layout";
+import { TheaterEvent, Ticket, SpecialGuestEntry, Seat, BraceletColor } from "./types";
 import { TheaterState } from "./ticket-store-types";
 import { loadInitialState, STORAGE_KEY } from "./initial-state";
 import { logAuditEvent } from "../auth/audit-logger";
+import { releaseUnclaimedTicketsForState } from "./ticket-release-utils";
+import { findTicketByAnyCode, evaluateTicketForCheckIn } from "./ticket-verification-utils";
+import { executeBooking, BookTicketPayload } from "./ticket-booking-handler";
 
 export type { TheaterState } from "./ticket-store-types";
 
@@ -33,14 +35,6 @@ export const theaterStore = {
       events: state.events.map((e) => (e.id === eventId ? { ...e, registrationEnabled: enabled } : e)),
     };
     notify();
-    logAuditEvent({
-      actorId: "usr-admin",
-      actorName: "Consola Administrativa",
-      actorRole: "PRODUCER",
-      action: "EVENT_CONFIG_UPDATED",
-      targetEntity: eventId,
-      details: enabled ? "Registros públicos habilitados" : "Registros públicos pausados",
-    });
   },
 
   updateEvent: (updated: TheaterEvent) => {
@@ -49,109 +43,69 @@ export const theaterStore = {
       events: state.events.map((e) => (e.id === updated.id ? updated : e)),
     };
     notify();
-    logAuditEvent({
-      actorId: "usr-admin",
-      actorName: "Consola Administrativa",
-      actorRole: "PRODUCER",
-      action: "EVENT_CONFIG_UPDATED",
-      targetEntity: updated.id,
-      details: `Parámetros de evento actualizados: ${updated.title}`,
-    });
+  },
+
+  setEventBraceletColor: (eventId: string, color: BraceletColor) => {
+    state = {
+      ...state,
+      events: state.events.map((e) =>
+        e.id === eventId
+          ? { ...e, braceletColorId: color.id, braceletColorName: color.name, braceletColorHex: color.hex }
+          : e
+      ),
+    };
+    notify();
+  },
+
+  updateBraceletCatalog: (colors: BraceletColor[]) => {
+    state = { ...state, braceletColors: colors };
+    notify();
   },
 
   updateEventSeats: (eventId: string, newSeats: Seat[]) => {
     state = { ...state, seatsByEvent: { ...state.seatsByEvent, [eventId]: newSeats } };
     notify();
-    logAuditEvent({
-      actorId: "usr-admin",
-      actorName: "Consola Administrativa",
-      actorRole: "PRODUCER",
-      action: "EVENT_CONFIG_UPDATED",
-      targetEntity: eventId,
-      details: `Matriz de sala actualizada (${newSeats.length} butacas)`,
-    });
   },
 
-  bookTicket: (payload: {
-    eventId: string;
-    citizenName: string;
-    citizenId: string;
-    citizenPhone?: string;
-    seatId: string | null;
-    zone: ZoneId;
-    isVipGuest?: boolean;
-    notes?: string;
-  }): { success: boolean; ticket?: Ticket; error?: string } => {
-    const existing = state.tickets.find(
-      (t) => t.eventId === payload.eventId && t.citizenId.trim().toLowerCase() === payload.citizenId.trim().toLowerCase()
-    );
-    if (existing && !payload.notes?.includes("Protocolo")) {
-      return { success: false, error: `La cédula ${payload.citizenId} ya cuenta con el tiquete ${existing.id.slice(0, 8)} para este evento.` };
+  checkAndReleaseUnclaimed: (currentTime: Date = new Date()): number => {
+    const { updatedState, releasedCount } = releaseUnclaimedTicketsForState(state, currentTime);
+    if (releasedCount > 0) {
+      state = updatedState;
+      notify();
+      logAuditEvent({
+        actorId: "system-auto",
+        actorName: "Regla 15 Minutos de Aforo",
+        actorRole: "PRODUCER",
+        action: "TICKET_CHECKIN",
+        targetEntity: "sala",
+        details: `Corte de 15 min: ${releasedCount} boletos no acreditados liberados para walk-ins`,
+      });
     }
-
-    const event = state.events.find((e) => e.id === payload.eventId);
-    if (!event) return { success: false, error: "Evento no encontrado." };
-
-    let seatLabel: string | null = null;
-    const currentSeats = state.seatsByEvent[payload.eventId] || generateInitialSeats();
-
-    if (payload.seatId) {
-      const seat = currentSeats.find((s) => s.id === payload.seatId);
-      if (!seat || seat.status !== "AVAILABLE") {
-        return { success: false, error: "La butaca seleccionada ya no está disponible." };
-      }
-      seat.status = "RESERVED";
-      seatLabel = seat.label;
-    }
-
-    const newTicket: Ticket = {
-      id: `tkt-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      eventId: payload.eventId,
-      citizenName: payload.citizenName.trim(),
-      citizenId: payload.citizenId.trim(),
-      citizenPhone: payload.citizenPhone?.trim(),
-      seatId: payload.seatId,
-      seatLabel,
-      zone: payload.zone,
-      qrCodeValue: `TM-${payload.eventId}-${payload.seatId || payload.zone}-${payload.citizenId.trim()}`,
-      isVipGuest: !!payload.isVipGuest,
-      checkedIn: false,
-      checkedInAt: null,
-      createdAt: new Date().toISOString(),
-      notes: payload.notes,
-    };
-
-    state = {
-      ...state,
-      tickets: [newTicket, ...state.tickets],
-      seatsByEvent: {
-        ...state.seatsByEvent,
-        [payload.eventId]: [...currentSeats],
-      },
-    };
-    notify();
-    logAuditEvent({
-      actorId: "public-system",
-      actorName: payload.citizenName,
-      actorRole: "CITIZEN",
-      action: "TICKET_BOOKED",
-      targetEntity: newTicket.id,
-      details: `Boleto emitido para ${payload.citizenName} (Cédula: ${payload.citizenId}) en ${newTicket.seatLabel || newTicket.zone}`,
-    });
-    return { success: true, ticket: newTicket };
+    return releasedCount;
   },
 
-  checkInTicket: (ticketId: string): { success: boolean; error?: string; ticket?: Ticket } => {
+  bookTicket: (payload: BookTicketPayload) => {
+    const { updatedState, result } = executeBooking(state, payload);
+    if (result.success) {
+      state = updatedState;
+      notify();
+    }
+    return result;
+  },
+
+  checkInTicket: (ticketId: string): { success: boolean; error?: string; ticket?: Ticket; status?: string } => {
     const ticket = state.tickets.find((t) => t.id === ticketId);
-    if (!ticket) return { success: false, error: "Tiquete no encontrado." };
-    if (ticket.checkedIn) {
-      return { success: false, error: `El tiquete ya ingresó a las ${new Date(ticket.checkedInAt || "").toLocaleTimeString()}.` };
+    const evaluation = evaluateTicketForCheckIn(ticket || null);
+
+    if (evaluation.status !== "VALID" || !ticket) {
+      return { success: false, error: evaluation.message, ticket: ticket || undefined, status: evaluation.status };
     }
 
     const updated: Ticket = {
       ...ticket,
       checkedIn: true,
       checkedInAt: new Date().toISOString(),
+      status: "CHECKED_IN",
     };
 
     const seats = state.seatsByEvent[ticket.eventId] || [];
@@ -166,22 +120,18 @@ export const theaterStore = {
       seatsByEvent: { ...state.seatsByEvent, [ticket.eventId]: [...seats] },
     };
     notify();
-    logAuditEvent({
-      actorId: "staff-gate",
-      actorName: "Control de Acceso Puerta",
-      actorRole: "DELEGATED_ADMIN",
-      action: "TICKET_CHECKIN",
-      targetEntity: ticketId,
-      details: `Acceso confirmado a sala: ${ticket.citizenName} (Butaca: ${ticket.seatLabel || ticket.zone})`,
-    });
-    return { success: true, ticket: updated };
+    return { success: true, ticket: updated, status: "VALID" };
   },
 
-  checkInByQr: (qrValue: string): { success: boolean; error?: string; ticket?: Ticket } => {
-    const ticket = state.tickets.find((t) => t.qrCodeValue.trim() === qrValue.trim());
-    if (!ticket) return { success: false, error: "Código QR no reconocido en el sistema." };
+  checkInByCode: (code: string): { success: boolean; error?: string; ticket?: Ticket; status?: string } => {
+    const ticket = findTicketByAnyCode(state.tickets, code);
+    if (!ticket) {
+      return { success: false, error: `Código "${code}" no encontrado en la base de datos.`, status: "NOT_FOUND" };
+    }
     return theaterStore.checkInTicket(ticket.id);
   },
+
+  checkInByQr: (qrValue: string) => theaterStore.checkInByCode(qrValue),
 
   addSpecialGuest: (guest: SpecialGuestEntry) => {
     state = { ...state, specialGuests: [guest, ...state.specialGuests] };

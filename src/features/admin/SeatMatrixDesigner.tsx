@@ -52,15 +52,15 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
   };
 
   return (
-    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-[#1e355b] p-4 sm:p-6 shadow-sm space-y-5 transition-colors">
+    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border p-4 sm:p-6 shadow-sm space-y-5 transition-colors">
       {/* 1. BARRA SUPERIOR DE HERRAMIENTAS Y CONTADORES */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#1e355b]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-teatro-navy-border">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase text-[#004ea2] dark:text-blue-400 font-bold tracking-wider">
+            <span className="text-[10px] font-mono uppercase text-teatro-blue dark:text-blue-400 font-bold tracking-wider">
               Diseñador de Layout de Sala
             </span>
-            <span className="text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-[#ebf3fc] dark:bg-blue-950/60 text-[#004ea2] dark:text-blue-300 border border-[#004ea2]/20">
+            <span className="text-xs px-2 py-0.5 rounded-full font-mono font-bold bg-teatro-blue-light dark:bg-blue-950/60 text-teatro-blue dark:text-blue-300 border border-teatro-blue/20">
               Aforo Total: {totalCount} / 220
             </span>
           </div>
@@ -80,7 +80,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
           <button
             type="button"
             onClick={handleSave}
-            className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-[#c8102e] hover:bg-[#a60c25] text-white transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+            className="px-4 py-1.5 rounded-xl text-xs font-semibold bg-muni-red hover:bg-muni-red-hover text-white transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" /> Guardar Sala
           </button>
@@ -94,7 +94,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
             type="button"
             onClick={() => setActiveZone("PLATEA_BAJA")}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer ${
-              activeZone === "PLATEA_BAJA" ? "bg-[#004ea2] text-white shadow-xs" : "text-slate-600 dark:text-slate-400"
+              activeZone === "PLATEA_BAJA" ? "bg-teatro-blue text-white shadow-xs" : "text-slate-600 dark:text-slate-400"
             }`}
           >
             Platea ({pbCount})
@@ -103,7 +103,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
             type="button"
             onClick={() => setActiveZone("NIVEL_MEDIO")}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer ${
-              activeZone === "NIVEL_MEDIO" ? "bg-[#004ea2] text-white shadow-xs" : "text-slate-600 dark:text-slate-400"
+              activeZone === "NIVEL_MEDIO" ? "bg-teatro-blue text-white shadow-xs" : "text-slate-600 dark:text-slate-400"
             }`}
           >
             Nivel Medio ({nmCount})
@@ -112,7 +112,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
             type="button"
             onClick={() => setActiveZone("BALCON_ALTO")}
             className={`px-3 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer ${
-              activeZone === "BALCON_ALTO" ? "bg-[#004ea2] text-white shadow-xs" : "text-slate-600 dark:text-slate-400"
+              activeZone === "BALCON_ALTO" ? "bg-teatro-blue text-white shadow-xs" : "text-slate-600 dark:text-slate-400"
             }`}
           >
             Balcón ({balconCount})
@@ -125,7 +125,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
             type="button"
             onClick={() => setActiveTool("SEAT")}
             className={`px-2.5 py-1 rounded-lg flex items-center gap-1 border transition-colors cursor-pointer ${
-              activeTool === "SEAT" ? "bg-[#004ea2] text-white border-[#003c80]" : "bg-white dark:bg-[#071324] border-slate-200 dark:border-[#1e355b]"
+              activeTool === "SEAT" ? "bg-teatro-blue text-white border-teatro-blue-hover" : "bg-white dark:bg-[#071324] border-slate-200 dark:border-teatro-navy-border"
             }`}
           >
             <Armchair className="w-3 h-3" /> Butaca
@@ -134,7 +134,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
             type="button"
             onClick={() => setActiveTool("VIP")}
             className={`px-2.5 py-1 rounded-lg flex items-center gap-1 border transition-colors cursor-pointer ${
-              activeTool === "VIP" ? "bg-[#c59223] text-white border-amber-600" : "bg-white dark:bg-[#071324] border-slate-200 dark:border-[#1e355b]"
+              activeTool === "VIP" ? "bg-teatro-gold text-white border-amber-600" : "bg-white dark:bg-[#071324] border-slate-200 dark:border-teatro-navy-border"
             }`}
           >
             <Star className="w-3 h-3" /> VIP
@@ -143,7 +143,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
             type="button"
             onClick={() => setActiveTool("EMPTY")}
             className={`px-2.5 py-1 rounded-lg flex items-center gap-1 border transition-colors cursor-pointer ${
-              activeTool === "EMPTY" ? "bg-slate-700 text-white border-slate-900" : "bg-white dark:bg-[#071324] border-slate-200 dark:border-[#1e355b]"
+              activeTool === "EMPTY" ? "bg-slate-700 text-white border-slate-900" : "bg-white dark:bg-[#071324] border-slate-200 dark:border-teatro-navy-border"
             }`}
           >
             <Eraser className="w-3 h-3" /> Pasillo
@@ -154,7 +154,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
       {/* 3. MATRIZ DE CUADRÍCULA INTERACTIVA */}
       <div className="overflow-x-auto pb-4">
         <div className="min-w-fit flex flex-col items-center gap-1 p-2 bg-slate-50 dark:bg-[#071324] rounded-2xl border border-slate-200 dark:border-[#1a3357]">
-          <div className="w-full max-w-sm text-center py-1 mb-2 border-b-2 border-[#004ea2] text-[10px] font-mono uppercase tracking-widest text-[#004ea2] dark:text-blue-400 font-bold">
+          <div className="w-full max-w-sm text-center py-1 mb-2 border-b-2 border-teatro-blue text-[10px] font-mono uppercase tracking-widest text-teatro-blue dark:text-blue-400 font-bold">
             ▲ ESCENARIO TEATRAL ▲
           </div>
 
@@ -175,7 +175,7 @@ export function SeatMatrixDesigner({ event, currentSeats, onSaveSeats }: SeatMat
                         onClick={() => handleCellClick(rIdx, cIdx)}
                         title={`Fila ${row.rowLetter} Columna ${cIdx + 1} (${cell})`}
                         className={`w-6 h-6 sm:w-7 sm:h-7 rounded-md flex items-center justify-center font-mono text-[9px] font-bold transition-all cursor-pointer select-none ${
-                          isSeat ? "bg-[#004ea2] text-white shadow-xs hover:bg-[#003c80]" : isVip ? "bg-[#c59223] text-white shadow-xs hover:bg-amber-600" : "bg-slate-200/50 dark:bg-[#0b1a30] text-slate-400 border border-dashed border-slate-300 dark:border-[#1e355b] hover:border-[#004ea2]"
+                          isSeat ? "bg-teatro-blue text-white shadow-xs hover:bg-teatro-blue-hover" : isVip ? "bg-teatro-gold text-white shadow-xs hover:bg-amber-600" : "bg-slate-200/50 dark:bg-[#0b1a30] text-slate-400 border border-dashed border-slate-300 dark:border-teatro-navy-border hover:border-teatro-blue"
                         }`}
                       >
                         {num || ""}

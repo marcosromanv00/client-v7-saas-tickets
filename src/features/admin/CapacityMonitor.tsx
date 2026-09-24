@@ -8,8 +8,8 @@ interface CapacityMonitorProps {
 
 export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) {
   return (
-    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-[#1e355b] p-6 shadow-sm space-y-6 text-left transition-colors">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-[#1e355b] pb-4">
+    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border p-6 shadow-sm space-y-6 text-left transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-teatro-navy-border pb-4">
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Monitor de Aforo Dinámico en Vivo</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{eventTitle} • Teatro Municipal de Alajuela</p>
@@ -24,18 +24,18 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-slate-50 dark:bg-[#071324] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#1a3357] shadow-xs">
           <span className="text-xs text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1.5">
-            <Armchair className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" /> Capacidad Total
+            <Armchair className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" /> Capacidad Total
           </span>
           <p className="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">{capacity.totalCapacity}</p>
           <span className="text-[10px] text-slate-400 font-mono">120 Platea • 70 Balcón</span>
         </div>
 
         <div className="bg-slate-50 dark:bg-[#071324] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#1a3357] shadow-xs">
-          <span className="text-xs text-[#004ea2] dark:text-blue-400 font-mono flex items-center gap-1.5 font-semibold">
+          <span className="text-xs text-teatro-blue dark:text-blue-400 font-mono flex items-center gap-1.5 font-semibold">
             <Users className="w-3.5 h-3.5" /> Pre-Reservas
           </span>
-          <p className="text-2xl font-bold font-mono text-[#004ea2] dark:text-blue-400 mt-1">{capacity.preReservedCount}</p>
-          <span className="text-[10px] text-[#004ea2]/80 dark:text-blue-400/80 font-mono">
+          <p className="text-2xl font-bold font-mono text-teatro-blue dark:text-blue-400 mt-1">{capacity.preReservedCount}</p>
+          <span className="text-[10px] text-teatro-blue/80 dark:text-blue-400/80 font-mono">
             {capacity.percentageOccupied}% del aforo
           </span>
         </div>
@@ -49,11 +49,11 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
         </div>
 
         <div className="bg-slate-50 dark:bg-[#071324] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#1a3357] shadow-xs">
-          <span className="text-xs text-[#c59223] dark:text-amber-400 font-mono flex items-center gap-1.5 font-semibold">
+          <span className="text-xs text-teatro-gold dark:text-amber-400 font-mono flex items-center gap-1.5 font-semibold">
             <AlertCircle className="w-3.5 h-3.5" /> Walk-In Disponible
           </span>
-          <p className="text-2xl font-bold font-mono text-[#c59223] dark:text-amber-400 mt-1">{capacity.availableRemaining}</p>
-          <span className="text-[10px] text-[#c59223]/80 dark:text-amber-400/80 font-mono">Orden de llegada</span>
+          <p className="text-2xl font-bold font-mono text-teatro-gold dark:text-amber-400 mt-1">{capacity.availableRemaining}</p>
+          <span className="text-[10px] text-teatro-gold/80 dark:text-amber-400/80 font-mono">Orden de llegada</span>
         </div>
       </div>
 
@@ -73,7 +73,7 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
             title={`Ingresados: ${capacity.checkedInCount}`}
           />
           <div
-            className="bg-[#004ea2] dark:bg-blue-500 h-full transition-all duration-300"
+            className="bg-teatro-blue dark:bg-blue-500 h-full transition-all duration-300"
             style={{
               width: `${
                 (Math.max(0, capacity.preReservedCount - capacity.checkedInCount) / capacity.totalCapacity) * 100
@@ -89,13 +89,13 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Ingresados
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#004ea2] dark:bg-blue-500" /> Pre-reservas
+              <span className="w-2.5 h-2.5 rounded-full bg-teatro-blue dark:bg-blue-500" /> Pre-reservas
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700" /> Libres
             </span>
           </div>
-          <span className="font-mono text-[#c59223] dark:text-amber-400 font-semibold">VIP Protocolo: {capacity.vipReservedCount}</span>
+          <span className="font-mono text-teatro-gold dark:text-amber-400 font-semibold">VIP Protocolo: {capacity.vipReservedCount}</span>
         </div>
       </div>
     </div>

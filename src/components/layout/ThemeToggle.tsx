@@ -18,8 +18,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = "", showLa
       title={isDark ? "Modo Claro" : "Modo Oscuro"}
       className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border transition-all cursor-pointer select-none text-xs font-medium ${
         isDark
-          ? "bg-[#0b1a30] border-[#1e355b] text-amber-400 hover:text-amber-300 hover:border-amber-400/40"
-          : "bg-white border-slate-200 text-slate-700 hover:text-[#004ea2] hover:border-[#004ea2]/30 shadow-xs"
+          ? "bg-[#0b1a30] border-teatro-navy-border text-amber-400 hover:text-amber-300 hover:border-amber-400/40"
+          : "bg-white border-slate-200 text-slate-700 hover:text-teatro-blue hover:border-teatro-blue/30 shadow-xs"
       } ${className}`}
     >
       <div className="relative w-4 h-4 flex items-center justify-center">

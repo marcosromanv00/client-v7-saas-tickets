@@ -82,11 +82,11 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
       </div>
 
       {/* BOLETO DIGITAL DE COLECCIÓN */}
-      <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-[#1e355b] bg-white dark:bg-[#0b1a30] shadow-lg transition-colors">
+      <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-teatro-navy-border bg-white dark:bg-[#0b1a30] shadow-lg transition-colors">
         <div className="relative h-44 w-full overflow-hidden">
           <img src={event.posterUrl} alt={event.title} className="w-full h-full object-cover brightness-75" />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-[#c59223] border border-[#c59223]/40 font-semibold">
+          <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/40 to-transparent" />
+          <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-teatro-gold border border-teatro-gold/40 font-semibold">
             Teatro Municipal de Alajuela
           </div>
           <div className="absolute bottom-3 left-4 right-4">
@@ -96,9 +96,9 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
         </div>
 
         <div className="relative flex items-center justify-between px-3 py-2 bg-white dark:bg-[#0b1a30]">
-          <div className="w-5 h-5 rounded-full bg-slate-50 dark:bg-[#040b17] -ml-5.5 border-r border-slate-200 dark:border-[#1e355b]" />
+          <div className="w-5 h-5 rounded-full bg-slate-50 dark:bg-teatro-navy -ml-5.5 border-r border-slate-200 dark:border-teatro-navy-border" />
           <div className="flex-1 border-b-2 border-dashed border-slate-300 dark:border-slate-700 mx-2" />
-          <div className="w-5 h-5 rounded-full bg-slate-50 dark:bg-[#040b17] -mr-5.5 border-l border-slate-200 dark:border-[#1e355b]" />
+          <div className="w-5 h-5 rounded-full bg-slate-50 dark:bg-teatro-navy -mr-5.5 border-l border-slate-200 dark:border-teatro-navy-border" />
         </div>
 
         <div className="p-6 pt-2 space-y-4 bg-white dark:bg-[#0b1a30]">
@@ -117,19 +117,19 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
             </div>
             <div>
               <span className="text-[10px] font-mono text-slate-400 uppercase block">Butacas Asignadas</span>
-              <span className="text-[#004ea2] dark:text-blue-400 font-mono font-bold text-sm">
+              <span className="text-teatro-blue dark:text-blue-400 font-mono font-bold text-sm">
                 {tickets.map((t) => t.seatLabel || t.seatId).join(", ")}
               </span>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-slate-200 dark:border-[#1e355b] flex flex-col items-center justify-center space-y-3">
+          <div className="pt-3 border-t border-slate-200 dark:border-teatro-navy-border flex flex-col items-center justify-center space-y-3">
             {qrUrl && (
               <div className="p-2.5 rounded-2xl bg-white border border-slate-200 shadow-xs">
                 <img src={qrUrl} alt="QR de Ingreso" className="w-28 h-28" />
               </div>
             )}
-            <svg ref={barcodeRef} className="w-full max-w-[200px]" />
+            <svg ref={barcodeRef} className="w-full max-w-50" />
             <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest">{primaryTicket.id}</span>
           </div>
         </div>
@@ -139,16 +139,16 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
         <button
           type="button"
           onClick={handlePrint}
-          className="py-3 px-4 bg-white dark:bg-[#0b1a30] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-[#1e355b] rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+          className="py-3 px-4 bg-white dark:bg-[#0b1a30] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-teatro-navy-border rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
         >
-          <Printer className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" /> Imprimir
+          <Printer className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" /> Imprimir
         </button>
         <button
           type="button"
           onClick={handleShare}
-          className="py-3 px-4 bg-white dark:bg-[#0b1a30] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-[#1e355b] rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+          className="py-3 px-4 bg-white dark:bg-[#0b1a30] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-teatro-navy-border rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
         >
-          <Share2 className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" /> Compartir
+          <Share2 className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" /> Compartir
         </button>
       </div>
 
@@ -156,16 +156,16 @@ export const Step4TicketSuccess: React.FC<Step4TicketSuccessProps> = ({
         <button
           type="button"
           onClick={onOpenMyTickets}
-          className="w-full py-3 bg-[#ebf3fc] dark:bg-[#004ea2]/20 hover:bg-[#004ea2]/25 text-[#004ea2] dark:text-blue-300 border border-[#004ea2]/30 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+          className="w-full py-3 bg-teatro-blue-light dark:bg-teatro-blue/20 hover:bg-teatro-blue/25 text-teatro-blue dark:text-blue-300 border border-teatro-blue/30 rounded-2xl text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
         >
-          <TicketIcon className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" /> Ver en Mis Entradas
+          <TicketIcon className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" /> Ver en Mis Entradas
         </button>
       )}
 
       <button
         type="button"
         onClick={onResetToStart}
-        className="w-full py-3.5 bg-[#004ea2] hover:bg-[#003c80] text-white font-semibold rounded-2xl text-xs shadow-md shadow-blue-900/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+        className="w-full py-3.5 bg-teatro-blue hover:bg-teatro-blue-hover text-white font-semibold rounded-2xl text-xs shadow-md shadow-blue-900/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
       >
         <span>Explorar Otra Función en Cartelera</span>
         <ArrowRight className="w-4 h-4" />

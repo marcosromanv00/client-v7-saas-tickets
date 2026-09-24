@@ -1,140 +1,140 @@
 # Especificación de Requisitos y Contratos del Sistema (SDD)
 ## Teatro Municipal - Sistema de Tiquetería y Gestión de Aforo
+### Módulo: Entradas, Liberación 15 Min, Código Rápido, Brazaletes y Marco Legal
 
 ---
 
-## 1. Contexto y Objetivo de Negocio
+## 1. Contexto y Objetivos de Negocio
 
-El Teatro Municipal es un espacio cívico patrimonial con capacidad aproximada para **190 espectadores**:
-- **Planta Baja (Platea)**: 120 butacas distribuidas en 10 filas (A a J) con pasillo central.
-- **Segunda Planta (Balcón / Anfiteatro)**: 70 butacas distribuidas en 5 filas (K a O) con vista panorámica.
-
-Los eventos del teatro son gratuitos y de interés cultural, pero requieren un estricto control de aforo para garantizar la seguridad humana, el cumplimiento de protocolos institucionales y la satisfacción del público. 
-
-### Necesidad Operativa
-El sistema debe resolver simultáneamente tres modalidades de acceso y una capa administrativa de control:
-1. **Capa 1 (Ventanilla / Taquilla Rápida)**: Registro e ingreso inmediato por número de cédula en un flujo minimalista y sin fricción para adultos mayores o taquilla presencial de último minuto.
-2. **Capa 2 (Acreditación con QR)**: Registro ciudadano con generación de tiquete digital que porta un código QR único verificable por la cámara o lector de los acomodadores en puerta.
-3. **Capa 3 (Reserva con Selección de Butacas)**: Experiencia digital inmersiva tipo sala de cine que renderiza el plano arquitectónico del teatro, permitiendo reservar asientos específicos o gestionar aforo general según la configuración del evento.
-4. **Capa Administrativa & Protocolo**: Habilitación manual de registros, reserva de filas VIP (filas A y K para autoridades e invitados especiales), precarga de listas cerradas (como la gala inaugural privada del viernes 25 a las 7:00 PM) y monitor de aforo dinámico en tiempo real que contrasta pre-reservas con personas que llegan en taquilla.
+El Teatro Municipal de Alajuela requiere optimizar la experiencia ciudadana y el control operativo de puerta para la Temporada 2026. Los nuevos requisitos abordan:
+1. **Límite de 2 entradas por usuario**: Evitar el acaparamiento y democratizar el acceso cívico mediante validación estricta por Cédula (`citizenId`).
+2. **Liberación automática 15 minutos antes de la función**: Toda entrada con butaca asignada no registrada (sin check-in) a falta de 15 minutos para la hora de inicio se libera a favor de los asistentes en espera (walk-ins).
+3. **Acomodo Híbrido Inteligente**: Combinación de reserva previa numerada con relleno asistido de sala por orden de llegada (desde la primera fila hacia atrás) para maximizar el aforo efectivo.
+4. **Sistema de Brazaletes de 1 Color por Evento**: Cada función maneja un color oficial único (Azul Rey, Plateado, Rojo, Negro, etc.), administrable desde la consola del teatro, garantizando que el personal de puerta entregue y verifique el color correcto evitando reutilizaciones.
+5. **Código Rápido de 4 Caracteres (2 letras + 2 dígitos)**: Acceso ultrarrápido sin depender exclusivamente de lectura óptica de cámara, con auto-procesamiento al ingresar los 4 caracteres.
+6. **Botón FAB de Verificación**: Acceso instantáneo con 1 clic desde cualquier pantalla del sistema a la consola de validación de puerta.
+7. **Marco Legal y Términos Cívicos**: Modal y cláusulas de aceptación obligatoria alineadas con la Ley N° 8968 de Costa Rica y la normativa patrimonial municipal.
 
 ---
 
-## 2. Modelo de Datos y Contratos de Tipado (Zod & TypeScript)
+## 2. Contratos de Datos y Esquemas Zod
 
 ```typescript
 import { z } from "zod";
 
-// Tipos de Evento y Modalidades
-export const EventModeSchema = z.enum(["SEATED_NUMBERED", "GENERAL_ADMISSION"]);
-export type EventMode = z.infer<typeof EventModeSchema>;
-
-export const EventStatusSchema = z.enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"]);
-export type EventStatus = z.infer<typeof EventStatusSchema>;
-
-export const ZoneIdSchema = z.enum(["PLANTA_BAJA", "BALCON"]);
-export type ZoneId = z.infer<typeof ZoneIdSchema>;
-
-// Butaca Individual
-export const SeatSchema = z.object({
-  id: z.string(), // Ej: "PB-A-01"
-  zone: ZoneIdSchema,
-  row: z.string(), // "A", "B", ...
-  number: z.number().int().positive(),
-  isVip: z.boolean().default(false),
-  status: z.enum(["AVAILABLE", "RESERVED", "OCCUPIED", "BLOCKED"]).default("AVAILABLE"),
+// Colores Oficiales de Brazaletes
+export const BraceletColorSchema = z.object({
+  id: z.string(),
+  name: z.string(), // "Azul Rey", "Plateado", "Rojo", "Negro"
+  hex: z.string(), // "#004ea2", "#94a3b8", "#c8102e", "#09090b"
+  description: z.string(),
 });
-export type Seat = z.infer<typeof SeatSchema>;
+export type BraceletColor = z.infer<typeof BraceletColorSchema>;
 
-// Tiquete emitido
+// Estado del Tiquete
+export const TicketStatusSchema = z.enum([
+  "ACTIVE",             // Emitido y válido para ingresar
+  "CHECKED_IN",          // Ingresado a sala
+  "RELEASED_NO_SHOW",    // Liberado por inasistencia (15 min antes)
+  "CANCELLED",          // Cancelado administrativamente
+]);
+export type TicketStatus = z.infer<typeof TicketStatusSchema>;
+
+// Tiquete con Código Rápido de 4 Caracteres
 export const TicketSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   eventId: z.string(),
   citizenName: z.string().min(2, "El nombre debe contener al menos 2 caracteres"),
-  citizenId: z.string().regex(/^[0-9A-Za-z-]{6,15}$/, "Cédula o documento de identidad no válido"),
-  seatId: z.string().nullable(), // Null si es aforo general
-  seatLabel: z.string().nullable(), // "Platea A-04" o null
-  zone: ZoneIdSchema,
+  citizenId: z.string().min(6, "Cédula o documento debe tener al menos 6 caracteres"),
+  citizenPhone: z.string().optional(),
+  citizenEmail: z.string().email().optional(),
+  seatId: z.string().nullable(),
+  seatLabel: z.string().nullable(),
+  zone: z.enum(["PLATEA_BAJA", "NIVEL_MEDIO", "BALCON_ALTO", "PLANTA_BAJA", "BALCON"]),
   qrCodeValue: z.string(),
+  shortCode: z.string().length(4), // Ej: "AL14", "TM08" (2 letras + 2 dígitos)
   isVipGuest: z.boolean().default(false),
   checkedIn: z.boolean().default(false),
-  checkedInAt: z.string().nullable(),
+  checkedInAt: z.string().nullable().default(null),
+  status: TicketStatusSchema.default("ACTIVE"),
+  releasedAt: z.string().nullable().default(null),
   createdAt: z.string(),
+  notes: z.string().optional(),
 });
 export type Ticket = z.infer<typeof TicketSchema>;
 
-// Entrada en Lista de Invitados Especiales
-export const SpecialGuestEntrySchema = z.object({
-  id: z.string().uuid(),
-  eventId: z.string(),
-  name: z.string().nullable(), // Puede ser con nombre o cupo anónimo reservado
-  citizenId: z.string().nullable(),
-  seatId: z.string().nullable(),
-  ticketsCount: z.number().int().min(1).default(1),
-  notes: z.string().optional(),
-  redeemedCount: z.number().int().min(0).default(0),
-});
-export type SpecialGuestEntry = z.infer<typeof SpecialGuestEntrySchema>;
-
-// Evento Principal
+// Evento de Teatro con Color de Brazalete
 export const TheaterEventSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   title: z.string().min(3),
   tagline: z.string(),
   date: z.string(), // YYYY-MM-DD
   time: z.string(), // HH:MM
   durationMinutes: z.number().int().positive(),
-  mode: EventModeSchema,
-  status: EventStatusSchema,
-  isPrivate: z.boolean().default(false), // Para eventos como la gala del viernes 25
-  totalCapacity: z.number().int().default(190),
-  plantaBajaCapacity: z.number().int().default(120),
-  balconCapacity: z.number().int().default(70),
-  vipRowsPlantaBaja: z.array(z.string()).default(["A"]),
-  vipRowsBalcon: z.array(z.string()).default(["K"]),
+  mode: z.enum(["SEATED_NUMBERED", "GENERAL_ADMISSION"]),
+  status: z.enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"]),
+  braceletColorId: z.string().default("azul-rey"), // Enlace a color de brazalete
+  braceletColorName: z.string().default("Azul Rey"),
+  totalCapacity: z.number().int().default(220),
   registrationEnabled: z.boolean().default(true),
   description: z.string(),
+  location: z.string().default("Sala Principal, Teatro Municipal"),
+  posterUrl: z.string().optional(),
+  genre: z.string().default("Teatro / Artes Escénicas"),
 });
 export type TheaterEvent = z.infer<typeof TheaterEventSchema>;
 ```
 
 ---
 
-## 3. Casos Borde y Manejo de Errores
+## 3. Casos Borde y Reglas de Negocio
 
-1. **Intento de Registro Duplicado por Cédula**:
-   - Una misma cédula no puede registrar más de un tiquete para el mismo evento a menos que sea una reserva de protocolo autorizada.
-   - Mensaje amigable: *"La cédula [X] ya cuenta con un tiquete asignado para este evento. Puede consultar su tiquete existente."*
-2. **Aforo Completo (Sold Out)**:
-   - Bloqueo instantáneo del formulario público cuando la suma de reservas y asistentes alcanza la capacidad máxima disponible.
-   - Activación de aviso visual: *"Aforo de reservas agotado. Asientos remanentes disponibles en taquilla 15 minutos antes de la función por orden de llegada."*
-3. **Escaneo de QR Ya Utilizado**:
-   - Si un tiquete ya fue validado en puerta, el lector emite alerta visual roja y sonora de advertencia: *"Alerta: Tiquete ya ingresado a las [Hora]. No se permite reingreso."*
-4. **Reserva en Filas VIP**:
-   - Las filas VIP sólo son accesibles para invitados de la lista especial o asignaciones de protocolo municipal; el público general ve dichas butacas con distintivo de protocolo no seleccionable.
-5. **Modo Aforo General vs Modo Numerado**:
-   - Si el evento es Aforo General, la reserva asigna zona (Planta Baja o Balcón) sin forzar número de butaca, y muestra el mapa con llenado dinámico por orden de llegada.
+1. **Límite de 2 Entradas por Cédula**:
+   - En `Step2SeatSelection`, el arreglo `selectedSeatIds` tiene longitud máxima de 2.
+   - En `theaterStore.bookTicket`, se contabilizan los tiquetes existentes (`status !== "RELEASED_NO_SHOW" && status !== "CANCELLED"`). Si `existentes + solicitados > 2`, la transacción falla con error: *"La cédula [X] ya alcanzó el límite máximo de 2 entradas para este evento."*
+
+2. **Corte y Liberación de 15 Minutos**:
+   - Regla: Si `(eventStartDateTime - now) <= 15 minutos` y el boleto no tiene `checkedIn === true`, se actualiza su estado a `RELEASED_NO_SHOW` y su butaca pasa inmediatamente a `AVAILABLE`.
+   - Si el espectador presenta un boleto liberado en puerta, el lector de acceso muestra el resultado `OUTCOME_RELEASED_NO_SHOW`: *"Entrada liberada por inasistencia (corte a 15 min antes de función). Su butaca fue reasignada."*
+
+3. **Acomodo Híbrido (Relleno desde el Frente)**:
+   - Algoritmo de selección: Recorre filas ordenadas prioritariamente:
+     1. Nivel 1 (Platea Baja): Fila A -> Fila B -> Fila C -> Fila D.
+     2. Nivel 2 (Nivel Medio): Fila E -> F -> G -> H -> I -> J.
+     3. Nivel 3 (Balcón): Fila K -> L -> M -> N -> O.
+   - Retorna la primera butaca en estado `AVAILABLE` para asignación inmediata de walk-in en taquilla/puerta.
+
+4. **Código Rápido de 4 Caracteres**:
+   - Formato: 2 letras mayúsculas [A-Z] + 2 dígitos [0-9] (ej: `AL14`, `TM25`, `CR89`).
+   - El verificador de puerta escucha el input manual y, al detectar exactamente 4 caracteres válidos, dispara la validación instantánea sin necesidad de tecla Enter.
+
+5. **FAB de Verificación**:
+   - Botón flotante accesible en todas las vistas (`App.tsx`), fija en la esquina inferior derecha (`z-40`), con feedback sensorial y tooltip que redirige de inmediato a la pestaña `puerta`.
+
+6. **Términos y Privacidad (Ley N° 8968)**:
+   - Checkbox obligatorio en el checkout: *"He leído y acepto los Términos y Condiciones y la Política de Privacidad de la Municipalidad de Alajuela (Liberación de entradas 15 min antes por inasistencia)."*
+   - Modal interactivo cívico consultable en cualquier momento desde el pie de página o desde el enlace del formulario.
 
 ---
 
 ## 4. Criterios de Aceptación (Given-When-Then)
 
-### Escenario 1: Registro Rápido por Cédula (Capa 1)
-- **Given** que el taquillero está en la pantalla de taquilla express,
-- **When** ingresa la cédula de un ciudadano y pulsa "Validar / Registrar",
-- **Then** el sistema busca si ya existe reserva para marcar check-in en 1 clic, o si no existe, emite un tiquete express al instante e incrementa el contador de ingresados.
+### Escenario 1: Límite de 2 Entradas por Usuario
+- **Given** que un ciudadano reserva en la web pública,
+- **When** intenta seleccionar una 3ra butaca en el mapa,
+- **Then** el sistema bloquea la selección e indica que el límite cívico es de 2 entradas por persona.
 
-### Escenario 2: Ingreso con Escaneo QR en Puerta (Capa 2)
-- **Given** que el acomodador enfoca la cámara o simula el escáner del código QR de un tiquete,
-- **When** el código es procesado,
-- **Then** el sistema valida la firma del tiquete, muestra el nombre, la butaca y la zona, actualiza el estado a "Ingresado" y emite retroalimentación visual inmediata.
+### Escenario 2: Liberación a 15 Minutos y Reasignación Híbrida
+- **Given** un tiquete con butaca reservada sin check-in cuando faltan 15 minutos o menos para la función,
+- **When** se evalúa el reloj del sistema,
+- **Then** el tiquete pasa a "RELEASED_NO_SHOW", la butaca se libera a "AVAILABLE" y el taquillero puede asignarla a un walk-in con la acción "Asignar siguiente mejor butaca".
 
-### Escenario 3: Selección de Butaca Interactiva (Capa 3)
-- **Given** que el ciudadano ingresa a un evento con modalidad numerada,
-- **When** navega por el plano interactivo de Planta Baja o Balcón y pulsa sobre una butaca disponible,
-- **Then** la butaca se ilumina como seleccionada, se calcula el resumen y al completar sus datos se le genera el tiquete con QR correspondiente a esa ubicación exacta.
+### Escenario 3: Verificación con Código Rápido de 4 Caracteres
+- **Given** que el acomodador en puerta tiene el lector de acceso,
+- **When** digita los 4 caracteres ("AL14") sin presionar Enter,
+- **Then** el sistema valida el boleto, muestra el color de brazalete correspondiente al evento y confirma el check-in.
 
-### Escenario 4: Auditoría y Control Dinámico de Aforo en Panel Admin
-- **Given** que el administrador abre el panel de control de un evento,
-- **When** personas van ingresando o registrándose en taquilla,
-- **Then** el tablero de aforo actualiza en vivo la proporción entre reservas previas, ingresos en puerta y butacas remanentes disponibles para el público en espera.
+### Escenario 4: Botón FAB Persistente
+- **Given** que el usuario u operador está en cualquier módulo (Inicio, Taquilla, etc.),
+- **When** hace clic en el botón flotante FAB,
+- **Then** navega instantáneamente al visor de Control de Acceso y Lector QR.

@@ -9,6 +9,7 @@ import { AdminDashboard } from "./features/admin/AdminDashboard";
 import { LoginModal } from "./features/auth/LoginModal";
 import { CitizenAccountDrawer } from "./features/auth/CitizenAccountDrawer";
 import { TicketPassModal } from "./features/tickets/TicketPassModal";
+import { VerificationFAB } from "./components/layout/VerificationFAB";
 import { Ticket } from "./features/tickets/types";
 import { useTheme } from "./features/theme/theme-store";
 import { Toaster } from "sonner";
@@ -21,7 +22,7 @@ export function App() {
   const [selectedTicketForPass, setSelectedTicketForPass] = useState<Ticket | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#040b17] text-slate-900 dark:text-slate-100 selection:bg-[#004ea2] selection:text-white dark:selection:bg-blue-600 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-teatro-navy text-slate-900 dark:text-slate-100 selection:bg-teatro-blue selection:text-white dark:selection:bg-blue-600 transition-colors duration-200">
       {/* Encabezado Cívico Minimalista (Orientado a Espectadores) */}
       <CivicHeader
         activeTab={activeTab}
@@ -65,6 +66,12 @@ export function App() {
       <BottomNavBar
         activeTab={activeTab}
         onTabChange={setActiveTab}
+      />
+
+      {/* Botón FAB para Acceso Ultra Rápido al Verificador */}
+      <VerificationFAB
+        activeTab={activeTab}
+        onOpenVerification={() => setActiveTab("puerta")}
       />
 
       {/* Notificaciones Toasts */}

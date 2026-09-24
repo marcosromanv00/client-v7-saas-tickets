@@ -9,7 +9,7 @@ interface SearchResultCardProps {
 
 export function SearchResultCard({ ticket, event, onCheckIn }: SearchResultCardProps) {
   return (
-    <div className="bg-white dark:bg-[#0b1a30] border-2 border-[#004ea2] dark:border-blue-500 rounded-3xl p-6 shadow-sm animate-in fade-in transition-colors">
+    <div className="bg-white dark:bg-[#0b1a30] border-2 border-teatro-blue dark:border-blue-500 rounded-3xl p-6 shadow-sm animate-in fade-in transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export function SearchResultCard({ ticket, event, onCheckIn }: SearchResultCardP
             Cédula: {ticket.citizenId} • Tiquete: {ticket.id.slice(0, 12)}
           </p>
           <div className="flex items-center gap-3 mt-2 text-xs text-slate-600 dark:text-slate-300">
-            <span className="flex items-center gap-1 font-mono text-[#004ea2] dark:text-blue-400 font-semibold">
+            <span className="flex items-center gap-1 font-mono text-teatro-blue dark:text-blue-400 font-semibold">
               <Armchair className="w-3.5 h-3.5" />
               {ticket.seatLabel ? `Butaca ${ticket.seatLabel}` : `Zona ${ticket.zone === "PLANTA_BAJA" ? "Platea" : "Balcón"}`}
             </span>
@@ -42,7 +42,7 @@ export function SearchResultCard({ ticket, event, onCheckIn }: SearchResultCardP
           ) : (
             <button
               onClick={() => onCheckIn(ticket.id)}
-              className="px-6 py-3 bg-[#c8102e] hover:bg-[#a60c25] text-white font-semibold rounded-2xl text-xs transition-all shadow-md shadow-red-900/20 flex items-center gap-2 cursor-pointer"
+              className="px-6 py-3 bg-muni-red hover:bg-muni-red-hover text-white font-semibold rounded-2xl text-xs transition-all shadow-md shadow-red-900/20 flex items-center gap-2 cursor-pointer"
             >
               <UserCheck className="w-4 h-4" />
               <span>Validar e Ingresar a Sala</span>

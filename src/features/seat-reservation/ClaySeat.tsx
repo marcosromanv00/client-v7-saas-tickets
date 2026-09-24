@@ -45,11 +45,11 @@ export function ClaySeat({ seat, isSelected, onSelect, disabled = false }: ClayS
         <div
           className={`w-1 sm:w-1.5 h-3.5 sm:h-4 rounded-full transition-colors ${
             isSelected
-              ? "bg-[#003c80] dark:bg-blue-400"
+              ? "bg-teatro-blue-hover dark:bg-blue-400"
               : isOccupied
               ? "bg-slate-300 dark:bg-slate-700"
               : isVip
-              ? "bg-[#c59223] dark:bg-amber-400"
+              ? "bg-teatro-gold dark:bg-amber-400"
               : "bg-slate-300 dark:bg-slate-600"
           }`}
         />
@@ -65,11 +65,11 @@ export function ClaySeat({ seat, isSelected, onSelect, disabled = false }: ClayS
         <div
           className={`w-1 sm:w-1.5 h-3.5 sm:h-4 rounded-full transition-colors ${
             isSelected
-              ? "bg-[#003c80] dark:bg-blue-400"
+              ? "bg-teatro-blue-hover dark:bg-blue-400"
               : isOccupied
               ? "bg-slate-300 dark:bg-slate-700"
               : isVip
-              ? "bg-[#c59223] dark:bg-amber-400"
+              ? "bg-teatro-gold dark:bg-amber-400"
               : "bg-slate-300 dark:bg-slate-600"
           }`}
         />
@@ -82,7 +82,7 @@ export function ClaySeat({ seat, isSelected, onSelect, disabled = false }: ClayS
 
       {/* Distintivo VIP Protocolario */}
       {isVip && !isSelected && (
-        <span className="absolute -top-1 right-0 w-2 h-2 rounded-full bg-[#c59223] dark:bg-amber-400 shadow-xs shadow-amber-500/50" />
+        <span className="absolute -top-1 right-0 w-2 h-2 rounded-full bg-teatro-gold dark:bg-amber-400 shadow-xs shadow-amber-500/50" />
       )}
     </motion.button>
   );
