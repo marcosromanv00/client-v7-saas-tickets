@@ -1,25 +1,30 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --font-sans: "Outfit", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 
-  /* Paleta Editorial Teatro Municipal 1890 */
-  --color-theater-cream: #f7f5f1;
-  --color-theater-surface: #ffffff;
-  --color-theater-text: #171717;
-  --color-theater-muted: #737373;
-  --color-theater-wine: #6d174f;
-  --color-theater-wine-hover: #54103c;
-  --color-theater-gold: #b58a3a;
-  --color-theater-border: #e5e1d9;
+  /* Paleta Oficial Teatro Municipal de Alajuela & Municipalidad de Alajuela */
+  --color-teatro-blue: #004ea2;
+  --color-teatro-blue-hover: #003c80;
+  --color-teatro-blue-light: #ebf3fc;
+  --color-teatro-navy: #040b17;
+  --color-teatro-navy-surface: #0a1931;
+  --color-teatro-navy-border: #1e355b;
+
+  --color-muni-red: #c8102e;
+  --color-muni-red-hover: #a60c25;
+  --color-muni-red-light: #fdf2f4;
+
+  --color-teatro-gold: #c59223;
+  --color-teatro-gold-light: #fef9ee;
 }
 
 @layer base {
   body {
-    background-color: #f7f5f1;
-    color: #171717;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     overflow-x: hidden;
   }
@@ -27,53 +32,89 @@
 
 /* Scrollbar sutil para listas y paneles */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f7f5f1;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d5d0c7;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e355b;
+}
 ::-webkit-scrollbar-thumb:hover {
-  background: #b9b3a7;
+  background: #94a3b8;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334d77;
 }
 
 /* Arco de luz del proscenio teatral */
 .stage-curved-arc {
-  border-top: 2.5px solid rgba(109, 23, 79, 0.8);
+  border-top: 2.5px solid #004ea2;
   border-radius: 120px 120px 0 0;
-  box-shadow: 0 -4px 20px 2px rgba(109, 23, 79, 0.25);
+  box-shadow: 0 -4px 20px 2px rgba(0, 78, 162, 0.35);
+}
+.dark .stage-curved-arc {
+  border-top: 2.5px solid #38bdf8;
+  box-shadow: 0 -4px 24px 3px rgba(56, 189, 248, 0.45);
 }
 
 /* Tactile Claymorph Seat Styles */
 .clay-seat-available {
-  background: linear-gradient(180deg, #ffffff 0%, #e8e8e5 100%);
-  border: 1px solid #dcdcd8;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.dark .clay-seat-available {
+  background: linear-gradient(180deg, #132746 0%, #0c1a30 100%);
+  border: 1px solid #1e355b;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .clay-seat-available:hover {
-  background: linear-gradient(180deg, #f5f5f3 0%, #deded9 100%);
-  border-color: #6d174f;
-  box-shadow: 0 3px 6px rgba(109, 23, 79, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  border-color: #004ea2;
+  box-shadow: 0 3px 6px rgba(0, 78, 162, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.dark .clay-seat-available:hover {
+  background: linear-gradient(180deg, #1a355f 0%, #102342 100%);
+  border-color: #38bdf8;
+  box-shadow: 0 3px 6px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .clay-seat-selected {
-  background: linear-gradient(180deg, #7c1a5a 0%, #6d174f 100%);
-  border: 1px solid #54103c;
-  box-shadow: 0 4px 10px rgba(109, 23, 79, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, #0056b8 0%, #004ea2 100%);
+  border: 1px solid #003c80;
+  box-shadow: 0 4px 10px rgba(0, 78, 162, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+.dark .clay-seat-selected {
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1px solid #60a5fa;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 .clay-seat-occupied {
-  background: #e2dfda;
-  border: 1px solid #d5d1cb;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
-  opacity: 0.55;
+  opacity: 0.5;
+}
+.dark .clay-seat-occupied {
+  background: #081324;
+  border: 1px solid #0f223f;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  opacity: 0.4;
 }
 .clay-seat-vip {
-  background: linear-gradient(180deg, #fbf7ee 0%, #f4ebd4 100%);
-  border: 1px solid #b58a3a;
-  box-shadow: 0 2px 4px rgba(181, 138, 58, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: linear-gradient(180deg, #fef9ee 0%, #fdf0d5 100%);
+  border: 1px solid #c59223;
+  box-shadow: 0 2px 4px rgba(197, 146, 35, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.dark .clay-seat-vip {
+  background: linear-gradient(180deg, #2a2010 0%, #1c1507 100%);
+  border: 1px solid #f59e0b;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* Boleto troquelado con ranuras laterales */
@@ -85,3 +126,12 @@
   background-size: 51% 100%;
   background-repeat: no-repeat;
 }
+.dark .ticket-collectible {
+  background-image: 
+    radial-gradient(circle at 0px 52%, transparent 11px, #0a1931 11.5px),
+    radial-gradient(circle at 100% 52%, transparent 11px, #0a1931 11.5px);
+  background-position: left center, right center;
+  background-size: 51% 100%;
+  background-repeat: no-repeat;
+}
+

@@ -26,12 +26,12 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
       <motion.nav
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="pointer-events-auto bg-white/95 backdrop-blur-2xl border border-[#e5e1d9] rounded-3xl shadow-xl px-3 py-2 flex items-center gap-1.5"
+        className="pointer-events-auto bg-white/95 dark:bg-[#071324]/95 backdrop-blur-2xl border border-slate-200 dark:border-[#192f52] rounded-3xl shadow-xl px-3 py-2 flex items-center gap-1.5 transition-colors"
       >
         <button
           type="button"
           onClick={() => onTabChange("public")}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-colors text-[#737373] hover:text-[#171717] hover:bg-stone-100"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <Home className="w-3.5 h-3.5" />
           <span>Cartelera</span>
@@ -42,8 +42,10 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             <button
               type="button"
               onClick={() => onTabChange("taquilla")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-medium transition-colors ${
-                activeTab === "taquilla" ? "bg-[#b58a3a] text-white font-bold" : "text-[#737373] hover:text-[#171717]"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
+                activeTab === "taquilla"
+                  ? "bg-amber-500 text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <span>Taquilla</span>
@@ -52,8 +54,10 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             <button
               type="button"
               onClick={() => onTabChange("puerta")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-medium transition-colors ${
-                activeTab === "puerta" ? "bg-teal-700 text-white font-bold" : "text-[#737373] hover:text-[#171717]"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
+                activeTab === "puerta"
+                  ? "bg-teal-600 text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <QrCode className="w-3.5 h-3.5" />
@@ -63,8 +67,10 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             <button
               type="button"
               onClick={() => onTabChange("admin")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-medium transition-colors ${
-                activeTab === "admin" ? "bg-[#6d174f] text-white font-bold" : "text-[#737373] hover:text-[#171717]"
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
+                activeTab === "admin"
+                  ? "bg-[#004ea2] dark:bg-blue-600 text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <Shield className="w-3.5 h-3.5" />
