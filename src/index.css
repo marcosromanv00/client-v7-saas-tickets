@@ -5,21 +5,19 @@
   --font-serif: "Playfair Display", Georgia, serif;
   --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 
-  /* Paleta Dark Luxury Theater & Cinema Plus */
-  --color-theater-midnight: #0a0f1d;
-  --color-theater-card: #111827;
-  --color-theater-surface: #162032;
-  --color-theater-surface-hover: #1f2d47;
-  --color-theater-gold: #e5a93c;
-  --color-theater-gold-glow: #f59e0b;
-  --color-theater-plum: #381e35;
-  --color-theater-border: #1e293b;
-  --color-theater-text-muted: #94a3b8;
+  /* Paleta Cinema Plus & Velvet Theater */
+  --color-theater-night: #0e0a16;
+  --color-theater-card: #171222;
+  --color-theater-surface: #201a2e;
+  --color-theater-wine: #9f1239;
+  --color-theater-crimson: #e11d48;
+  --color-theater-gold: #c59b27;
+  --color-theater-border: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
   body {
-    background-color: #0a0f1d;
+    background-color: #0e0a16;
     color: #f8fafc;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     overflow-x: hidden;
@@ -32,29 +30,53 @@
   height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0f1d;
+  background: #0e0a16;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #251e33;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #392f4e;
 }
 
-/* Resplandor del Proscenio / Pantalla Curva */
-.stage-glow-arc {
-  box-shadow: 0 0 25px 3px rgba(229, 169, 60, 0.45);
+/* Arco de luz del escenario / proscenio curvo */
+.stage-curved-arc {
+  border-top: 2.5px solid rgba(225, 29, 72, 0.7);
+  border-radius: 120px 120px 0 0;
+  box-shadow: 0 -4px 28px 4px rgba(225, 29, 72, 0.4);
 }
 
-.screen-cyan-glow {
-  box-shadow: 0 0 20px 2px rgba(6, 182, 212, 0.4);
+/* Tactile Claymorph Seat & Button effects */
+.clay-seat-available {
+  background: linear-gradient(180deg, #2c253b 0%, #1e1929 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+}
+.clay-seat-available:hover {
+  background: linear-gradient(180deg, #3d3452 0%, #292237 100%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+.clay-seat-selected {
+  background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
+  box-shadow: 0 0 14px rgba(244, 63, 94, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.45);
+}
+.clay-seat-occupied {
+  background: #191421;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  opacity: 0.35;
+}
+.clay-seat-vip {
+  background: linear-gradient(180deg, #4c1d38 0%, #2f1022 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(217, 119, 6, 0.35);
+  border: 1px solid rgba(217, 119, 6, 0.4);
 }
 
-/* Tiquete físico troquelado: notch lateral con clip-path */
-.ticket-notch-left {
-  clip-path: circle(12px at 0% 50%);
-}
-.ticket-notch-right {
-  clip-path: circle(12px at 100% 50%);
+/* Boleto troquelado: notch semicircular en ambos lados */
+.ticket-collectible {
+  background-image: 
+    radial-gradient(circle at 0px 55%, transparent 12px, #161122 12.5px),
+    radial-gradient(circle at 100% 55%, transparent 12px, #161122 12.5px);
+  background-position: left center, right center;
+  background-size: 51% 100%;
+  background-repeat: no-repeat;
 }

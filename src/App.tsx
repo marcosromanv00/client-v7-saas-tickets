@@ -11,7 +11,6 @@ import { CitizenAccountDrawer } from "./features/auth/CitizenAccountDrawer";
 import { TicketPassModal } from "./features/tickets/TicketPassModal";
 import { Ticket } from "./features/tickets/types";
 import { Toaster } from "sonner";
-import { useTheaterStore } from "./features/tickets/useTheaterStore";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("public");
@@ -19,25 +18,21 @@ export function App() {
   const [isCitizenDrawerOpen, setIsCitizenDrawerOpen] = useState(false);
   const [selectedTicketForPass, setSelectedTicketForPass] = useState<Ticket | null>(null);
 
-  const store = useTheaterStore();
-  const totalCapacity = 190;
-  const checkedInCount = store.tickets.filter((t) => t.checkedIn).length;
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#070b16] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#1d1538]/50 via-[#070b16] to-[#070b16] text-slate-100 selection:bg-amber-500 selection:text-slate-950">
-      {/* Encabezado Cívico Consolidado */}
+    <div className="min-h-screen flex flex-col bg-[#0e0a16] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(159,18,57,0.18),rgba(255,255,255,0))] text-slate-100 selection:bg-rose-500 selection:text-white">
+      {/* Encabezado Cívico Minimalista (Orientado a Espectadores) */}
       <CivicHeader
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        checkedInCount={checkedInCount}
-        totalCapacity={totalCapacity}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
         onOpenCitizenDrawer={() => setIsCitizenDrawerOpen(true)}
       />
 
-      {/* Contenido Principal según Capa Activa */}
+      {/* Contenido Principal según Módulo Activo */}
       <main className="flex-1">
-        {activeTab === "public" && <PublicEventView />}
+        {activeTab === "public" && (
+          <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />
+        )}
         {activeTab === "taquilla" && <TaquillaExpressView />}
         {activeTab === "puerta" && <DoorScannerView />}
         {activeTab === "admin" && (
@@ -64,18 +59,17 @@ export function App() {
         />
       )}
 
-      {/* Barra de Navegación Inferior Flotante (Estilo App Móvil) */}
+      {/* Barra de Navegación Inferior Flotante (Solo para Operadores de Personal) */}
       <BottomNavBar
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        ticketCount={store.tickets.length}
       />
 
-      {/* Notificaciones Toasts de Alta Gama */}
+      {/* Notificaciones Toasts */}
       <Toaster position="top-center" richColors theme="dark" closeButton />
 
       {/* Pie de Página Tradicional Cívico de 4 Columnas */}
-      <CivicFooter />
+      <CivicFooter onSelectAdminTab={(tab) => setActiveTab(tab)} />
     </div>
   );
 }
