@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Seat } from "../tickets/types";
 import { ClaySeat } from "./ClaySeat";
-import { groupSeatsByRow } from "../tickets/theater-layout";
+import { groupSeatsByRow, PLATEA_BAJA_ROWS, NIVEL_MEDIO_ROWS, BALCON_ALTO_ROWS } from "../tickets/theater-layout";
 
 interface TheaterSeatMapProps {
   seats: Seat[];
@@ -11,61 +11,53 @@ interface TheaterSeatMapProps {
   allowVipSelection?: boolean;
 }
 
+type ActiveLevel = "TODOS" | "PLATEA_BAJA" | "NIVEL_MEDIO" | "BALCON_ALTO";
+
 export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
   seats,
   selectedSeatIds,
   onToggleSeat,
   allowVipSelection = false,
 }) => {
+  const [activeZone, setActiveZone] = useState<ActiveLevel>("TODOS");
   const seatsByRow = groupSeatsByRow(seats);
 
-  const plantaBajaRows = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
-  const plantaAltaRows = ["K", "L", "M", "N", "O"];
+  const pbCount = seats.filter((s) => s.zone === "PLATEA_BAJA" || PLATEA_BAJA_ROWS.includes(s.row as any)).length;
+  const nmCount = seats.filter((s) => s.zone === "NIVEL_MEDIO" || NIVEL_MEDIO_ROWS.includes(s.row as any)).length;
+  const balconCount = seats.filter((s) => s.zone === "BALCON_ALTO" || s.zone === "BALCON").length;
 
-  const renderRowBlock = (rows: string[], splitIndex: number) => (
-    <div className="flex flex-col items-center gap-1.5 sm:gap-2">
+  const renderRowBlock = (rows: readonly string[], isSingleBlock = false) => (
+    <div className="flex flex-col items-center gap-1 sm:gap-1.5">
       {rows.map((rowLetter) => {
         const rowSeats = seatsByRow[rowLetter] || [];
         const isVip = rowLetter === "A" || rowLetter === "K";
-        const leftBlock = rowSeats.slice(0, splitIndex);
-        const rightBlock = rowSeats.slice(splitIndex);
+        const splitIndex = Math.ceil(rowSeats.length / 2);
+        const leftBlock = isSingleBlock ? rowSeats : rowSeats.slice(0, splitIndex);
+        const rightBlock = isSingleBlock ? [] : rowSeats.slice(splitIndex);
 
         return (
-          <div key={rowLetter} className="flex items-center justify-center gap-1.5 sm:gap-2">
-            <span className={`w-4 text-right font-mono text-[10px] ${isVip ? "text-[#b58a3a] font-bold" : "text-[#737373]"}`}>
+          <div key={rowLetter} className="flex items-center justify-center gap-1 sm:gap-1.5">
+            <span className={`w-3.5 text-right font-mono text-[9px] sm:text-[10px] ${isVip ? "text-[#c59223] dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
               {rowLetter}
             </span>
-
-            <div className="flex items-center gap-1 sm:gap-1.5">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               {leftBlock.map((seat) => (
-                <ClaySeat
-                  key={seat.id}
-                  seat={seat}
-                  isSelected={selectedSeatIds.includes(seat.id)}
-                  onSelect={onToggleSeat}
-                  disabled={seat.isVip && !allowVipSelection}
-                />
+                <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} />
               ))}
             </div>
-
-            {/* Pasillo central teatral (espacio negativo arquitectónico) */}
-            <div className="w-2.5 sm:w-4 h-6 flex items-center justify-center">
-              <span className="w-px h-full bg-[#e5e1d9]" />
-            </div>
-
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              {rightBlock.map((seat) => (
-                <ClaySeat
-                  key={seat.id}
-                  seat={seat}
-                  isSelected={selectedSeatIds.includes(seat.id)}
-                  onSelect={onToggleSeat}
-                  disabled={seat.isVip && !allowVipSelection}
-                />
-              ))}
-            </div>
-
-            <span className={`w-4 text-left font-mono text-[10px] ${isVip ? "text-[#b58a3a] font-bold" : "text-[#737373]"}`}>
+            {!isSingleBlock && (
+              <>
+                <div className="w-2 sm:w-3.5 h-6 flex items-center justify-center">
+                  <span className="w-px h-full bg-slate-200 dark:bg-slate-700/60" />
+                </div>
+                <div className="flex items-center gap-0.5 sm:gap-1">
+                  {rightBlock.map((seat) => (
+                    <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} />
+                  ))}
+                </div>
+              </>
+            )}
+            <span className={`w-3.5 text-left font-mono text-[9px] sm:text-[10px] ${isVip ? "text-[#c59223] dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
               {rowLetter}
             </span>
           </div>
@@ -75,65 +67,109 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
   );
 
   return (
-    <div className="bg-white rounded-3xl border border-[#e5e1d9] p-4 sm:p-6 shadow-sm relative select-none">
-      {/* 1. ESCENARIO CURVO CON ARCO DE NEÓN Y RESPLANDOR */}
-      <div className="relative max-w-sm sm:max-w-md mx-auto mb-6 text-center">
-        <div className="relative w-full h-8 flex items-center justify-center">
-          <svg className="w-full h-12 overflow-visible" viewBox="0 0 320 40" fill="none">
-            <motion.path
-              d="M 10 35 Q 160 -5 310 35"
-              stroke="#6d174f"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              animate={{ opacity: [0.85, 1, 0.85] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-              className="drop-shadow-[0_0_8px_rgba(109,23,79,0.3)]"
-            />
+    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-[#1e355b] p-3 sm:p-5 shadow-sm relative select-none transition-colors">
+      {/* 1. ESCENARIO COMPACTO CON ARCO DE NEÓN */}
+      <div className="relative max-w-sm mx-auto mb-2 text-center">
+        <div className="relative w-full h-6 flex items-center justify-center">
+          <svg className="w-full h-8 overflow-visible" viewBox="0 0 320 28" fill="none">
+            <motion.path d="M 12 24 Q 160 -2 308 24" stroke="#004ea2" strokeWidth="3" strokeLinecap="round" className="drop-shadow-[0_0_6px_rgba(0,78,162,0.4)] dark:stroke-[#38bdf8]" />
           </svg>
         </div>
-        <div className="w-48 h-6 bg-[#6d174f]/5 rounded-full blur-xl mx-auto -mt-4 pointer-events-none" />
-        <span className="text-[10px] font-mono tracking-widest uppercase text-[#6d174f] font-semibold block">
-          ESCENARIO PRINCIPAL • SALA CÍVICA
+        <span className="text-[9px] font-mono tracking-widest uppercase text-[#004ea2] dark:text-blue-400 font-bold block -mt-1">
+          ESCENARIO • TEATRO MUNICIPAL DE ALAJUELA
         </span>
       </div>
 
-      {/* 2. PLANTA BAJA (120 BUTACAS • FILAS A - J) */}
-      <div className="overflow-x-auto pb-4">
+      {/* 2. SELECTOR DE NIVELES (3 NIVELES ARQUITECTÓNICOS + TODOS) */}
+      <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-3 flex-wrap">
+        {[
+          { id: "TODOS" as ActiveLevel, label: "Todos", count: pbCount + nmCount + balconCount },
+          { id: "PLATEA_BAJA" as ActiveLevel, label: "Nivel 1: Platea", count: pbCount },
+          { id: "NIVEL_MEDIO" as ActiveLevel, label: "Nivel 2: Medio", count: nmCount },
+          { id: "BALCON_ALTO" as ActiveLevel, label: "Nivel 3: Balcón", count: balconCount },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveZone(tab.id)}
+            className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+              activeZone === tab.id
+                ? "bg-[#004ea2] text-white shadow-xs"
+                : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#102444] border border-slate-200 dark:border-[#1e355b]"
+            }`}
+          >
+            <span>{tab.label}</span>
+            <span className="px-1.5 py-0.2 rounded-md bg-white/20 text-[10px] font-mono font-bold">{tab.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* 3. MATRIZ DE BUTACAS POR NIVEL Y PASARELA DE ACCESO */}
+      <div className="overflow-x-auto pb-2">
         <div className="min-w-fit flex flex-col items-center">
-          <div className="mb-2 px-3 py-0.5 rounded-full bg-[#f7f5f1] border border-[#e5e1d9] text-[10px] font-mono text-[#737373] uppercase tracking-wider">
-            Planta Baja • Platea Central (120 Asientos)
-          </div>
-          {renderRowBlock(plantaBajaRows, 6)}
+          {/* NIVEL 1: PLATEA BAJA */}
+          {(activeZone === "TODOS" || activeZone === "PLATEA_BAJA") && (
+            <div className="w-full flex flex-col items-center mb-2">
+              <span className="text-[9px] font-mono uppercase text-slate-400 mb-1">Nivel 1: Platea Baja (62 butacas)</span>
+              {renderRowBlock(PLATEA_BAJA_ROWS, false)}
+            </div>
+          )}
+
+          {/* PASARELA / DESCANSO PRINCIPAL Y ACCESO POR LA IZQUIERDA DESDE LOBBY */}
+          {(activeZone === "TODOS" || activeZone === "PLATEA_BAJA" || activeZone === "NIVEL_MEDIO") && (
+            <div className="w-full max-w-lg my-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#071324] border border-dashed border-[#004ea2]/30 dark:border-blue-500/30 flex items-center justify-between gap-2 text-[10px] font-mono select-none">
+              <div className="flex items-center gap-1.5 text-[#c8102e] dark:text-red-400 font-bold">
+                <span className="px-1.5 py-0.5 rounded-md bg-red-100 dark:bg-red-950/60 border border-red-200 dark:border-red-900/40">
+                  🚪 Acceso Lobby (Izquierda)
+                </span>
+                <span className="text-slate-400 hidden sm:inline">➔ Pasillo al teatro</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                <span className="hidden sm:inline">Descanso Central</span>
+                <span className="px-1.5 py-0.5 rounded-md bg-[#004ea2]/10 dark:bg-blue-900/30 text-[#004ea2] dark:text-blue-300 font-bold">
+                  Gradas a Nivel Medio ⇡
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* NIVEL 2: NIVEL MEDIO */}
+          {(activeZone === "TODOS" || activeZone === "NIVEL_MEDIO") && (
+            <div className="w-full flex flex-col items-center mb-3">
+              <span className="text-[9px] font-mono uppercase text-slate-400 mb-1">Nivel 2: Nivel Medio (96 butacas)</span>
+              {renderRowBlock(NIVEL_MEDIO_ROWS, false)}
+            </div>
+          )}
+
+          {/* NIVEL 3: BALCÓN SUPERIOR */}
+          {(activeZone === "TODOS" || activeZone === "BALCON_ALTO") && (
+            <div className={`w-full flex flex-col items-center ${activeZone === "TODOS" ? "pt-2 border-t border-slate-200 dark:border-[#1e355b]" : ""}`}>
+              <div className="mb-1.5 px-2.5 py-0.5 rounded-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] text-[9px] font-mono text-slate-500 uppercase tracking-wider">
+                Nivel 3: Balcón Superior (62 butacas)
+              </div>
+              {renderRowBlock(BALCON_ALTO_ROWS, true)}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 3. PLANTA ALTA / BALCÓN (70 BUTACAS • FILAS K - O) */}
-      <div className="mt-4 pt-4 border-t border-[#e5e1d9] overflow-x-auto pb-2">
-        <div className="min-w-fit flex flex-col items-center">
-          <div className="mb-2 px-3 py-0.5 rounded-full bg-[#f7f5f1] border border-[#e5e1d9] text-[10px] font-mono text-[#737373] uppercase tracking-wider">
-            Planta Alta • Balcón Histórico (70 Asientos)
-          </div>
-          {renderRowBlock(plantaAltaRows, 7)}
+      {/* 4. LEYENDA VISUAL COMPACTA */}
+      <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-[#1e355b] flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs text-slate-700 dark:text-slate-200">
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-xs clay-seat-available" />
+          <span className="text-[10px] text-slate-500 dark:text-slate-400">Disponible</span>
         </div>
-      </div>
-
-      {/* 4. LEYENDA VISUAL DE ESTADOS DE BUTACAS */}
-      <div className="mt-5 pt-4 border-t border-[#e5e1d9] flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-[#171717]">
-        <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 rounded-sm clay-seat-available" />
-          <span className="text-[11px] text-[#737373]">Disponible</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-xs clay-seat-selected" />
+          <span className="text-[10px] font-semibold text-[#004ea2] dark:text-blue-400">Seleccionada</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 rounded-sm clay-seat-selected" />
-          <span className="text-[11px] font-medium text-[#6d174f]">Seleccionada</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-xs clay-seat-occupied" />
+          <span className="text-[10px] text-slate-400 dark:text-slate-500">Ocupada</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 rounded-sm clay-seat-occupied" />
-          <span className="text-[11px] text-[#737373]">Ocupada</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 rounded-sm clay-seat-vip" />
-          <span className="text-[11px] text-[#855e14] font-medium">Protocolo VIP</span>
+        <div className="flex items-center gap-1.5">
+          <div className="w-3 h-3 rounded-xs clay-seat-vip" />
+          <span className="text-[10px] text-[#c59223] dark:text-amber-400 font-semibold">Protocolo VIP</span>
         </div>
       </div>
     </div>

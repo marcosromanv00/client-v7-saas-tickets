@@ -1,16 +1,30 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-[#070b16] antialiased">
+<html lang="es" class="h-full antialiased">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teatro Municipal | Sistema Cívico de Tiquetería y Gestión de Aforo</title>
-    <meta name="description" content="Plataforma oficial del Teatro Municipal para reserva de butacas, emisión de tiquetes QR y control de aforo cívico en tiempo real." />
+    <title>Teatro Municipal de Alajuela | Municipalidad de Alajuela</title>
+    <meta name="description" content="Plataforma oficial del Teatro Municipal y la Municipalidad de Alajuela para reserva de butacas, emisión de tiquetes QR y control de aforo cívico." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('tm_civic_theme');
+          if (t === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.add('light');
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
   </head>
-  <body class="h-full font-sans bg-[#070b16] text-slate-100 selection:bg-amber-500 selection:text-slate-950">
+  <body class="h-full font-sans bg-slate-50 dark:bg-[#040b17] text-slate-900 dark:text-slate-100 selection:bg-[#004ea2] selection:text-white dark:selection:bg-blue-600 transition-colors duration-200">
     <div id="root" class="min-h-full flex flex-col"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -72,16 +72,16 @@ export function ReservationSummary({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[#11192b]/95 backdrop-blur-md rounded-3xl border border-slate-800 p-6 shadow-2xl space-y-5 text-left"
+      className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-[#1e355b] p-6 shadow-sm space-y-5 text-left transition-colors"
     >
       {/* Resumen de Butaca Seleccionada */}
-      <div className="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+      <div className="bg-slate-50 dark:bg-[#071324] p-3.5 rounded-2xl border border-slate-200 dark:border-[#1a3357] space-y-2">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-400 flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-mono text-slate-300">{selectedDate} • {selectedTime} hrs</span>
+          <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-[#004ea2] dark:text-blue-400" />
+            <span className="font-mono text-slate-700 dark:text-slate-300">{selectedDate} • {selectedTime} hrs</span>
           </span>
-          <span className={`font-mono font-bold text-sm ${selectedSeat ? "text-cyan-400" : "text-amber-400"}`}>
+          <span className="font-mono font-bold text-sm text-[#004ea2] dark:text-blue-400">
             {isNumbered
               ? selectedSeat
                 ? selectedSeat.label
@@ -93,22 +93,22 @@ export function ReservationSummary({
         </div>
 
         {isNumbered && selectedSeat && (
-          <div className="flex items-center gap-2 text-xs text-cyan-200 bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-500/30">
-            <Armchair className="w-4 h-4 text-cyan-400 shrink-0" />
+          <div className="flex items-center gap-2 text-xs text-[#004ea2] dark:text-blue-300 bg-[#ebf3fc] dark:bg-[#004ea2]/15 p-2.5 rounded-xl border border-[#004ea2]/25 dark:border-blue-500/30">
+            <Armchair className="w-4 h-4 text-[#004ea2] dark:text-blue-400 shrink-0" />
             <span>Butaca apartada. Complete sus datos para emitir su boleto.</span>
           </div>
         )}
 
-        <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
-          <span className="text-slate-400">Entrada Oficial:</span>
-          <span className="font-mono text-emerald-400 font-semibold flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5" /> Gratuita (Acceso Cívico)
+        <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-200 dark:border-[#1a3357]">
+          <span className="text-slate-500 dark:text-slate-400">Entrada Oficial:</span>
+          <span className="font-mono text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+            <Sparkles className="w-3.5 h-3.5" /> Gratuita (Acceso Cívico Municipal)
           </span>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-start gap-2 p-3 bg-rose-500/10 text-rose-300 text-xs rounded-xl border border-rose-500/30">
+        <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs rounded-xl border border-red-200 dark:border-red-900/50">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>
@@ -116,37 +116,37 @@ export function ReservationSummary({
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="block text-[11px] font-mono text-slate-300 mb-1">Nombre Completo del Asistente</label>
+          <label className="block text-[11px] font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Nombre Completo del Asistente</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Ej: Carmen Mora Rojas"
-            className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
             required
           />
         </div>
 
         <div>
-          <label className="block text-[11px] font-mono text-slate-300 mb-1">Cédula o Documento de Identidad</label>
+          <label className="block text-[11px] font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Cédula o Documento de Identidad</label>
           <input
             type="text"
             value={idNumber}
             onChange={(e) => setIdNumber(e.target.value)}
             placeholder="Ej: 1-1120-0456"
-            className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
             required
           />
         </div>
 
         <div>
-          <label className="block text-[11px] font-mono text-slate-300 mb-1">Teléfono / WhatsApp (Opcional)</label>
+          <label className="block text-[11px] font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Teléfono / WhatsApp (Opcional)</label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="Ej: 8844-1234"
-            className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-[#004ea2] dark:focus:border-blue-500 transition-colors"
           />
         </div>
 
@@ -154,7 +154,7 @@ export function ReservationSummary({
           whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={!canSubmit || isSubmitting}
-          className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 disabled:from-slate-800 disabled:to-slate-800 text-slate-950 font-bold rounded-2xl text-xs transition-all shadow-lg shadow-amber-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+          className="w-full py-3.5 bg-[#c8102e] hover:bg-[#a60c25] disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white font-semibold rounded-2xl text-xs transition-all shadow-md shadow-red-900/20 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed"
         >
           <CheckCircle2 className="w-4 h-4" />
           <span>{isSubmitting ? "Emitiendo Tiquete..." : "Confirmar Reserva y Obtener Pase"}</span>

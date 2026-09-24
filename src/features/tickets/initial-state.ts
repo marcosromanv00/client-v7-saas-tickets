@@ -3,7 +3,7 @@ import { INITIAL_EVENTS, INITIAL_SPECIAL_GUESTS, INITIAL_TICKETS } from "./mock-
 import { generateInitialSeats } from "./theater-layout";
 import { Seat } from "./types";
 
-export const STORAGE_KEY = "tm_theater_state_v2_luxury";
+export const STORAGE_KEY = "tm_theater_state_v3_agenda";
 
 export function loadInitialState(): TheaterState {
   if (typeof localStorage !== "undefined") {
@@ -11,8 +11,13 @@ export function loadInitialState(): TheaterState {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        // Garantizar que los pósteres apunten siempre a los archivos locales
         parsed.events = INITIAL_EVENTS;
+        if (!parsed.seatsByEvent) parsed.seatsByEvent = {};
+        for (const evt of INITIAL_EVENTS) {
+          if (!parsed.seatsByEvent[evt.id]) {
+            parsed.seatsByEvent[evt.id] = generateInitialSeats(evt.vipRowsPlantaBaja, evt.vipRowsBalcon);
+          }
+        }
         return parsed;
       }
     } catch (err) {

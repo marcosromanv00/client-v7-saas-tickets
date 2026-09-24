@@ -10,16 +10,18 @@ import { LoginModal } from "./features/auth/LoginModal";
 import { CitizenAccountDrawer } from "./features/auth/CitizenAccountDrawer";
 import { TicketPassModal } from "./features/tickets/TicketPassModal";
 import { Ticket } from "./features/tickets/types";
+import { useTheme } from "./features/theme/theme-store";
 import { Toaster } from "sonner";
 
 export function App() {
+  const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<ActiveTab>("public");
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCitizenDrawerOpen, setIsCitizenDrawerOpen] = useState(false);
   const [selectedTicketForPass, setSelectedTicketForPass] = useState<Ticket | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f7f5f1] text-[#171717] selection:bg-[#6d174f] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#040b17] text-slate-900 dark:text-slate-100 selection:bg-[#004ea2] selection:text-white dark:selection:bg-blue-600 transition-colors duration-200">
       {/* Encabezado Cívico Minimalista (Orientado a Espectadores) */}
       <CivicHeader
         activeTab={activeTab}
@@ -66,10 +68,12 @@ export function App() {
       />
 
       {/* Notificaciones Toasts */}
-      <Toaster position="top-center" richColors theme="light" closeButton />
+      <Toaster position="top-center" richColors theme={theme} closeButton />
 
-      {/* Pie de Página Tradicional Cívico de 4 Columnas */}
-      <CivicFooter onSelectAdminTab={(tab) => setActiveTab(tab)} />
+      {/* Pie de Página Administrativo (Oculto en Wizard Público para experiencia nativa de app) */}
+      {activeTab !== "public" && (
+        <CivicFooter onSelectAdminTab={(tab) => setActiveTab(tab)} />
+      )}
     </div>
   );
 }
