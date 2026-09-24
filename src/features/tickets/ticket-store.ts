@@ -3,7 +3,7 @@ import { TheaterState } from "./ticket-store-types";
 import { loadInitialState, STORAGE_KEY } from "./initial-state";
 import { logAuditEvent } from "../auth/audit-logger";
 import { releaseUnclaimedTicketsForState } from "./ticket-release-utils";
-import { findTicketByAnyCode, evaluateTicketForCheckIn } from "./ticket-verification-utils";
+import { findTicketByAnyCode, executeCheckInTicket, executeUndoCheckInTicket } from "./ticket-verification-utils";
 import { executeBooking, BookTicketPayload } from "./ticket-booking-handler";
 import { executeBatchBooking, BatchBookGroupPayload } from "./batch-booking-handler";
 import { theaterSync } from "./sync-channel";
@@ -105,33 +105,34 @@ export const theaterStore = {
   },
 
   checkInTicket: (ticketId: string): { success: boolean; error?: string; ticket?: Ticket; status?: string } => {
-    const ticket = state.tickets.find((t) => t.id === ticketId);
-    const evaluation = evaluateTicketForCheckIn(ticket || null);
-
-    if (evaluation.status !== "VALID" || !ticket) {
-      return { success: false, error: evaluation.message, ticket: ticket || undefined, status: evaluation.status };
+    const res = executeCheckInTicket(state, ticketId);
+    if (res.success && res.updatedState) {
+      state = res.updatedState;
+      notify("TICKET_CHECKED_IN");
     }
+    return { success: res.success, error: res.error, ticket: res.ticket, status: res.status };
+  },
 
-    const updated: Ticket = {
-      ...ticket,
-      checkedIn: true,
-      checkedInAt: new Date().toISOString(),
-      status: "CHECKED_IN",
-    };
-
-    const seats = state.seatsByEvent[ticket.eventId] || [];
-    if (ticket.seatId) {
-      const s = seats.find((seat) => seat.id === ticket.seatId);
-      if (s) s.status = "OCCUPIED";
+  undoCheckInTicket: (ticketId: string): { success: boolean; ticket?: Ticket } => {
+    const res = executeUndoCheckInTicket(state, ticketId);
+    if (res.success && res.updatedState) {
+      state = res.updatedState;
+      notify("TICKET_CHECKED_IN");
     }
+    return { success: res.success, ticket: res.ticket };
+  },
 
+  redeemSpecialGuest: (guestId: string, count: number = 1): { success: boolean; guest?: SpecialGuestEntry } => {
+    const guest = state.specialGuests.find((g) => g.id === guestId);
+    if (!guest) return { success: false };
+    const updatedCount = Math.min(guest.ticketsCount, guest.redeemedCount + count);
+    const updated: SpecialGuestEntry = { ...guest, redeemedCount: updatedCount };
     state = {
       ...state,
-      tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)),
-      seatsByEvent: { ...state.seatsByEvent, [ticket.eventId]: [...seats] },
+      specialGuests: state.specialGuests.map((g) => (g.id === guestId ? updated : g)),
     };
     notify("TICKET_CHECKED_IN");
-    return { success: true, ticket: updated, status: "VALID" };
+    return { success: true, guest: updated };
   },
 
   batchBookGroup: (payload: BatchBookGroupPayload) => {

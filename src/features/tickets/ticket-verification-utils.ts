@@ -1,4 +1,5 @@
 import { Ticket } from "./types";
+import { TheaterState } from "./ticket-store-types";
 
 export type VerificationStatus =
   | "VALID"
@@ -10,6 +11,20 @@ export interface VerificationCheckResult {
   status: VerificationStatus;
   ticket: Ticket | null;
   message?: string;
+}
+
+export interface CheckInExecutionResult {
+  success: boolean;
+  error?: string;
+  ticket?: Ticket;
+  status?: string;
+  updatedState?: TheaterState;
+}
+
+export interface UndoCheckInExecutionResult {
+  success: boolean;
+  ticket?: Ticket;
+  updatedState?: TheaterState;
 }
 
 export function findTicketByAnyCode(tickets: Ticket[], rawCode: string): Ticket | null {
@@ -60,4 +75,56 @@ export function evaluateTicketForCheckIn(ticket: Ticket | null): VerificationChe
     status: "VALID",
     ticket,
   };
+}
+
+export function executeCheckInTicket(state: TheaterState, ticketId: string): CheckInExecutionResult {
+  const ticket = state.tickets.find((t) => t.id === ticketId);
+  const evaluation = evaluateTicketForCheckIn(ticket || null);
+
+  if (evaluation.status !== "VALID" || !ticket) {
+    return { success: false, error: evaluation.message, ticket: ticket || undefined, status: evaluation.status };
+  }
+
+  const updated: Ticket = {
+    ...ticket,
+    checkedIn: true,
+    checkedInAt: new Date().toISOString(),
+    status: "CHECKED_IN",
+  };
+
+  const seats = state.seatsByEvent[ticket.eventId] || [];
+  const updatedSeats = seats.map((s) => (s.id === ticket.seatId ? { ...s, status: "OCCUPIED" as const } : s));
+
+  const updatedState: TheaterState = {
+    ...state,
+    tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)),
+    seatsByEvent: { ...state.seatsByEvent, [ticket.eventId]: updatedSeats },
+  };
+
+  return { success: true, ticket: updated, status: "VALID", updatedState };
+}
+
+export function executeUndoCheckInTicket(state: TheaterState, ticketId: string): UndoCheckInExecutionResult {
+  const ticket = state.tickets.find((t) => t.id === ticketId);
+  if (!ticket || !ticket.checkedIn) {
+    return { success: false };
+  }
+
+  const updated: Ticket = {
+    ...ticket,
+    checkedIn: false,
+    checkedInAt: null,
+    status: "ACTIVE",
+  };
+
+  const seats = state.seatsByEvent[ticket.eventId] || [];
+  const updatedSeats = seats.map((s) => (s.id === ticket.seatId && s.status === "OCCUPIED" ? { ...s, status: "RESERVED" as const } : s));
+
+  const updatedState: TheaterState = {
+    ...state,
+    tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)),
+    seatsByEvent: { ...state.seatsByEvent, [ticket.eventId]: updatedSeats },
+  };
+
+  return { success: true, ticket: updated, updatedState };
 }

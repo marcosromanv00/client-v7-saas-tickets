@@ -98,3 +98,23 @@ A falta de una hora para el inicio de la función, se activa el protocolo presen
 ### Regla de Corte Web de 20 Minutos
 - A falta de 20 minutos para el inicio, la boletería web pública se bloquea automáticamente para evitar colisiones con las personas presentes en el teatro. Los usuarios web son informados mediante un aviso cívico formal orientándolos a taquilla física.
 
+---
+
+## 7. Padrón Dinámico de Acreditación y Verificación de Entradas (Puerta)
+
+Diseñado para la Gran Reapertura Oficial y funciones con reservaciones por lista o contingentes protocolares sin QR digital en mano.
+
+### Modos de Operación en Puerta
+En la parte superior del módulo **Puerta**, un conmutador segmentado permite alternar entre:
+1. **`[📋 Padrón de Acreditación (Nombre / Cédula / Puesto)]`**: Modo activo predeterminado.
+2. **`[📷 Escáner QR]`**: Lector de cámara óptica o digitación de código corto de 4 caracteres.
+
+### Funcionalidades Clave del Padrón:
+1. **Barra de Métricas Comprimida**: Panel superior sobrio y sin saturación con Convocados Totales, En Sala (con % de avance en vivo), Por Ingresar y Protocolo Acreditado.
+2. **Búsqueda Reactiva Multi-Criterio**: Digite el Nombre, Cédula (con o sin guiones) o Butaca (ej. `A-08`). El filtrado es instantáneo. Presione `/` para enfocar o `Esc` para limpiar.
+3. **Filtros Segmentados & Orden Inteligente**: Filtre por estado (*Todos*, *Pendientes*, *En Sala*, *Liberados*) o zona. El orden inteligente sitúa a los pendientes de ingresar al inicio alfabéticamente para agilizar la fila.
+4. **Acreditación en 1 Clic & Deshacer**: Al pulsar *"Ingresar"*, el asistente queda acreditado inmediatamente y se muestra una notificación toast con botón *"Deshacer"* de 5 segundos en caso de error.
+5. **Orientación de Butaca Inmediata**: Cada fila indica la puerta recomendada (*"Puerta Derecha • Fila A"*, *"Gradas Superiores (Balcón)"*) para orientar verbalmente al espectador.
+6. **Registro Rápido In-situ**: El botón *"+ Registrar In-situ"* permite inscribir y acreditar inmediatamente a un invitado de última hora sin salir del módulo.
+
+

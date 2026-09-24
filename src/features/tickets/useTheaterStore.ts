@@ -11,6 +11,8 @@ export interface TheaterStoreHook extends TheaterState {
   bookTicket: typeof theaterStore.bookTicket;
   batchBookGroup: typeof theaterStore.batchBookGroup;
   checkInTicket: typeof theaterStore.checkInTicket;
+  undoCheckInTicket: typeof theaterStore.undoCheckInTicket;
+  redeemSpecialGuest: typeof theaterStore.redeemSpecialGuest;
   toggleTicketSeated: typeof theaterStore.toggleTicketSeated;
   checkInByCode: typeof theaterStore.checkInByCode;
   checkInByQr: typeof theaterStore.checkInByQr;
@@ -36,6 +38,8 @@ export function useTheaterStore(): TheaterStoreHook {
     bookTicket: theaterStore.bookTicket,
     batchBookGroup: theaterStore.batchBookGroup,
     checkInTicket: theaterStore.checkInTicket,
+    undoCheckInTicket: theaterStore.undoCheckInTicket,
+    redeemSpecialGuest: theaterStore.redeemSpecialGuest,
     toggleTicketSeated: theaterStore.toggleTicketSeated,
     checkInByCode: theaterStore.checkInByCode,
     checkInByQr: theaterStore.checkInByQr,
