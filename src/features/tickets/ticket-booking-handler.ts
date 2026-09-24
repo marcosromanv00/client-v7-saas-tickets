@@ -84,6 +84,8 @@ export function executeBooking(
     isVipGuest: !!payload.isVipGuest,
     checkedIn: false,
     checkedInAt: null,
+    isSeated: false,
+    seatedAt: null,
     status: "ACTIVE",
     releasedAt: null,
     createdAt: new Date().toISOString(),

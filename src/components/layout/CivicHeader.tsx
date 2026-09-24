@@ -4,7 +4,7 @@ import { useAuthStore } from "../../features/auth/useAuthStore";
 import { useTheaterStore } from "../../features/tickets/useTheaterStore";
 import { ThemeToggle } from "./ThemeToggle";
 
-export type ActiveTab = "public" | "taquilla" | "puerta" | "admin";
+export type ActiveTab = "public" | "taquilla" | "puerta" | "sala" | "admin";
 
 interface CivicHeaderProps {
   activeTab: ActiveTab;
@@ -38,21 +38,13 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* MARCA E IDENTIDAD INSTITUCIONAL: TEATRO MUNICIPAL DE ALAJUELA */}
-          <div
-            onClick={() => onTabChange("public")}
-            className="flex items-center gap-2.5 cursor-pointer group select-none"
-            title="Ir a inicio de cartelera"
-          >
+          <div onClick={() => onTabChange("public")} className="flex items-center gap-2.5 cursor-pointer group select-none" title="Ir a inicio de cartelera">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-teatro-blue-light dark:bg-teatro-blue/20 border border-teatro-blue/30 dark:border-blue-500/30 flex items-center justify-center text-teatro-blue dark:text-blue-400 shadow-xs group-hover:scale-105 group-hover:bg-teatro-blue group-hover:text-white dark:group-hover:bg-blue-600 transition-all">
               <TicketIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-teatro-blue dark:group-hover:text-blue-400 transition-colors block leading-tight">
-                Teatro Municipal de Alajuela
-              </span>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 tracking-normal hidden sm:block leading-none mt-0.5">
-                Municipalidad de Alajuela • Tiquetería Oficial
-              </p>
+              <span className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-teatro-blue dark:group-hover:text-blue-400 transition-colors block leading-tight">Teatro Municipal de Alajuela</span>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 tracking-normal hidden sm:block leading-none mt-0.5">Municipalidad de Alajuela • Tiquetería Oficial</p>
             </div>
           </div>
 
@@ -106,6 +98,16 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
                   }`}
                 >
                   Puerta
+                </button>
+                <button
+                  onClick={() => onTabChange("sala")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    activeTab === "sala"
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  Acomodadores
                 </button>
                 <button
                   onClick={() => onTabChange("admin")}
@@ -176,10 +178,13 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
           )}
           {hasStaffRole && (
             <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-[10px] font-mono uppercase text-slate-400 px-3">Módulos Administrativos</span>
-              <button onClick={() => { onTabChange("taquilla"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-amber-600 dark:text-amber-400">Taquilla Express</button>
-              <button onClick={() => { onTabChange("puerta"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-teal-600 dark:text-teal-400">Lector en Puerta</button>
-              <button onClick={() => { onTabChange("admin"); setMobileMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-xs text-teatro-blue dark:text-blue-400">Aforo & Admins</button>
+              <span className="text-[10px] font-mono uppercase text-slate-400 px-3">Módulos de Personal</span>
+              <div className="grid grid-cols-2 gap-1 px-1">
+                <button onClick={() => { onTabChange("taquilla"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-600 dark:text-amber-400 hover:bg-slate-100">Taquilla</button>
+                <button onClick={() => { onTabChange("puerta"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-teal-600 dark:text-teal-400 hover:bg-slate-100">Puerta</button>
+                <button onClick={() => { onTabChange("sala"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-slate-100">Acomodadores</button>
+                <button onClick={() => { onTabChange("admin"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-teatro-blue dark:text-blue-400 hover:bg-slate-100">Aforo</button>
+              </div>
             </div>
           )}
         </div>

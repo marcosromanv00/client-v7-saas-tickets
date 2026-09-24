@@ -143,7 +143,7 @@ export function TicketPassCard({ ticket, event }: TicketPassCardProps) {
                 <span className="text-[9px] uppercase font-mono tracking-wider text-slate-400 block mb-0.5">
                   Código Rápido de Puerta
                 </span>
-                <span className="inline-block px-3 py-0.5 rounded-lg bg-slate-900 text-white font-mono text-sm font-black tracking-widest">
+                <span className="inline-block px-3 py-0.5 rounded-lg bg-slate-900 text-white font-mono text-sm font-bold tracking-widest">
                   {ticket.shortCode}
                 </span>
               </div>

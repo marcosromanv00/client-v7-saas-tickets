@@ -72,6 +72,29 @@ Cuando el equipo de producción o dirección abre el sistema desde su computador
 ![Consola Productora y Aforo](./assets/05-productora-admin-console.png)
 
 ### Control Integral de Sala:
-1. **Monitor de Aforo Dinámico**: Visualización en vivo de aforo total (190), cupos pre-reservados, asistentes en sala y entradas walk-in remanentes.
+1. **Monitor de Aforo Dinámico**: Visualización en vivo de aforo total (220), cupos pre-reservados, asistentes en sala y entradas walk-in remanentes.
 2. **Invitados Especiales y Protocolo**: Gestión de delegaciones (Alcaldía, Concejo, etc.) y emisión de pases VIP para filas A y K.
 3. **Parámetros de Evento**: Conmutación entre modo de *Butacas Numeradas* y *Aforo General por Orden de Llegada*, habilitación/pausa de registros.
+
+---
+
+## 6. Operación Presencial a 1 Hora: Mesas de Atención y Acomodadores
+
+A falta de una hora para el inicio de la función, se activa el protocolo presencial con dos mesas en el vestíbulo y personal de acomodadores en sala:
+
+### Mesa 1: Registro Presencial & Walk-in
+- **Asistente Inteligente de Grupos**: Al presionar *"Sugerir Grupo"*, el operador ingresa la cantidad de asistentes (1 a 6+), nombre y cédula del titular. El algoritmo sugiere la mejor ubicación contigua disponible o partición balanceada en filas cercanas.
+- **Matriz de Sala**: Botón para proyectar la matriz de los 3 niveles con las butacas pre-seleccionadas e iluminadas.
+- **QR de Auto-Registro en Mesa**: Botón para proyectar o imprimir el código QR que permite a los ciudadanos en fila auto-registrarse desde su teléfono (`?mode=walkin-kiosk`).
+
+### Mesa 2: Puerta y Verificación Rápida
+- **Escáner Óptico de Entrada**: Validación instantánea por cámara o ingreso de Código Rápido de 4 caracteres (ej. `SV08`) o cédula para acreditar a quienes reservaron con antelación.
+
+### Sala: Pantalla para Acomodadores en Vivo
+- **Feed Sincronizado en Tiempo Real**: Recepción inmediata vía `BroadcastChannel` de los espectadores conforme ingresan por taquilla o puerta.
+- **Buscador Rápido**: Búsqueda instantánea por nombre, cédula o butaca.
+- **Control de Ubicación**: Botón *"Marcar Ubicado"* para certificar que el espectador ya tomó asiento.
+
+### Regla de Corte Web de 20 Minutos
+- A falta de 20 minutos para el inicio, la boletería web pública se bloquea automáticamente para evitar colisiones con las personas presentes en el teatro. Los usuarios web son informados mediante un aviso cívico formal orientándolos a taquilla física.
+
