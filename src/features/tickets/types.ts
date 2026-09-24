@@ -6,7 +6,13 @@ export type EventMode = z.infer<typeof EventModeSchema>;
 export const EventStatusSchema = z.enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"]);
 export type EventStatus = z.infer<typeof EventStatusSchema>;
 
-export const ZoneIdSchema = z.enum(["PLANTA_BAJA", "BALCON"]);
+export const ZoneIdSchema = z.enum([
+  "PLATEA_BAJA",  // Nivel 1: Platea Baja (filas A-D, frente al escenario)
+  "NIVEL_MEDIO",  // Nivel 2: Nivel Medio (filas E-J, detrás de la pasarela y gradas)
+  "BALCON_ALTO",  // Nivel 3: Balcón Superior (filas K-O)
+  "PLANTA_BAJA",  // Alias de compatibilidad (Niveles 1 y 2 combinados)
+  "BALCON",       // Alias de compatibilidad
+]);
 export type ZoneId = z.infer<typeof ZoneIdSchema>;
 
 export const SeatStatusSchema = z.enum(["AVAILABLE", "RESERVED", "OCCUPIED", "BLOCKED"]);
@@ -63,9 +69,9 @@ export const TheaterEventSchema = z.object({
   mode: EventModeSchema,
   status: EventStatusSchema,
   isPrivate: z.boolean().default(false),
-  totalCapacity: z.number().int().default(190),
-  plantaBajaCapacity: z.number().int().default(120),
-  balconCapacity: z.number().int().default(70),
+  totalCapacity: z.number().int().default(220),
+  plantaBajaCapacity: z.number().int().default(158),
+  balconCapacity: z.number().int().default(62),
   vipRowsPlantaBaja: z.array(z.string()).default(["A"]),
   vipRowsBalcon: z.array(z.string()).default(["K"]),
   registrationEnabled: z.boolean().default(true),
@@ -79,6 +85,7 @@ export const TheaterEventSchema = z.object({
     dayNumber: z.string(),
   })).optional(),
   timeSlots: z.array(z.string()).default(["17:00", "19:00", "20:30"]),
+  price: z.number().nonnegative().optional(),
 });
 export type TheaterEvent = z.infer<typeof TheaterEventSchema>;
 
