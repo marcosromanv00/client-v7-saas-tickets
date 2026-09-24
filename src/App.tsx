@@ -19,7 +19,7 @@ export function App() {
   const [selectedTicketForPass, setSelectedTicketForPass] = useState<Ticket | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0e0a16] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(159,18,57,0.18),rgba(255,255,255,0))] text-slate-100 selection:bg-rose-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#f7f5f1] text-[#171717] selection:bg-[#6d174f] selection:text-white">
       {/* Encabezado Cívico Minimalista (Orientado a Espectadores) */}
       <CivicHeader
         activeTab={activeTab}
@@ -66,7 +66,7 @@ export function App() {
       />
 
       {/* Notificaciones Toasts */}
-      <Toaster position="top-center" richColors theme="dark" closeButton />
+      <Toaster position="top-center" richColors theme="light" closeButton />
 
       {/* Pie de Página Tradicional Cívico de 4 Columnas */}
       <CivicFooter onSelectAdminTab={(tab) => setActiveTab(tab)} />
