@@ -17,9 +17,13 @@ export function loadInitialState(): TheaterState {
           parsed.braceletColors = DEFAULT_BRACELET_COLORS;
         }
         if (!parsed.seatsByEvent) parsed.seatsByEvent = {};
+        if (!parsed.braceletCountersByEvent) parsed.braceletCountersByEvent = {};
         for (const evt of INITIAL_EVENTS) {
           if (!parsed.seatsByEvent[evt.id]) {
             parsed.seatsByEvent[evt.id] = generateInitialSeats(evt.vipRowsPlantaBaja, evt.vipRowsBalcon);
+          }
+          if (!parsed.braceletCountersByEvent[evt.id]) {
+            parsed.braceletCountersByEvent[evt.id] = { eventId: evt.id, deliveredCount: 0, history: [] };
           }
         }
         return parsed;
@@ -43,11 +47,17 @@ export function loadInitialState(): TheaterState {
     seatsByEvent[evt.id] = seats;
   }
 
+  const braceletCountersByEvent: Record<string, { eventId: string; deliveredCount: number; history: [] }> = {};
+  for (const evt of INITIAL_EVENTS) {
+    braceletCountersByEvent[evt.id] = { eventId: evt.id, deliveredCount: 0, history: [] };
+  }
+
   return {
     events: INITIAL_EVENTS,
     tickets: INITIAL_TICKETS,
     specialGuests: INITIAL_SPECIAL_GUESTS,
     seatsByEvent,
     braceletColors: DEFAULT_BRACELET_COLORS,
+    braceletCountersByEvent,
   };
 }

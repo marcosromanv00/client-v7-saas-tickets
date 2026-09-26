@@ -1,8 +1,11 @@
+import { STORAGE_KEY } from "./initial-state";
+
 export type TheaterSyncEventType =
   | "TICKET_BOOKED"
   | "TICKET_CHECKED_IN"
   | "TICKET_SEATED"
   | "UNCLAIMED_RELEASED"
+  | "BRACELET_COUNT_UPDATED"
   | "STATE_RESET";
 
 export interface TheaterSyncMessage {
@@ -31,9 +34,9 @@ class TheaterSyncChannel {
 
     if (typeof window !== "undefined") {
       window.addEventListener("storage", (event) => {
-        if (event.key === "tm_theater_civic_store_v1") {
+        if (event.key === STORAGE_KEY || event.key === "tm_theater_civic_store_v1") {
           this.notifyListeners({
-            type: "TICKET_CHECKED_IN",
+            type: "BRACELET_COUNT_UPDATED",
             timestamp: Date.now(),
           });
         }

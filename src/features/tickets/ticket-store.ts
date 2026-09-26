@@ -6,14 +6,15 @@ import { releaseUnclaimedTicketsForState } from "./ticket-release-utils";
 import { findTicketByAnyCode, executeCheckInTicket, executeUndoCheckInTicket } from "./ticket-verification-utils";
 import { executeBooking, BookTicketPayload } from "./ticket-booking-handler";
 import { executeBatchBooking, BatchBookGroupPayload } from "./batch-booking-handler";
-import { theaterSync } from "./sync-channel";
+import { theaterSync, TheaterSyncEventType } from "./sync-channel";
+import { executeUpdateBraceletCount, executeResetBraceletCount } from "../bracelet-counter/bracelet-counter-handler";
 
 export type { TheaterState } from "./ticket-store-types";
 
 let state: TheaterState = loadInitialState();
 const listeners = new Set<() => void>();
 
-function notify(broadcastType?: "TICKET_BOOKED" | "TICKET_CHECKED_IN" | "TICKET_SEATED") {
+function notify(broadcastType?: TheaterSyncEventType) {
   if (typeof localStorage !== "undefined") {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -49,10 +50,7 @@ export const theaterStore = {
   },
 
   updateEvent: (updated: TheaterEvent) => {
-    state = {
-      ...state,
-      events: state.events.map((e) => (e.id === updated.id ? updated : e)),
-    };
+    state = { ...state, events: state.events.map((e) => (e.id === updated.id ? updated : e)) };
     notify();
   },
 
@@ -176,6 +174,18 @@ export const theaterStore = {
   addSpecialGuest: (guest: SpecialGuestEntry) => {
     state = { ...state, specialGuests: [guest, ...state.specialGuests] };
     notify();
+  },
+
+  updateBraceletCount: (eventId: string, delta: number, notes?: string) => {
+    const res = executeUpdateBraceletCount(state, eventId, delta, notes);
+    state = res.updatedState;
+    notify("BRACELET_COUNT_UPDATED");
+    return res;
+  },
+
+  resetBraceletCount: (eventId: string) => {
+    state = executeResetBraceletCount(state, eventId);
+    notify("BRACELET_COUNT_UPDATED");
   },
 
   resetStore: () => {
