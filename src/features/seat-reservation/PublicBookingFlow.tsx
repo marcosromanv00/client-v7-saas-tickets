@@ -3,6 +3,7 @@ import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { Seat, TheaterEvent, Ticket } from "../tickets/types";
+import { findActiveEventForDate } from "../tickets/event-date-utils";
 import { Step1ShowSelection } from "./Step1ShowSelection";
 import { Step2SeatSelection } from "./Step2SeatSelection";
 import { Step3CheckoutForm } from "./Step3CheckoutForm";
@@ -16,15 +17,16 @@ interface PublicBookingFlowProps {
 
 export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTickets }) => {
   const store = useTheaterStore();
+  const initialEvent = findActiveEventForDate(store.events) || store.events[0];
   const [currentStep, setCurrentStep] = useState<BookingStep>("show");
-  const [selectedEventId, setSelectedEventId] = useState<string>(store.events[0]?.id || "");
-  const [selectedDate, setSelectedDate] = useState<string>("2026-09-25");
-  const [selectedTime, setSelectedTime] = useState<string>("19:00");
+  const [selectedEventId, setSelectedEventId] = useState<string>(() => initialEvent?.id || "");
+  const [selectedDate, setSelectedDate] = useState<string>(() => initialEvent?.date || "2026-09-26");
+  const [selectedTime, setSelectedTime] = useState<string>(() => initialEvent?.time || "19:00");
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([]);
   const [issuedTickets, setIssuedTickets] = useState<Ticket[]>([]);
 
-  const selectedEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
-  const seats = store.seatsByEvent[selectedEvent.id] || [];
+  const selectedEvent = store.events.find((e) => e.id === selectedEventId) || initialEvent;
+  const seats = store.seatsByEvent[selectedEvent?.id || ""] || [];
 
   const handleSelectEvent = (evt: TheaterEvent) => {
     setSelectedEventId(evt.id);
@@ -116,31 +118,23 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
       )}
       {/* BARRA DE PROGRESO DE APP NATIVA */}
       <div className="flex items-center justify-between max-w-2xl mx-auto mb-4 px-3 sm:px-5 py-2 bg-white dark:bg-[#0b1a30] rounded-2xl border border-slate-200 dark:border-teatro-navy-border text-xs shadow-xs">
-        <button
-          type="button"
-          onClick={() => setCurrentStep("show")}
-          className="flex items-center gap-1.5 cursor-pointer"
-        >
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "show" ? "bg-teatro-blue text-white" : "bg-emerald-600 text-white"}`}>1</span>
+        <button type="button" onClick={() => setCurrentStep("show")} className="flex items-center gap-1.5 cursor-pointer">
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-2xs ${currentStep === "show" ? "bg-teatro-blue text-white" : "bg-emerald-600 text-white"}`}>1</span>
           <span className={`hidden sm:inline ${currentStep === "show" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Obra</span>
         </button>
         <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
-        <button
-          type="button"
-          onClick={() => selectedEvent && setCurrentStep("seats")}
-          className="flex items-center gap-1.5 cursor-pointer"
-        >
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "seats" ? "bg-teatro-blue text-white" : currentStep === "checkout" || currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>2</span>
+        <button type="button" onClick={() => selectedEvent && setCurrentStep("seats")} className="flex items-center gap-1.5 cursor-pointer">
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-2xs ${currentStep === "seats" ? "bg-teatro-blue text-white" : currentStep === "checkout" || currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>2</span>
           <span className={`hidden sm:inline ${currentStep === "seats" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Butacas</span>
         </button>
         <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
         <div className="flex items-center gap-1.5">
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "checkout" ? "bg-teatro-blue text-white" : currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>3</span>
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-2xs ${currentStep === "checkout" ? "bg-teatro-blue text-white" : currentStep === "success" ? "bg-emerald-600 text-white" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>3</span>
           <span className={`hidden sm:inline ${currentStep === "checkout" ? "font-bold text-slate-900 dark:text-white" : "text-slate-500"}`}>Datos</span>
         </div>
         <div className="h-px w-4 sm:w-10 bg-slate-200 dark:bg-slate-700" />
         <div className="flex items-center gap-1.5">
-          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${currentStep === "success" ? "bg-muni-red text-white shadow-xs" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>4</span>
+          <span className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-2xs ${currentStep === "success" ? "bg-muni-red text-white shadow-xs" : "bg-slate-200 dark:bg-slate-800 text-slate-500"}`}>4</span>
           <span className={`hidden sm:inline ${currentStep === "success" ? "font-bold text-muni-red dark:text-red-400" : "text-slate-500"}`}>Boleto</span>
         </div>
       </div>
@@ -157,7 +151,6 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           onProceedToSeats={() => setCurrentStep("seats")}
         />
       )}
-
       {currentStep === "seats" && (
         <Step2SeatSelection
           event={selectedEvent}
@@ -170,7 +163,6 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           onProceedToCheckout={() => setCurrentStep("checkout")}
         />
       )}
-
       {currentStep === "checkout" && (
         <Step3CheckoutForm
           event={selectedEvent}
@@ -182,7 +174,6 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           onSubmit={handleCheckoutSubmit}
         />
       )}
-
       {currentStep === "success" && (
         <Step4TicketSuccess
           tickets={issuedTickets}

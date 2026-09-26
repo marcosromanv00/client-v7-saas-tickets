@@ -12,11 +12,12 @@ import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
 import { computeDynamicCapacity } from "../tickets/capacity-calculator";
 import { findNextBestAvailableSeat } from "../tickets/hybrid-seating-utils";
 import { Ticket, ZoneId, Seat } from "../tickets/types";
+import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
 import { toast } from "sonner";
 
 export function TaquillaExpressView() {
   const store = useTheaterStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
+  const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [searchedTicket, setSearchedTicket] = useState<Ticket | null>(null);
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null);
   const [isQuickRegisterOpen, setIsQuickRegisterOpen] = useState(false);
@@ -29,7 +30,7 @@ export function TaquillaExpressView() {
     store.checkAndReleaseUnclaimed();
   }, [selectedEventId]);
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
   const capacity = computeDynamicCapacity(currentEvent, store.tickets, store.specialGuests, eventSeats);
 
@@ -105,7 +106,14 @@ export function TaquillaExpressView() {
           <h1 className="text-xl text-slate-900 dark:text-white font-bold tracking-tight mt-0.5">Taquilla Presencial y Asignación de Butacas</h1>
           <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] text-xs">
             <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 shrink-0" style={{ backgroundColor: currentEvent.braceletColorHex || "#004ea2" }} />
-            <span className="text-slate-600 dark:text-slate-300">Brazalete: <strong className="text-slate-900 dark:text-white font-bold">{currentEvent.braceletColorName || "Azul Rey"}</strong></span>
+            <span className="text-slate-600 dark:text-slate-300">
+              Brazalete: <strong className="text-slate-900 dark:text-white font-bold">{currentEvent.braceletColorName || "Azul Rey"}</strong>
+              {currentEvent.mode === "GENERAL_ADMISSION" && (
+                <span className="ml-1.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
+                  • {store.braceletCountersByEvent?.[currentEvent.id]?.deliveredCount || 0} entregados
+                </span>
+              )}
+            </span>
           </div>
         </div>
 

@@ -3,14 +3,15 @@ import { Search, Armchair, Grid } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { AcomodadorFeedItem } from "./AcomodadorFeedItem";
 import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
+import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
 
 export const AcomodadoresLiveView: React.FC = () => {
   const store = useTheaterStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
+  const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [searchQuery, setSearchQuery] = useState("");
   const [showOccupancyMap, setShowOccupancyMap] = useState(false);
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
 
   const checkedInTickets = useMemo(() => {
@@ -40,6 +41,10 @@ export const AcomodadoresLiveView: React.FC = () => {
   const handleToggleSeated = (ticketId: string) => {
     store.toggleTicketSeated(ticketId);
   };
+
+  const isGeneralAdmission = currentEvent.mode === "GENERAL_ADMISSION";
+  const braceletCount = store.braceletCountersByEvent?.[currentEvent.id]?.deliveredCount || 0;
+  const availableCount = Math.max(0, currentEvent.totalCapacity - braceletCount);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-900 dark:text-slate-100">
@@ -82,19 +87,47 @@ export const AcomodadoresLiveView: React.FC = () => {
         </div>
       </div>
 
+      {/* Banner de función con brazaletes por orden de llegada */}
+      {isGeneralAdmission && (
+        <div className="flex items-center justify-between p-3.5 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl text-xs">
+          <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-medium">
+            <span
+              className="w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 shrink-0"
+              style={{ backgroundColor: currentEvent.braceletColorHex || "#10b981" }}
+            />
+            <span>Función de Orden de Llegada • Brazalete Oficial: <strong>{currentEvent.braceletColorName}</strong></span>
+          </div>
+          <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+            {braceletCount} / {currentEvent.totalCapacity} ({availableCount} libres)
+          </span>
+        </div>
+      )}
+
       {/* Métricas de sala */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white dark:bg-[#0b1a30] p-4 rounded-2xl border border-slate-200 dark:border-teatro-navy-border shadow-xs text-center">
-          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Ingresaron a Sala</span>
-          <p className="text-xl font-bold font-mono text-teatro-blue dark:text-blue-400 mt-0.5">{checkedInTickets.length}</p>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+            {isGeneralAdmission ? "Brazaletes en Sala" : "Ingresaron a Sala"}
+          </span>
+          <p className="text-xl font-bold font-mono text-teatro-blue dark:text-blue-400 mt-0.5">
+            {isGeneralAdmission ? braceletCount : checkedInTickets.length}
+          </p>
         </div>
         <div className="bg-white dark:bg-[#0b1a30] p-4 rounded-2xl border border-slate-200 dark:border-teatro-navy-border shadow-xs text-center">
-          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Ubicados en Asiento</span>
-          <p className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">{seatedCount}</p>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+            {isGeneralAdmission ? "Disponibles" : "Ubicados en Asiento"}
+          </span>
+          <p className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
+            {isGeneralAdmission ? availableCount : seatedCount}
+          </p>
         </div>
         <div className="bg-white dark:bg-[#0b1a30] p-4 rounded-2xl border border-slate-200 dark:border-teatro-navy-border shadow-xs text-center">
-          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">Por Ubicar</span>
-          <p className="text-xl font-bold font-mono text-amber-500 dark:text-amber-400 mt-0.5">{pendingCount}</p>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+            {isGeneralAdmission ? "Aforo Máximo" : "Por Ubicar"}
+          </span>
+          <p className="text-xl font-bold font-mono text-amber-500 dark:text-amber-400 mt-0.5">
+            {isGeneralAdmission ? currentEvent.totalCapacity : pendingCount}
+          </p>
         </div>
       </div>
 

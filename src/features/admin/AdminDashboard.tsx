@@ -12,6 +12,7 @@ import { AuditLogViewer } from "../auth/AuditLogViewer";
 import { SeatMatrixDesigner } from "./SeatMatrixDesigner";
 import { computeDynamicCapacity } from "../tickets/capacity-calculator";
 import { TheaterEvent } from "../tickets/types";
+import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
 
 interface AdminDashboardProps {
   onOpenLoginModal: () => void;
@@ -20,12 +21,12 @@ interface AdminDashboardProps {
 export function AdminDashboard({ onOpenLoginModal }: AdminDashboardProps) {
   const store = useTheaterStore();
   const { currentUser, isSuperAdmin, isProducer, isStaff } = useAuthStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
+  const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isBraceletManagerOpen, setIsBraceletManagerOpen] = useState(false);
   const [subTab, setSubTab] = useState<"aforo" | "matriz" | "admins" | "auditoria">("aforo");
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
   const capacity = computeDynamicCapacity(currentEvent, store.tickets, store.specialGuests, eventSeats);
 

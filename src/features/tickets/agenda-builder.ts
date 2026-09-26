@@ -1,4 +1,4 @@
-import { TheaterEvent } from "./types";
+import { TheaterEvent, EventMode } from "./types";
 
 export interface EventDef {
   id: string;
@@ -12,6 +12,10 @@ export interface EventDef {
   description: string;
   posterUrl: string;
   extraDates?: string[];
+  mode?: EventMode;
+  braceletColorId?: string;
+  braceletColorName?: string;
+  braceletColorHex?: string;
 }
 
 const SPANISH_DAYS = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
@@ -34,12 +38,12 @@ export function buildEvent(def: EventDef): TheaterEvent {
     date: def.date,
     time: def.time,
     durationMinutes: def.durationMinutes,
-    mode: "SEATED_NUMBERED",
+    mode: def.mode || "SEATED_NUMBERED",
     status: "ACTIVE",
     isPrivate: def.isPrivate,
-    braceletColorId: "azul-rey",
-    braceletColorName: "Azul Rey",
-    braceletColorHex: "#004ea2",
+    braceletColorId: def.braceletColorId || "azul-rey",
+    braceletColorName: def.braceletColorName || "Azul Rey",
+    braceletColorHex: def.braceletColorHex || "#004ea2",
     totalCapacity: 220,
     plantaBajaCapacity: 158,
     balconCapacity: 62,
