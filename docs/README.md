@@ -13,6 +13,7 @@ Bienvenido al repositorio de documentación del Sistema Cívico de Tiquetería y
 3. **Registro de Decisiones Arquitectónicas (ADRs)**:
    - [ADR-0001: Arquitectura Frontend y Motor Reactivo Local-First](./adr/0001-sistema-tiqueteria-teatro-municipal.md)
    - [ADR-0004: Contador Táctil de Brazaletes Físicos y Control de Aforo por Orden de Llegada](./adr/0004-contador-brazaletes-aforo-orden-llegada.md)
+   - [ADR-0005: Persistencia de Vista Activa, Menú Bento Móvil para Administradores y Selector Dinámico de Color de Brazaletes](./adr/0005-persistencia-vistas-menu-bento-cambio-color-brazalete.md)
 4. **Especificación Técnica del Sistema**:
    - [Arquitectura de Micro-Módulos y Modelo Matemático de Aforo](./technical/arquitectura-sistema.md)
 5. **Manual de Usuario Ilustrado**:
