@@ -2,7 +2,7 @@ import { TheaterState } from "./ticket-store-types";
 import { INITIAL_EVENTS, INITIAL_SPECIAL_GUESTS, INITIAL_TICKETS } from "./mock-data";
 import { generateInitialSeats } from "./theater-layout";
 import { DEFAULT_BRACELET_COLORS } from "./bracelet-utils";
-import { Seat } from "./types";
+import { Seat, TheaterEvent } from "./types";
 
 export const STORAGE_KEY = "tm_theater_state_v3_agenda";
 
@@ -12,7 +12,14 @@ export function loadInitialState(): TheaterState {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        parsed.events = INITIAL_EVENTS;
+        if (Array.isArray(parsed.events) && parsed.events.length > 0) {
+          parsed.events = INITIAL_EVENTS.map((initEvt) => {
+            const saved = parsed.events.find((e: TheaterEvent) => e.id === initEvt.id);
+            return saved ? { ...initEvt, ...saved } : initEvt;
+          });
+        } else {
+          parsed.events = INITIAL_EVENTS;
+        }
         if (!parsed.braceletColors || parsed.braceletColors.length === 0) {
           parsed.braceletColors = DEFAULT_BRACELET_COLORS;
         }

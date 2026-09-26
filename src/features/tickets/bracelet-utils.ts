@@ -2,10 +2,40 @@ import { BraceletColor } from "./types";
 
 export const DEFAULT_BRACELET_COLORS: BraceletColor[] = [
   {
+    id: "verde-neon",
+    name: "Verde Neón Oficial",
+    hex: "#10b981",
+    description: "Brazalete Verde Neón - Función Sábado 26 (Pato Barraza & Gazel)",
+  },
+  {
     id: "azul-rey",
     name: "Azul Rey",
     hex: "#004ea2",
     description: "Brazalete Azul Rey Oficial - Municipalidad y Teatro de Alajuela",
+  },
+  {
+    id: "naranja-neon",
+    name: "Naranja Neón",
+    hex: "#f97316",
+    description: "Brazalete Naranja Neón - Alta visibilidad para personal y general",
+  },
+  {
+    id: "amarillo-fluo",
+    name: "Amarillo Fluorescente",
+    hex: "#eab308",
+    description: "Brazalete Amarillo - Acceso diurno y control en puerta",
+  },
+  {
+    id: "morado-gala",
+    name: "Morado Real",
+    hex: "#8b5cf6",
+    description: "Brazalete Morado - Invitados especiales y protocolo",
+  },
+  {
+    id: "rojo",
+    name: "Rojo Carmesí",
+    hex: "#c8102e",
+    description: "Brazalete Rojo Carmesí Institucional - Identidad Alajuela",
   },
   {
     id: "plateado",
@@ -14,14 +44,8 @@ export const DEFAULT_BRACELET_COLORS: BraceletColor[] = [
     description: "Brazalete Plateado Cívico - Brillo satinado para acceso de gala",
   },
   {
-    id: "rojo",
-    name: "Rojo",
-    hex: "#c8102e",
-    description: "Brazalete Rojo Carmesí Institucional - Identidad Alajuela",
-  },
-  {
     id: "negro",
-    name: "Negro",
+    name: "Negro Escénico",
     hex: "#0f172a",
     description: "Brazalete Negro Escénico - Acabado premium proscenio",
   },
