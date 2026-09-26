@@ -18,8 +18,12 @@ export const OFFICIAL_AGENDA_EVENTS: TheaterEvent[] = [
     title: "Entre Héroes y Amigos: 40 Años de Carrera",
     tagline: "Pato Barraza y Gazel en concierto de rock y música nacional costarricense",
     date: "2026-09-26", time: "19:00", durationMinutes: 105, genre: "Rock & Música Nacional", isPrivate: false,
-    description: "Concierto en vivo con los cantautores Pato Barraza y Gazel conmemorando cuatro décadas de historia musical. Entrada gratuita con butaca numerada para la ciudadanía alajuelense.",
+    description: "Concierto en vivo con los cantautores Pato Barraza y Gazel conmemorando cuatro décadas de historia musical. Acceso general por orden de llegada con entrega de brazaletes hasta completar aforo de sala.",
     posterUrl: "/posters/sinfonica.jpg",
+    mode: "GENERAL_ADMISSION",
+    braceletColorId: "verde-neon",
+    braceletColorName: "Verde Neón Oficial",
+    braceletColorHex: "#10b981",
   }),
 
   // 3. CONCIERTO ESCATS (DOMINGO 27 SEPT)
