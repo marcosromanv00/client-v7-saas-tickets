@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CivicHeader, ActiveTab } from "./components/layout/CivicHeader";
 import { CivicFooter } from "./components/layout/CivicFooter";
 import { BottomNavBar } from "./components/layout/BottomNavBar";
+import { AdminMobileBentoMenu } from "./components/layout/AdminMobileBentoMenu";
 import { PublicEventView } from "./features/seat-reservation/PublicEventView";
 import { TaquillaExpressView } from "./features/taquilla-express/TaquillaExpressView";
 import { DoorScannerView } from "./features/qr-access/DoorScannerView";
@@ -15,19 +16,53 @@ import { Ticket } from "./features/tickets/types";
 import { useTheme } from "./features/theme/theme-store";
 import { Toaster } from "sonner";
 
+const VALID_TABS: ActiveTab[] = ["public", "taquilla", "puerta", "sala", "admin"];
+
+function getInitialActiveTab(): ActiveTab {
+  if (typeof window !== "undefined") {
+    const hash = window.location.hash.replace("#", "") as ActiveTab;
+    if (VALID_TABS.includes(hash)) return hash;
+    const saved = localStorage.getItem("tm_active_tab") as ActiveTab;
+    if (saved && VALID_TABS.includes(saved)) return saved;
+  }
+  return "public";
+}
+
 export function App() {
   const { theme } = useTheme();
-  const [activeTab, setActiveTab] = useState<ActiveTab>("public");
+  const [activeTab, setActiveTabState] = useState<ActiveTab>(getInitialActiveTab);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCitizenDrawerOpen, setIsCitizenDrawerOpen] = useState(false);
   const [selectedTicketForPass, setSelectedTicketForPass] = useState<Ticket | null>(null);
+
+  const handleTabChange = (tab: ActiveTab) => {
+    setActiveTabState(tab);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("tm_active_tab", tab);
+      if (window.location.hash.replace("#", "") !== tab) {
+        window.location.hash = tab === "public" ? "" : tab;
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace("#", "") as ActiveTab;
+      if (VALID_TABS.includes(hash)) {
+        setActiveTabState(hash);
+        localStorage.setItem("tm_active_tab", hash);
+      }
+    };
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-teatro-navy text-slate-900 dark:text-slate-100 selection:bg-teatro-blue selection:text-white dark:selection:bg-blue-600 transition-colors duration-200">
       {/* Encabezado Cívico Minimalista (Orientado a Espectadores) */}
       <CivicHeader
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         onOpenLoginModal={() => setIsLoginModalOpen(true)}
         onOpenCitizenDrawer={() => setIsCitizenDrawerOpen(true)}
       />
@@ -35,7 +70,10 @@ export function App() {
       {/* Contenido Principal según Módulo Activo */}
       <main className="flex-1">
         {activeTab === "public" && (
-          <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />
+          <>
+            <AdminMobileBentoMenu onSelectTab={handleTabChange} />
+            <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />
+          </>
         )}
         {activeTab === "taquilla" && <TaquillaExpressView />}
         {activeTab === "puerta" && <DoorScannerView />}
@@ -67,13 +105,13 @@ export function App() {
       {/* Barra de Navegación Inferior Flotante (Solo para Operadores de Personal) */}
       <BottomNavBar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
       />
 
       {/* Botón FAB para Acceso Ultra Rápido al Verificador */}
       <VerificationFAB
         activeTab={activeTab}
-        onOpenVerification={() => setActiveTab("puerta")}
+        onOpenVerification={() => handleTabChange("puerta")}
       />
 
       {/* Notificaciones Toasts */}
@@ -81,7 +119,7 @@ export function App() {
 
       {/* Pie de Página Administrativo (Oculto en Wizard Público para experiencia nativa de app) */}
       {activeTab !== "public" && (
-        <CivicFooter onSelectAdminTab={(tab) => setActiveTab(tab)} />
+        <CivicFooter onSelectAdminTab={(tab) => handleTabChange(tab)} />
       )}
     </div>
   );
