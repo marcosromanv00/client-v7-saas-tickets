@@ -3,14 +3,15 @@ import { Search, Armchair, Grid } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { AcomodadorFeedItem } from "./AcomodadorFeedItem";
 import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
+import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
 
 export const AcomodadoresLiveView: React.FC = () => {
   const store = useTheaterStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
+  const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [searchQuery, setSearchQuery] = useState("");
   const [showOccupancyMap, setShowOccupancyMap] = useState(false);
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
 
   const checkedInTickets = useMemo(() => {

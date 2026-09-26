@@ -12,11 +12,12 @@ import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
 import { computeDynamicCapacity } from "../tickets/capacity-calculator";
 import { findNextBestAvailableSeat } from "../tickets/hybrid-seating-utils";
 import { Ticket, ZoneId, Seat } from "../tickets/types";
+import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
 import { toast } from "sonner";
 
 export function TaquillaExpressView() {
   const store = useTheaterStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
+  const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [searchedTicket, setSearchedTicket] = useState<Ticket | null>(null);
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null);
   const [isQuickRegisterOpen, setIsQuickRegisterOpen] = useState(false);
@@ -29,7 +30,7 @@ export function TaquillaExpressView() {
     store.checkAndReleaseUnclaimed();
   }, [selectedEventId]);
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
   const capacity = computeDynamicCapacity(currentEvent, store.tickets, store.specialGuests, eventSeats);
 

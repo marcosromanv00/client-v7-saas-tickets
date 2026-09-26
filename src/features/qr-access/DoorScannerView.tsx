@@ -7,13 +7,14 @@ import { DoorOpticalScannerSection } from "./DoorOpticalScannerSection";
 import { AttendeeVerificationView } from "../attendee-verification/AttendeeVerificationView";
 import { BraceletCounterSection } from "../bracelet-counter/BraceletCounterSection";
 import { Ticket } from "../tickets/types";
+import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
 
 type DoorViewMode = "BRAZALETES" | "LIST" | "SCANNER";
 
 export function DoorScannerView() {
   const store = useTheaterStore();
-  const [selectedEventId, setSelectedEventId] = useState(store.events[0]?.id || "");
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || store.events[0];
+  const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
 
   const [viewMode, setViewMode] = useState<DoorViewMode>(() =>
     currentEvent.mode === "GENERAL_ADMISSION" || currentEvent.id === "evt-pato-barraza-26"
