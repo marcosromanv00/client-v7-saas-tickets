@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { X, Sliders, Save } from "lucide-react";
-import { TheaterEvent, EventMode, BraceletColor } from "../tickets/types";
+import { TheaterEvent, EventMode, TicketStyle, BraceletColor } from "../tickets/types";
 import { DEFAULT_BRACELET_COLORS } from "../tickets/bracelet-utils";
 import { EventBraceletSelector } from "./EventBraceletSelector";
+import { EventEntryStyleSelector } from "./EventEntryStyleSelector";
 
 interface EventConfigModalProps {
   isOpen: boolean;
@@ -23,8 +24,9 @@ export function EventConfigModal({
   const [date, setDate] = useState(event.date);
   const [time, setTime] = useState(event.time);
   const [duration, setDuration] = useState(event.durationMinutes);
-  const [totalCapacity, setTotalCapacity] = useState(event.totalCapacity || 220);
+  const [totalCapacity, setTotalCapacity] = useState(event.totalCapacity || 225);
   const [mode, setMode] = useState<EventMode>(event.mode);
+  const [ticketStyle, setTicketStyle] = useState<TicketStyle>(event.ticketStyle || "HIBRIDO");
   const [selectedColorId, setSelectedColorId] = useState(event.braceletColorId || "azul-rey");
   const [registrationEnabled, setRegistrationEnabled] = useState(event.registrationEnabled);
   const [isPrivate, setIsPrivate] = useState(event.isPrivate);
@@ -45,8 +47,9 @@ export function EventConfigModal({
       date,
       time,
       durationMinutes: Number(duration),
-      totalCapacity: Math.max(10, Math.min(220, Number(totalCapacity) || 220)),
+      totalCapacity: Math.max(10, Math.min(225, Number(totalCapacity) || 225)),
       mode,
+      ticketStyle,
       braceletColorId: chosenColor.id,
       braceletColorName: chosenColor.name,
       braceletColorHex: chosenColor.hex,
@@ -96,9 +99,14 @@ export function EventConfigModal({
             </div>
             <div>
               <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Butacas</label>
-              <input type="number" min="10" max="220" value={totalCapacity} onChange={(e) => setTotalCapacity(parseInt(e.target.value) || 220)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs font-mono font-bold" required title="Cantidad total de butacas disponibles para esta función" />
+              <input type="number" min="10" max="225" value={totalCapacity} onChange={(e) => setTotalCapacity(parseInt(e.target.value) || 225)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs font-mono font-bold" required title="Cantidad total de butacas disponibles para esta función" />
             </div>
           </div>
+
+          <EventEntryStyleSelector
+            ticketStyle={ticketStyle}
+            onChangeStyle={setTicketStyle}
+          />
 
           <EventBraceletSelector
             braceletColors={braceletColors}
