@@ -12,7 +12,12 @@ import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
 import { computeDynamicCapacity } from "../tickets/capacity-calculator";
 import { findNextBestAvailableSeat } from "../tickets/hybrid-seating-utils";
 import { Ticket, ZoneId, Seat } from "../tickets/types";
-import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
+import {
+  getDefaultActiveEventId,
+  findActiveEventForDate,
+  getUpcomingActiveEvents,
+  isGeneralAdmissionEvent,
+} from "../tickets/event-date-utils";
 import { toast } from "sonner";
 
 export function TaquillaExpressView() {
@@ -109,7 +114,7 @@ export function TaquillaExpressView() {
             <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 shrink-0" style={{ backgroundColor: currentEvent.braceletColorHex || "#004ea2" }} />
             <span className="text-slate-600 dark:text-slate-300">
               Brazalete: <strong className="text-slate-900 dark:text-white font-bold">{currentEvent.braceletColorName || "Azul Rey"}</strong>
-              {currentEvent.mode === "GENERAL_ADMISSION" && (
+              {isGeneralAdmissionEvent(currentEvent) && (
                 <span className="ml-1.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
                   • {store.braceletCountersByEvent?.[currentEvent.id]?.deliveredCount || 0} entregados
                 </span>
