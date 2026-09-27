@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { findActiveEventForDate, getDefaultActiveEventId } from "./event-date-utils";
+import { findActiveEventForDate, getDefaultActiveEventId, getUpcomingActiveEvents } from "./event-date-utils";
 import { INITIAL_EVENTS } from "./mock-data";
+import { TheaterEvent } from "./types";
 
 describe("event-date-utils", () => {
   it("selecciona automáticamente la función del sábado 26 de septiembre de 2026", () => {
@@ -33,5 +34,16 @@ describe("event-date-utils", () => {
   it("getDefaultActiveEventId devuelve el ID del evento de hoy", () => {
     const eventId = getDefaultActiveEventId(INITIAL_EVENTS, "2026-09-26");
     expect(eventId).toBe("evt-pato-barraza-26");
+  });
+
+  it("getUpcomingActiveEvents oculta eventos pasados y devuelve exactamente los próximos 4", () => {
+    // Para el 26 de septiembre de 2026, el evento del 25 de septiembre debe estar oculto
+    const upcoming = getUpcomingActiveEvents(INITIAL_EVENTS, 4, "2026-09-26");
+    expect(upcoming.length).toBe(4);
+    expect(upcoming.some((e: TheaterEvent) => e.id === "evt-reapertura-25")).toBe(false);
+    expect(upcoming[0].id).toBe("evt-pato-barraza-26");
+    expect(upcoming[1].id).toBe("evt-escats-27");
+    expect(upcoming[2].id).toBe("evt-elvirilla-03");
+    expect(upcoming[3].id).toBe("evt-bernardo-quesada-04");
   });
 });

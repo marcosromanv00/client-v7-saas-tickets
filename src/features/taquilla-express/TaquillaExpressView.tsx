@@ -12,11 +12,12 @@ import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
 import { computeDynamicCapacity } from "../tickets/capacity-calculator";
 import { findNextBestAvailableSeat } from "../tickets/hybrid-seating-utils";
 import { Ticket, ZoneId, Seat } from "../tickets/types";
-import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
+import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
 import { toast } from "sonner";
 
 export function TaquillaExpressView() {
   const store = useTheaterStore();
+  const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [searchedTicket, setSearchedTicket] = useState<Ticket | null>(null);
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null);
@@ -117,7 +118,7 @@ export function TaquillaExpressView() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 max-w-full">
           <select
             value={selectedEventId}
             onChange={(e) => {
@@ -126,10 +127,12 @@ export function TaquillaExpressView() {
               setSearchFeedback(null);
               setSelectedSeatIds([]);
             }}
-            className="px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none"
+            className="w-full sm:w-auto min-w-0 max-w-full sm:max-w-xs truncate text-ellipsis overflow-hidden px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none cursor-pointer"
           >
-            {store.events.map((evt) => (
-              <option key={evt.id} value={evt.id}>{evt.title} ({evt.time} hrs)</option>
+            {upcomingEvents.map((evt) => (
+              <option key={evt.id} value={evt.id}>
+                {evt.title.length > 32 ? `${evt.title.slice(0, 30)}...` : evt.title} ({evt.time} hrs)
+              </option>
             ))}
           </select>
           <button onClick={() => setIsGroupModalOpen(true)} className="px-3.5 py-2 bg-teatro-blue hover:bg-teatro-blue-hover text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs">

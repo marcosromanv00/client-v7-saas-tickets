@@ -38,7 +38,7 @@ export const DoorEventHeader: React.FC<DoorEventHeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 min-w-0 max-w-full">
+      <div className="flex items-center gap-2 min-w-0 w-full sm:w-auto max-w-full sm:max-w-xs">
         <label htmlFor="door-event-select" className="text-xs font-mono text-slate-500 dark:text-slate-400 shrink-0">
           Función:
         </label>
@@ -46,11 +46,11 @@ export const DoorEventHeader: React.FC<DoorEventHeaderProps> = ({
           id="door-event-select"
           value={selectedEventId}
           onChange={(e) => onSelectEventId(e.target.value)}
-          className="max-w-48 sm:max-w-xs truncate px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teatro-blue"
+          className="flex-1 min-w-0 w-full truncate text-ellipsis overflow-hidden px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teatro-blue cursor-pointer"
         >
           {events.map((evt) => (
             <option key={evt.id} value={evt.id}>
-              {evt.title} ({evt.time} hrs)
+              {evt.title.length > 32 ? `${evt.title.slice(0, 30)}...` : evt.title} ({evt.time} hrs)
             </option>
           ))}
         </select>
