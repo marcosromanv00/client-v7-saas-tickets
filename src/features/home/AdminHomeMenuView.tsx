@@ -1,10 +1,12 @@
-import React from "react";
-import { QrCode, Ticket, Armchair, Shield, Calendar } from "lucide-react";
+import React, { useState } from "react";
+import { QrCode, Ticket, Armchair, Shield, Calendar, Sliders } from "lucide-react";
 import { ActiveTab } from "../../components/layout/CivicHeader";
 import { useTheaterStore } from "../tickets/useTheaterStore";
+import { useAuthStore } from "../auth/useAuthStore";
 import { findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
 import { HomeBentoCard } from "./HomeBentoCard";
 import { HomeUpcomingEventsSection } from "./HomeUpcomingEventsSection";
+import { EventConfigModal } from "../admin/EventConfigModal";
 import { TheaterEvent } from "../tickets/types";
 
 interface AdminHomeMenuViewProps {
@@ -17,6 +19,10 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
   onSelectEventForBooking,
 }) => {
   const store = useTheaterStore();
+  const { isSuperAdmin, isProducer, isStaff, isAdminStaff } = useAuthStore();
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const canManage = isSuperAdmin || isProducer || isStaff || isAdminStaff;
+
   const currentEvent = findActiveEventForDate(store.events) || store.events[0];
   const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const counterData = store.braceletCountersByEvent?.[currentEvent?.id || ""] || { deliveredCount: 0 };
@@ -47,18 +53,25 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
           </p>
         </div>
 
-        {/* Indicador de Función de Hoy */}
-        <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#071324] border border-slate-200 dark:border-slate-800 shadow-xs shrink-0">
+        {/* Indicador de Función de Hoy con opción de edición para admin */}
+        <div
+          onClick={() => canManage && setIsConfigOpen(true)}
+          className={`inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-white dark:bg-[#071324] border border-slate-200 dark:border-slate-800 shadow-xs shrink-0 ${
+            canManage ? "cursor-pointer hover:border-teatro-blue/50 transition-colors" : ""
+          }`}
+          title={canManage ? "Toca para modificar color de brazalete y butacas disponibles" : undefined}
+        >
           <span
             className="w-3.5 h-3.5 rounded-full ring-2 ring-white dark:ring-slate-900 shrink-0"
             style={{ backgroundColor: currentEvent?.braceletColorHex || "#10b981" }}
           />
           <div className="text-left leading-tight">
-            <span className="block text-[10px] font-mono text-slate-400 uppercase">
-              Función de Hoy ({currentEvent?.date})
+            <span className="flex items-center gap-1 text-[10px] font-mono text-slate-400 uppercase">
+              Función de Hoy ({currentEvent?.date}) • {total} butacas
+              {canManage && <Sliders className="w-2.5 h-2.5 text-teatro-blue dark:text-blue-400" />}
             </span>
             <span className="text-xs font-bold text-slate-900 dark:text-white">
-              {currentEvent?.title.length > 28 ? `${currentEvent.title.slice(0, 26)}...` : currentEvent?.title}
+              {currentEvent?.title && currentEvent.title.length > 28 ? `${currentEvent.title.slice(0, 26)}...` : currentEvent?.title}
             </span>
           </div>
         </div>
@@ -133,6 +146,14 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
         events={upcomingEvents}
         onSelectEvent={handleSelectEvent}
         onGoToCartelera={() => onSelectTab("public")}
+      />
+
+      <EventConfigModal
+        isOpen={isConfigOpen}
+        onClose={() => setIsConfigOpen(false)}
+        event={currentEvent}
+        braceletColors={store.braceletColors}
+        onSave={(updated) => store.updateEvent(updated)}
       />
     </div>
   );
