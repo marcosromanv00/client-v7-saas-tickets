@@ -8,28 +8,49 @@ import { TaquillaExpressView } from "./features/taquilla-express/TaquillaExpress
 import { DoorScannerView } from "./features/qr-access/DoorScannerView";
 import { AcomodadoresLiveView } from "./features/acomodadores/AcomodadoresLiveView";
 import { AdminDashboard } from "./features/admin/AdminDashboard";
+import { IncidentsDashboardView } from "./features/incidents/IncidentsDashboardView";
+import { StaffDutyHubView } from "./features/staff/StaffDutyHubView";
+import { StandaloneTimeTrackingView } from "./features/public-forms/StandaloneTimeTrackingView";
+import { StandaloneIncidentReportView } from "./features/public-forms/StandaloneIncidentReportView";
+import { SystemLockdownView } from "./features/public-forms/SystemLockdownView";
 import { LoginModal } from "./features/auth/LoginModal";
 import { CitizenAccountDrawer } from "./features/auth/CitizenAccountDrawer";
 import { TicketPassModal } from "./features/tickets/TicketPassModal";
 import { VerificationFAB } from "./components/layout/VerificationFAB";
 import { Ticket } from "./features/tickets/types";
+import { useAuthStore } from "./features/auth/useAuthStore";
 import { useTheme } from "./features/theme/theme-store";
 import { Toaster } from "sonner";
 
-const VALID_TABS: ActiveTab[] = ["home", "public", "taquilla", "puerta", "sala", "admin"];
+const VALID_TABS: ActiveTab[] = [
+  "home", "public", "taquilla", "puerta", "sala",
+  "admin", "incidencias", "personal", "registro-horas", "reporte-incidencias"
+];
+
+function normalizeHash(raw: string): ActiveTab | null {
+  const clean = raw.replace("#", "").toLowerCase();
+  if (clean === "horas" || clean === "turnos" || clean === "registro-horas") return "registro-horas";
+  if (clean === "reporte" || clean === "incidencias-sala" || clean === "reporte-incidencias") return "reporte-incidencias";
+  if (VALID_TABS.includes(clean as ActiveTab)) return clean as ActiveTab;
+  return null;
+}
 
 function getInitialActiveTab(): ActiveTab {
   if (typeof window !== "undefined") {
-    const hash = window.location.hash.replace("#", "") as ActiveTab;
-    if (VALID_TABS.includes(hash)) return hash;
-    const saved = localStorage.getItem("tm_active_tab") as ActiveTab;
-    if (saved && VALID_TABS.includes(saved)) return saved;
+    const fromHash = normalizeHash(window.location.hash);
+    if (fromHash) return fromHash;
+    const saved = localStorage.getItem("tm_active_tab");
+    if (saved) {
+      const fromSaved = normalizeHash(saved);
+      if (fromSaved) return fromSaved;
+    }
   }
   return "home";
 }
 
 export function App() {
   const { theme } = useTheme();
+  const { isSuperAdmin } = useAuthStore();
   const [activeTab, setActiveTabState] = useState<ActiveTab>(getInitialActiveTab);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCitizenDrawerOpen, setIsCitizenDrawerOpen] = useState(false);
@@ -47,19 +68,20 @@ export function App() {
 
   useEffect(() => {
     const handleHash = () => {
-      const hash = window.location.hash.replace("#", "") as ActiveTab;
-      if (VALID_TABS.includes(hash)) {
-        setActiveTabState(hash);
-        localStorage.setItem("tm_active_tab", hash);
+      const normalized = normalizeHash(window.location.hash);
+      if (normalized) {
+        setActiveTabState(normalized);
+        localStorage.setItem("tm_active_tab", normalized);
       }
     };
     window.addEventListener("hashchange", handleHash);
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
 
+  const isStandaloneRoute = activeTab === "registro-horas" || activeTab === "reporte-incidencias";
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-teatro-navy text-slate-900 dark:text-slate-100 selection:bg-teatro-blue selection:text-white dark:selection:bg-blue-600 transition-colors duration-200">
-      {/* Encabezado Cívico Minimalista (Orientado a Espectadores) */}
       <CivicHeader
         activeTab={activeTab}
         onTabChange={handleTabChange}
@@ -67,58 +89,54 @@ export function App() {
         onOpenCitizenDrawer={() => setIsCitizenDrawerOpen(true)}
       />
 
-      {/* Contenido Principal según Módulo Activo */}
       <main className="flex-1">
-        {activeTab === "home" && (
-          <AdminHomeMenuView onSelectTab={handleTabChange} />
-        )}
-        {activeTab === "public" && (
-          <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />
-        )}
-        {activeTab === "taquilla" && <TaquillaExpressView />}
-        {activeTab === "puerta" && <DoorScannerView />}
-        {activeTab === "sala" && <AcomodadoresLiveView />}
-        {activeTab === "admin" && (
-          <AdminDashboard onOpenLoginModal={() => setIsLoginModalOpen(true)} />
+        {activeTab === "registro-horas" ? (
+          <StandaloneTimeTrackingView />
+        ) : activeTab === "reporte-incidencias" ? (
+          <StandaloneIncidentReportView />
+        ) : !isSuperAdmin ? (
+          <SystemLockdownView
+            onOpenLoginModal={() => setIsLoginModalOpen(true)}
+            onNavigateToTab={(t) => handleTabChange(t as ActiveTab)}
+          />
+        ) : (
+          <>
+            {activeTab === "home" && <AdminHomeMenuView onSelectTab={handleTabChange} />}
+            {activeTab === "public" && <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />}
+            {activeTab === "taquilla" && <TaquillaExpressView />}
+            {activeTab === "puerta" && <DoorScannerView />}
+            {activeTab === "sala" && <AcomodadoresLiveView />}
+            {activeTab === "incidencias" && (
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-28">
+                <IncidentsDashboardView />
+              </div>
+            )}
+            {activeTab === "personal" && <StaffDutyHubView onOpenLoginModal={() => setIsLoginModalOpen(true)} />}
+            {activeTab === "admin" && <AdminDashboard onOpenLoginModal={() => setIsLoginModalOpen(true)} />}
+          </>
         )}
       </main>
 
-      {/* Modales y Cajones de Autenticación & Cuenta */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
-
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
       <CitizenAccountDrawer
         isOpen={isCitizenDrawerOpen}
         onClose={() => setIsCitizenDrawerOpen(false)}
-        onSelectTicketForQr={(ticket) => setSelectedTicketForPass(ticket)}
+        onSelectTicketForQr={(t) => setSelectedTicketForPass(t)}
       />
-
       {selectedTicketForPass && (
-        <TicketPassModal
-          ticket={selectedTicketForPass}
-          onClose={() => setSelectedTicketForPass(null)}
-        />
+        <TicketPassModal ticket={selectedTicketForPass} onClose={() => setSelectedTicketForPass(null)} />
       )}
 
-      {/* Barra de Navegación Inferior Flotante (Solo para Operadores de Personal) */}
-      <BottomNavBar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-      />
+      {isSuperAdmin && !isStandaloneRoute && (
+        <>
+          <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
+          <VerificationFAB activeTab={activeTab} onOpenVerification={() => handleTabChange("puerta")} />
+        </>
+      )}
 
-      {/* Botón FAB para Acceso Ultra Rápido al Verificador */}
-      <VerificationFAB
-        activeTab={activeTab}
-        onOpenVerification={() => handleTabChange("puerta")}
-      />
-
-      {/* Notificaciones Toasts */}
       <Toaster position="top-center" richColors theme={theme} closeButton />
 
-      {/* Pie de Página Administrativo (Oculto en Home y Wizard Público para experiencia nativa de app) */}
-      {activeTab !== "public" && activeTab !== "home" && (
+      {isSuperAdmin && activeTab !== "public" && activeTab !== "home" && !isStandaloneRoute && (
         <CivicFooter onSelectAdminTab={(tab) => handleTabChange(tab)} />
       )}
     </div>

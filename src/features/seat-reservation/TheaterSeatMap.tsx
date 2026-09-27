@@ -20,6 +20,7 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
   allowVipSelection = false,
 }) => {
   const [activeZone, setActiveZone] = useState<ActiveLevel>("TODOS");
+  const [isFitToScreen, setIsFitToScreen] = useState(true);
   const seatsByRow = groupSeatsByRow(seats);
 
   const pbCount = seats.filter((s) => s.zone === "PLATEA_BAJA" || PLATEA_BAJA_ROWS.includes(s.row as any)).length;
@@ -27,37 +28,40 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
   const balconCount = seats.filter((s) => s.zone === "BALCON_ALTO" || s.zone === "BALCON").length;
 
   const renderRowBlock = (rows: readonly string[], isSingleBlock = false) => (
-    <div className="flex flex-col items-center gap-1 sm:gap-1.5">
+    <div className={`flex flex-col items-center ${isFitToScreen ? "gap-0.5 sm:gap-1" : "gap-1 sm:gap-1.5"}`}>
       {rows.map((rowLetter) => {
         const rowSeats = seatsByRow[rowLetter] || [];
         const isVip = rowLetter === "A" || rowLetter === "K";
+        const maxWing = 7; // Regla: máximo 7 asientos por ala
         const splitIndex = Math.ceil(rowSeats.length / 2);
-        const leftBlock = isSingleBlock ? rowSeats : rowSeats.slice(0, splitIndex);
-        const rightBlock = isSingleBlock ? [] : rowSeats.slice(splitIndex);
+        const leftRaw = isSingleBlock ? rowSeats : rowSeats.slice(0, splitIndex);
+        const rightRaw = isSingleBlock ? [] : rowSeats.slice(splitIndex);
+        const leftBlock = leftRaw.slice(0, maxWing);
+        const rightBlock = rightRaw.slice(0, maxWing);
 
         return (
-          <div key={rowLetter} className="flex items-center justify-center gap-1 sm:gap-1.5">
-            <span className={`w-3.5 text-right font-mono text-[9px] sm:text-[10px] ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
+          <div key={rowLetter} className="flex items-center justify-center gap-0.5 sm:gap-1.5">
+            <span className={`w-3 sm:w-4 text-right font-mono text-[8px] sm:text-[10px] ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
               {rowLetter}
             </span>
             <div className="flex items-center gap-0.5 sm:gap-1">
               {leftBlock.map((seat) => (
-                <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} />
+                <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} compact={isFitToScreen} />
               ))}
             </div>
             {!isSingleBlock && (
               <>
-                <div className="w-2 sm:w-3.5 h-6 flex items-center justify-center">
+                <div className="w-1.5 sm:w-3.5 h-4 sm:h-6 flex items-center justify-center">
                   <span className="w-px h-full bg-slate-200 dark:bg-slate-700/60" />
                 </div>
                 <div className="flex items-center gap-0.5 sm:gap-1">
                   {rightBlock.map((seat) => (
-                    <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} />
+                    <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} compact={isFitToScreen} />
                   ))}
                 </div>
               </>
             )}
-            <span className={`w-3.5 text-left font-mono text-[9px] sm:text-[10px] ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
+            <span className={`w-3 sm:w-4 text-left font-mono text-[8px] sm:text-[10px] ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
               {rowLetter}
             </span>
           </div>
@@ -67,41 +71,57 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border p-3 sm:p-5 shadow-sm relative select-none transition-colors">
+    <div className={`bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border ${isFitToScreen ? "p-2 sm:p-4" : "p-2.5 sm:p-5"} shadow-sm relative select-none transition-all`}>
       {/* 1. ESCENARIO COMPACTO CON ARCO DE NEÓN */}
-      <div className="relative max-w-sm mx-auto mb-2 text-center">
-        <div className="relative w-full h-6 flex items-center justify-center">
-          <svg className="w-full h-8 overflow-visible" viewBox="0 0 320 28" fill="none">
+      <div className="relative max-w-sm mx-auto mb-1.5 text-center">
+        <div className="relative w-full h-5 flex items-center justify-center">
+          <svg className="w-full h-6 overflow-visible" viewBox="0 0 320 28" fill="none">
             <motion.path d="M 12 24 Q 160 -2 308 24" stroke="#004ea2" strokeWidth="3" strokeLinecap="round" className="drop-shadow-[0_0_6px_rgba(0,78,162,0.4)] dark:stroke-[#38bdf8]" />
           </svg>
         </div>
-        <span className="text-[9px] font-mono tracking-widest uppercase text-teatro-blue dark:text-blue-400 font-bold block -mt-1">
-          ESCENARIO • TEATRO MUNICIPAL DE ALAJUELA
+        <span className="text-[8px] sm:text-[9px] font-mono tracking-widest uppercase text-teatro-blue dark:text-blue-400 font-bold block -mt-1">
+          ESCENARIO • TEATRO MUNICIPAL (MÁX 7 POR ALA)
         </span>
       </div>
 
-      {/* 2. SELECTOR DE NIVELES (3 NIVELES ARQUITECTÓNICOS + TODOS) */}
-      <div className="flex items-center justify-center gap-1 sm:gap-1.5 mb-3 flex-wrap">
-        {[
-          { id: "TODOS" as ActiveLevel, label: "Todos", count: pbCount + nmCount + balconCount },
-          { id: "PLATEA_BAJA" as ActiveLevel, label: "Nivel 1: Platea", count: pbCount },
-          { id: "NIVEL_MEDIO" as ActiveLevel, label: "Nivel 2: Medio", count: nmCount },
-          { id: "BALCON_ALTO" as ActiveLevel, label: "Nivel 3: Balcón", count: balconCount },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveZone(tab.id)}
-            className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-              activeZone === tab.id
-                ? "bg-teatro-blue text-white shadow-xs"
-                : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#102444] border border-slate-200 dark:border-teatro-navy-border"
-            }`}
-          >
-            <span>{tab.label}</span>
-            <span className="px-1.5 py-0.2 rounded-md bg-white/20 text-[10px] font-mono font-bold">{tab.count}</span>
-          </button>
-        ))}
+      {/* 2. BARRA DE CONTROL: NIVELES Y MODO AJUSTAR A PANTALLA */}
+      <div className="flex items-center justify-between gap-1.5 mb-2.5 flex-wrap">
+        <div className="flex items-center gap-1 flex-wrap">
+          {[
+            { id: "TODOS" as ActiveLevel, label: "Todos", count: pbCount + nmCount + balconCount },
+            { id: "PLATEA_BAJA" as ActiveLevel, label: "N1: Platea", count: pbCount },
+            { id: "NIVEL_MEDIO" as ActiveLevel, label: "N2: Medio", count: nmCount },
+            { id: "BALCON_ALTO" as ActiveLevel, label: "N3: Balcón", count: balconCount },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveZone(tab.id)}
+              className={`px-2 py-0.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
+                activeZone === tab.id
+                  ? "bg-teatro-blue text-white shadow-xs"
+                  : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#102444] border border-slate-200 dark:border-teatro-navy-border"
+              }`}
+            >
+              <span>{tab.label}</span>
+              <span className="px-1 py-0.2 rounded-md bg-white/20 text-[9px] font-mono font-bold">{tab.count}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Botón Ajustar a Pantalla */}
+        <button
+          type="button"
+          onClick={() => setIsFitToScreen(!isFitToScreen)}
+          className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer border ${
+            isFitToScreen
+              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800"
+              : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800"
+          }`}
+          title="Alternar entre vista que cabe 100% en una pantalla o vista expandida"
+        >
+          {isFitToScreen ? "📺 Pantalla Completa (Fit)" : "🔍 Vista Ampliada"}
+        </button>
       </div>
 
       {/* 3. MATRIZ DE BUTACAS POR NIVEL Y PASARELA DE ACCESO */}

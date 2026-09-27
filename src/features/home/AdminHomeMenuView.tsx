@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { QrCode, Ticket, Armchair, Shield, Calendar, Sliders } from "lucide-react";
+import { QrCode, Ticket, Armchair, Shield, Calendar, Sliders, AlertTriangle, Users } from "lucide-react";
 import { ActiveTab } from "../../components/layout/CivicHeader";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { useAuthStore } from "../auth/useAuthStore";
+import { useIncidentStore } from "../incidents/useIncidentStore";
 import { findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
 import { HomeBentoCard } from "./HomeBentoCard";
 import { HomeUpcomingEventsSection } from "./HomeUpcomingEventsSection";
@@ -22,6 +23,8 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
   const { isSuperAdmin, isProducer, isStaff, isAdminStaff } = useAuthStore();
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const canManage = isSuperAdmin || isProducer || isStaff || isAdminStaff;
+  const { incidents } = useIncidentStore();
+  const openIncidents = incidents.filter((i) => i.status === "ABIERTA").length;
 
   const currentEvent = findActiveEventForDate(store.events) || store.events[0];
   const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
@@ -138,6 +141,31 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
           imageSrc="/posters/titeres.jpg"
           icon={<Shield className="w-5 h-5 text-indigo-400" />}
           onClick={() => onSelectTab("admin")}
+        />
+
+        {/* Card 6: Mesa de Incidencias en Sala */}
+        <HomeBentoCard
+          title="Mesa de Incidencias"
+          subtitle="Registro ágil de contingencias, asientos duplicados y resolución en sala."
+          imageSrc="/posters/theater-entrance.jpg"
+          icon={<AlertTriangle className="w-5 h-5 text-rose-400" />}
+          badge={
+            openIncidents > 0 ? (
+              <span className="px-2.5 py-1 rounded-full text-2xs font-mono font-bold bg-rose-500/25 text-rose-300 border border-rose-500/40">
+                {openIncidents} abiertas
+              </span>
+            ) : undefined
+          }
+          onClick={() => onSelectTab("incidencias")}
+        />
+
+        {/* Card 7: Personal y Control Horario */}
+        <HomeBentoCard
+          title="Personal & Turnos"
+          subtitle="Acreditación con cédula, reloj de entrada/salida y asignación de puestos."
+          imageSrc="/posters/theater-box-office.jpg"
+          icon={<Users className="w-5 h-5 text-indigo-400" />}
+          onClick={() => onSelectTab("personal")}
         />
       </div>
 

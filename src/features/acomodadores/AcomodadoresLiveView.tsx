@@ -142,7 +142,7 @@ export const AcomodadoresLiveView: React.FC = () => {
       </div>
 
       {showOccupancyMap ? (
-        <div className="bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-teatro-navy-border shadow-sm space-y-4">
+        <div className="bg-white dark:bg-[#0b1a30] p-3 sm:p-6 rounded-3xl border border-slate-200 dark:border-teatro-navy-border shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold tracking-tight">Mapa Visual de Ocupación en Sala</h2>
             <span className="text-xs text-slate-500">Toque una butaca para verificar su estado</span>
