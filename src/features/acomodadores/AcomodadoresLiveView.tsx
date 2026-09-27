@@ -3,7 +3,12 @@ import { Search, Armchair, Grid } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { AcomodadorFeedItem } from "./AcomodadorFeedItem";
 import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
-import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
+import {
+  getDefaultActiveEventId,
+  findActiveEventForDate,
+  getUpcomingActiveEvents,
+  isGeneralAdmissionEvent,
+} from "../tickets/event-date-utils";
 
 export const AcomodadoresLiveView: React.FC = () => {
   const store = useTheaterStore();
@@ -43,7 +48,7 @@ export const AcomodadoresLiveView: React.FC = () => {
     store.toggleTicketSeated(ticketId);
   };
 
-  const isGeneralAdmission = currentEvent.mode === "GENERAL_ADMISSION";
+  const isGeneralAdmission = isGeneralAdmissionEvent(currentEvent);
   const braceletCount = store.braceletCountersByEvent?.[currentEvent.id]?.deliveredCount || 0;
   const availableCount = Math.max(0, currentEvent.totalCapacity - braceletCount);
 

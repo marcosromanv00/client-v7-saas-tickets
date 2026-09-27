@@ -57,3 +57,11 @@ export function getUpcomingActiveEvents(
     .slice(0, limit);
 }
 
+/**
+ * Determina si una función es de admisión general (por orden de llegada con brazaletes)
+ */
+export function isGeneralAdmissionEvent(event?: TheaterEvent): boolean {
+  if (!event) return false;
+  return event.mode === "GENERAL_ADMISSION" || event.id === "evt-pato-barraza-26";
+}
+

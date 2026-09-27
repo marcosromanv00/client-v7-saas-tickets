@@ -51,4 +51,27 @@ describe("Bracelet Color & State Persistence", () => {
     expect(targetEvent?.braceletColorName).toBe("Naranja Neón");
     expect(targetEvent?.braceletColorHex).toBe("#f97316");
   });
+
+  it("garantiza que la función de hoy conserve GENERAL_ADMISSION aunque el storage antiguo tuviera mode undefined", () => {
+    // Simular storage legado v3 con mode undefined o numerado
+    localStorage.setItem(
+      "tm_theater_state_v3_agenda",
+      JSON.stringify({
+        events: [
+          {
+            id: "evt-pato-barraza-26",
+            title: "Entre Héroes y Amigos",
+            mode: undefined,
+            braceletColorId: "verde-neon",
+          },
+        ],
+      })
+    );
+
+    const loaded = loadInitialState();
+    const patoEvent = loaded.events.find((e: TheaterEvent) => e.id === "evt-pato-barraza-26");
+
+    expect(patoEvent).toBeDefined();
+    expect(patoEvent?.mode).toBe("GENERAL_ADMISSION");
+  });
 });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ListFilter, QrCode } from "lucide-react";
+import { ListFilter, QrCode, Tag } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { DoorValidationResult, ValidationOutcome } from "./DoorValidationResult";
 import { DoorEventHeader } from "./DoorEventHeader";
@@ -7,7 +7,12 @@ import { DoorOpticalScannerSection } from "./DoorOpticalScannerSection";
 import { AttendeeVerificationView } from "../attendee-verification/AttendeeVerificationView";
 import { BraceletCounterSection } from "../bracelet-counter/BraceletCounterSection";
 import { Ticket } from "../tickets/types";
-import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
+import {
+  getDefaultActiveEventId,
+  findActiveEventForDate,
+  getUpcomingActiveEvents,
+  isGeneralAdmissionEvent,
+} from "../tickets/event-date-utils";
 
 type DoorViewMode = "BRAZALETES" | "LIST" | "SCANNER";
 
@@ -15,12 +20,16 @@ export function DoorScannerView() {
   const store = useTheaterStore();
   const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || upcomingEvents[0] || findActiveEventForDate(store.events) || store.events[0];
+  const currentEvent =
+    store.events.find((e) => e.id === selectedEventId) ||
+    upcomingEvents[0] ||
+    findActiveEventForDate(store.events) ||
+    store.events[0];
+
+  const isGeneralAdmission = isGeneralAdmissionEvent(currentEvent);
 
   const [viewMode, setViewMode] = useState<DoorViewMode>(() =>
-    currentEvent.mode === "GENERAL_ADMISSION" || currentEvent.id === "evt-pato-barraza-26"
-      ? "BRAZALETES"
-      : "LIST"
+    isGeneralAdmission ? "BRAZALETES" : "LIST"
   );
   const [validationOutcome, setValidationOutcome] = useState<ValidationOutcome>(null);
   const [activeTicket, setActiveTicket] = useState<Ticket | null>(null);
@@ -57,7 +66,13 @@ export function DoorScannerView() {
     }
   };
 
-  const isGeneralAdmission = currentEvent.mode === "GENERAL_ADMISSION";
+  useEffect(() => {
+    if (isGeneralAdmission) {
+      setViewMode("BRAZALETES");
+    } else if (viewMode === "BRAZALETES") {
+      setViewMode("LIST");
+    }
+  }, [currentEvent.id, isGeneralAdmission]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
@@ -99,6 +114,18 @@ export function DoorScannerView() {
                 <QrCode className="w-3.5 h-3.5 text-teatro-blue dark:text-white shrink-0" />
                 <span>Escáner QR</span>
               </button>
+
+              <button
+                onClick={() => setViewMode("BRAZALETES")}
+                className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  viewMode === "BRAZALETES"
+                    ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-xs"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                }`}
+              >
+                <Tag className="w-3.5 h-3.5 text-teatro-blue dark:text-white shrink-0" />
+                <span>Brazaletes</span>
+              </button>
             </div>
 
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono text-center sm:text-right pr-2">
@@ -107,7 +134,9 @@ export function DoorScannerView() {
           </div>
 
           {/* Vista Activa */}
-          {viewMode === "LIST" ? (
+          {viewMode === "BRAZALETES" ? (
+            <BraceletCounterSection currentEvent={currentEvent} />
+          ) : viewMode === "LIST" ? (
             <AttendeeVerificationView currentEvent={currentEvent} />
           ) : (
             <DoorOpticalScannerSection
