@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { StaffApprovalStatusSchema, StaffDutySchema } from "../staff/types";
+export type { StaffApprovalStatus, StaffDuty } from "../staff/types";
+
 export const RoleSchema = z.enum(["SUPERADMIN", "PRODUCER", "DELEGATED_ADMIN", "CITIZEN"]);
 export type UserRole = z.infer<typeof RoleSchema>;
 
@@ -22,6 +25,8 @@ export const UserAccountSchema = z.object({
   createdAt: z.string(),
   createdBy: z.string().optional(),
   active: z.boolean().default(true),
+  approvalStatus: StaffApprovalStatusSchema.default("APPROVED"),
+  assignedDuty: StaffDutySchema.default("GENERAL"),
   notifications: NotificationPrefsSchema.default({
     email: true,
     sms: false,
@@ -37,6 +42,14 @@ export const AuditActionSchema = z.enum([
   "ADMIN_CREATED",
   "ADMIN_DELETED",
   "ADMIN_STATUS_CHANGED",
+  "STAFF_REGISTERED",
+  "STAFF_APPROVED",
+  "STAFF_REJECTED",
+  "STAFF_DUTY_CHANGED",
+  "STAFF_CLOCK_IN",
+  "STAFF_CLOCK_OUT",
+  "INCIDENT_REPORTED",
+  "INCIDENT_RESOLVED",
   "TICKET_BOOKED",
   "TICKET_CHECKIN",
   "VIP_INVITE_ISSUED",

@@ -23,6 +23,10 @@ export function useAuthStore() {
     createAdminUser: authStore.createAdminUser,
     deleteAdminUser: authStore.deleteAdminUser,
     registerCitizen: authStore.registerCitizen,
+    registerStaff: authStore.registerStaff,
+    approveStaff: authStore.approveStaff,
+    rejectStaff: authStore.rejectStaff,
+    assignDuty: authStore.assignDuty,
     updateNotificationPrefs: authStore.updateNotificationPrefs,
     updateNotifications: (prefs: Partial<NotificationPrefs>) => {
       if (state.currentUser) {

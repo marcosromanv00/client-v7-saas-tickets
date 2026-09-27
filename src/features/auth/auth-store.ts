@@ -6,6 +6,19 @@ import {
   loadStoredUsers,
   loadStoredSession,
 } from "./auth-defaults";
+import {
+  createAdminUserPure,
+  deleteAdminUserPure,
+  registerCitizenPure,
+} from "./auth-admin-actions";
+import {
+  registerStaffPure,
+  approveStaffPure,
+  rejectStaffPure,
+  assignDutyPure,
+  RegisterStaffPayload,
+} from "../staff/staff-account-service";
+import { StaffDuty } from "../staff/types";
 
 interface AuthState {
   users: UserAccount[];
@@ -42,21 +55,31 @@ export const authStore = {
     return () => listeners.delete(listener);
   },
 
-  login: (email: string, passwordPlain: string): { success: boolean; user?: UserAccount; error?: string } => {
+  login: (identifier: string, passwordPlain: string): { success: boolean; user?: UserAccount; error?: string } => {
+    const clean = identifier.toLowerCase().trim();
     const user = state.users.find(
-      (u) => u.email.toLowerCase().trim() === email.toLowerCase().trim()
+      (u) => u.email.toLowerCase().trim() === clean || (u.citizenId && u.citizenId.trim() === clean)
     );
     if (!user || user.passwordHash !== passwordPlain) {
       logAuditEvent({
         actorId: "anonymous",
-        actorName: email || "Desconocido",
+        actorName: identifier || "Desconocido",
         actorRole: "CITIZEN",
         action: "AUTH_LOGIN",
-        targetEntity: email,
-        details: "Intento fallido de inicio de sesión (credenciales erróneas)",
+        targetEntity: identifier,
+        details: "Intento fallido de inicio de sesión",
         severity: "WARNING",
       });
-      return { success: false, error: "Credenciales inválidas. Compruebe correo y contraseña." };
+      return { success: false, error: "Credenciales inválidas. Compruebe correo/cédula y contraseña." };
+    }
+    if (user.approvalStatus === "PENDING_APPROVAL") {
+      return {
+        success: false,
+        error: "Tu cuenta de personal está pendiente de aprobación por el Superadministrador (Marco). En breve será validada.",
+      };
+    }
+    if (user.approvalStatus === "REJECTED") {
+      return { success: false, error: "Esta solicitud de personal no fue aprobada por la administración." };
     }
     if (!user.active) {
       return { success: false, error: "Esta cuenta se encuentra inactiva. Contacte al Superadmin." };
@@ -70,7 +93,7 @@ export const authStore = {
       actorRole: user.role,
       action: "AUTH_LOGIN",
       targetEntity: user.id,
-      details: `Inicio de sesión exitoso como ${user.role}`,
+      details: `Inicio de sesión exitoso como ${user.role} (${user.assignedDuty || "GENERAL"})`,
       severity: "INFO",
     });
     return { success: true, user };
@@ -93,76 +116,71 @@ export const authStore = {
   },
 
   createAdminUser: (payload: { name: string; email: string; passwordPlain: string; role?: UserRole }) => {
-    const exists = state.users.some((u) => u.email.toLowerCase() === payload.email.toLowerCase());
-    if (exists) return { success: false, error: "Ya existe un usuario con este correo electrónico." };
-
-    const newUser: UserAccount = {
-      id: `usr-admin-${Date.now()}`,
-      name: payload.name.trim(),
-      email: payload.email.toLowerCase().trim(),
-      role: payload.role || "DELEGATED_ADMIN",
-      passwordHash: payload.passwordPlain,
-      createdAt: new Date().toISOString(),
-      createdBy: state.currentUser?.id || "usr-superadmin-01",
-      active: true,
-      notifications: { email: true, sms: false, whatsapp: false, reminderHoursBefore: 24 },
-    };
-
-    state = { ...state, users: [...state.users, newUser] };
-    notify();
-
-    logAuditEvent({
-      actorId: state.currentUser?.id || "usr-superadmin-01",
-      actorName: state.currentUser?.name || "Marco (Superadmin)",
-      actorRole: state.currentUser?.role || "SUPERADMIN",
-      action: "ADMIN_CREATED",
-      targetEntity: newUser.id,
-      details: `Nuevo administrador creado: ${newUser.name} (${newUser.role})`,
-      severity: "INFO",
-    });
-    return { success: true, user: newUser };
+    const res = createAdminUserPure(state.users, payload, state.currentUser?.id);
+    if (res.success && res.user) {
+      state = { ...state, users: res.users };
+      notify();
+    }
+    return res;
   },
 
   deleteAdminUser: (adminId: string) => {
-    const target = state.users.find((u) => u.id === adminId);
-    if (!target) return { success: false, error: "Usuario no encontrado." };
-    if (target.role === "SUPERADMIN") return { success: false, error: "No se puede eliminar la cuenta del Superadmin." };
-
-    state = { ...state, users: state.users.filter((u) => u.id !== adminId) };
-    notify();
-
-    logAuditEvent({
-      actorId: state.currentUser?.id || "usr-superadmin-01",
-      actorName: state.currentUser?.name || "Marco (Superadmin)",
-      actorRole: "SUPERADMIN",
-      action: "ADMIN_DELETED",
-      targetEntity: adminId,
-      details: `Administrador eliminado: ${target.name} (${target.email})`,
-      severity: "WARNING",
-    });
-    return { success: true };
+    const res = deleteAdminUserPure(state.users, adminId, state.currentUser?.id);
+    if (res.success) {
+      state = { ...state, users: res.users };
+      notify();
+    }
+    return res;
   },
 
   registerCitizen: (payload: { name: string; email: string; citizenId: string; phone?: string; passwordPlain: string }) => {
-    const exists = state.users.some((u) => u.email.toLowerCase() === payload.email.toLowerCase() || (u.citizenId && u.citizenId === payload.citizenId));
-    if (exists) return { success: false, error: "Ya existe una cuenta con este correo o cédula." };
+    const res = registerCitizenPure(state.users, payload);
+    if (res.success && res.user) {
+      state = { ...state, users: res.users, currentUser: res.user };
+      notify();
+    }
+    return res;
+  },
 
-    const newCitizen: UserAccount = {
-      id: `usr-cit-${Date.now()}`,
-      name: payload.name.trim(),
-      email: payload.email.toLowerCase().trim(),
-      citizenId: payload.citizenId.trim(),
-      phone: payload.phone?.trim(),
-      role: "CITIZEN",
-      passwordHash: payload.passwordPlain,
-      createdAt: new Date().toISOString(),
-      active: true,
-      notifications: { email: true, sms: false, whatsapp: true, reminderHoursBefore: 24 },
-    };
+  registerStaff: (payload: RegisterStaffPayload) => {
+    const res = registerStaffPure(state.users, payload);
+    if (res.success) {
+      state = { ...state, users: res.users };
+      notify();
+    }
+    return res;
+  },
 
-    state = { ...state, users: [...state.users, newCitizen], currentUser: newCitizen };
-    notify();
-    return { success: true, user: newCitizen };
+  approveStaff: (staffId: string, duty?: StaffDuty) => {
+    const res = approveStaffPure(state.users, staffId, duty, state.currentUser?.id, state.currentUser?.name);
+    if (res.success) {
+      state = { ...state, users: res.users };
+      notify();
+    }
+    return res;
+  },
+
+  rejectStaff: (staffId: string) => {
+    const res = rejectStaffPure(state.users, staffId, state.currentUser?.id, state.currentUser?.name);
+    if (res.success) {
+      state = { ...state, users: res.users };
+      notify();
+    }
+    return res;
+  },
+
+  assignDuty: (staffId: string, duty: StaffDuty) => {
+    const res = assignDutyPure(state.users, staffId, duty, state.currentUser?.id, state.currentUser?.name);
+    if (res.success) {
+      const isSelf = state.currentUser?.id === staffId;
+      state = {
+        ...state,
+        users: res.users,
+        currentUser: isSelf && state.currentUser ? { ...state.currentUser, assignedDuty: duty } : state.currentUser,
+      };
+      notify();
+    }
+    return res;
   },
 
   updateNotificationPrefs: (userId: string, prefs: Partial<NotificationPrefs>) => {
