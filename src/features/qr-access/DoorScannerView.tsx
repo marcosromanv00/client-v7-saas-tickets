@@ -7,14 +7,15 @@ import { DoorOpticalScannerSection } from "./DoorOpticalScannerSection";
 import { AttendeeVerificationView } from "../attendee-verification/AttendeeVerificationView";
 import { BraceletCounterSection } from "../bracelet-counter/BraceletCounterSection";
 import { Ticket } from "../tickets/types";
-import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
+import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
 
 type DoorViewMode = "BRAZALETES" | "LIST" | "SCANNER";
 
 export function DoorScannerView() {
   const store = useTheaterStore();
+  const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || upcomingEvents[0] || findActiveEventForDate(store.events) || store.events[0];
 
   const [viewMode, setViewMode] = useState<DoorViewMode>(() =>
     currentEvent.mode === "GENERAL_ADMISSION" || currentEvent.id === "evt-pato-barraza-26"
@@ -61,7 +62,7 @@ export function DoorScannerView() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
       <DoorEventHeader
-        events={store.events}
+        events={upcomingEvents}
         selectedEventId={selectedEventId}
         onSelectEventId={setSelectedEventId}
         currentEvent={currentEvent}

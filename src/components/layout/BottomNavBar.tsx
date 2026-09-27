@@ -1,5 +1,5 @@
 import React from "react";
-import { Home, Shield, QrCode } from "lucide-react";
+import { Home, Shield, QrCode, Ticket, Armchair, Zap } from "lucide-react";
 import { motion } from "motion/react";
 import { ActiveTab } from "./CivicHeader";
 import { useAuthStore } from "../../features/auth/useAuthStore";
@@ -16,80 +16,76 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   const { isSuperAdmin, isProducer, isStaff } = useAuthStore();
   const hasStaffRole = isSuperAdmin || isProducer || isStaff;
 
-  // En la vista pública de cartelera y butacas, nunca mostramos barras que compitan con la compra
-  if (activeTab === "public") {
+  // Solo se muestra a roles de personal / administración
+  if (!hasStaffRole) {
     return null;
   }
 
+  const navItems: { tab: ActiveTab; label: string; icon: React.ReactNode; activeColor: string }[] = [
+    {
+      tab: "home",
+      label: "Inicio",
+      icon: <Home className="w-5 h-5" />,
+      activeColor: "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md",
+    },
+    {
+      tab: "puerta",
+      label: "Puerta",
+      icon: <QrCode className="w-5 h-5" />,
+      activeColor: "bg-teal-600 text-white shadow-md shadow-teal-900/30",
+    },
+    {
+      tab: "taquilla",
+      label: "Taquilla",
+      icon: <Zap className="w-5 h-5" />,
+      activeColor: "bg-amber-500 text-white shadow-md shadow-amber-900/30",
+    },
+    {
+      tab: "sala",
+      label: "Sala",
+      icon: <Armchair className="w-5 h-5" />,
+      activeColor: "bg-emerald-600 text-white shadow-md shadow-emerald-900/30",
+    },
+    {
+      tab: "public",
+      label: "Cartelera",
+      icon: <Ticket className="w-5 h-5" />,
+      activeColor: "bg-rose-600 text-white shadow-md shadow-rose-900/30",
+    },
+    {
+      tab: "admin",
+      label: "Aforo",
+      icon: <Shield className="w-5 h-5" />,
+      activeColor: "bg-teatro-blue dark:bg-blue-600 text-white shadow-md shadow-blue-900/30",
+    },
+  ];
+
   return (
-    <div className="fixed bottom-3 inset-x-0 z-40 p-2 pointer-events-none flex justify-center lg:hidden">
+    <div className="fixed bottom-3 inset-x-0 z-40 px-3 pointer-events-none flex justify-center lg:hidden">
       <motion.nav
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="pointer-events-auto bg-white/95 dark:bg-[#071324]/95 backdrop-blur-2xl border border-slate-200 dark:border-[#192f52] rounded-3xl shadow-xl px-3 py-2 flex items-center gap-1.5 transition-colors"
+        className="pointer-events-auto bg-white/95 dark:bg-[#071324]/95 backdrop-blur-2xl border border-slate-200 dark:border-[#192f52] rounded-3xl shadow-2xl p-1.5 flex items-center justify-between gap-1 max-w-xs sm:max-w-md w-full transition-colors"
       >
-        <button
-          type="button"
-          onClick={() => onTabChange("public")}
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <Home className="w-3.5 h-3.5" />
-          <span>Cartelera</span>
-        </button>
-
-        {hasStaffRole && (
-          <>
+        {navItems.map((item) => {
+          const isActive = activeTab === item.tab;
+          return (
             <button
+              key={item.tab}
               type="button"
-              onClick={() => onTabChange("taquilla")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
-                activeTab === "taquilla"
-                  ? "bg-amber-500 text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+              onClick={() => onTabChange(item.tab)}
+              title={item.label}
+              aria-label={item.label}
+              className={`flex-1 flex flex-col items-center justify-center h-10 rounded-2xl transition-all cursor-pointer ${
+                isActive
+                  ? item.activeColor
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
               }`}
             >
-              <span>Taquilla</span>
+              {item.icon}
             </button>
-
-            <button
-              type="button"
-              onClick={() => onTabChange("puerta")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
-                activeTab === "puerta"
-                  ? "bg-teal-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <QrCode className="w-3.5 h-3.5" />
-              <span>Puerta</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onTabChange("sala")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
-                activeTab === "sala"
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <span>Sala</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onTabChange("admin")}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-semibold transition-colors ${
-                activeTab === "admin"
-                  ? "bg-teatro-blue dark:bg-blue-600 text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
-              }`}
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Aforo</span>
-            </button>
-          </>
-        )}
+          );
+        })}
       </motion.nav>
     </div>
   );

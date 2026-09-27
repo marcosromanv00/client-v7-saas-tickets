@@ -40,3 +40,20 @@ export function getDefaultActiveEventId(
   const active = findActiveEventForDate(events, targetDate);
   return active ? active.id : (events[0]?.id || "");
 }
+
+/**
+ * Filtra eventos cuya fecha ya haya pasado y retorna únicamente los próximos N eventos
+ */
+export function getUpcomingActiveEvents(
+  events: TheaterEvent[],
+  limit: number = 4,
+  targetDate: string = getTodayDateString()
+): TheaterEvent[] {
+  if (!events || events.length === 0) return [];
+
+  return events
+    .filter((e) => e.date >= targetDate)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, limit);
+}
+

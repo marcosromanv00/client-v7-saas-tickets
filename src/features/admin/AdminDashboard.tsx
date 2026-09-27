@@ -12,7 +12,7 @@ import { AuditLogViewer } from "../auth/AuditLogViewer";
 import { SeatMatrixDesigner } from "./SeatMatrixDesigner";
 import { computeDynamicCapacity } from "../tickets/capacity-calculator";
 import { TheaterEvent } from "../tickets/types";
-import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
+import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
 
 interface AdminDashboardProps {
   onOpenLoginModal: () => void;
@@ -20,13 +20,14 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onOpenLoginModal }: AdminDashboardProps) {
   const store = useTheaterStore();
+  const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const { currentUser, isSuperAdmin, isProducer, isStaff } = useAuthStore();
   const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isBraceletManagerOpen, setIsBraceletManagerOpen] = useState(false);
   const [subTab, setSubTab] = useState<"aforo" | "matriz" | "admins" | "auditoria">("aforo");
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || upcomingEvents[0] || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
   const capacity = computeDynamicCapacity(currentEvent, store.tickets, store.specialGuests, eventSeats);
 
@@ -108,11 +109,11 @@ export function AdminDashboard({ onOpenLoginModal }: AdminDashboardProps) {
               <select
                 value={selectedEventId}
                 onChange={(e) => setSelectedEventId(e.target.value)}
-                className="px-3 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-mono text-slate-800 dark:text-white focus:outline-none"
+                className="w-full sm:w-auto min-w-0 max-w-full sm:max-w-xs truncate text-ellipsis overflow-hidden px-3 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-mono text-slate-800 dark:text-white focus:outline-none cursor-pointer"
               >
-                {store.events.map((evt) => (
+                {upcomingEvents.map((evt) => (
                   <option key={evt.id} value={evt.id}>
-                    {evt.title} ({evt.time} hrs)
+                    {evt.title.length > 30 ? `${evt.title.slice(0, 28)}...` : evt.title} ({evt.time} hrs)
                   </option>
                 ))}
               </select>

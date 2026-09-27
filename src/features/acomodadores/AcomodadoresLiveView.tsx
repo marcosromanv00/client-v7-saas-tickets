@@ -3,15 +3,16 @@ import { Search, Armchair, Grid } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { AcomodadorFeedItem } from "./AcomodadorFeedItem";
 import { TheaterSeatMap } from "../seat-reservation/TheaterSeatMap";
-import { getDefaultActiveEventId, findActiveEventForDate } from "../tickets/event-date-utils";
+import { getDefaultActiveEventId, findActiveEventForDate, getUpcomingActiveEvents } from "../tickets/event-date-utils";
 
 export const AcomodadoresLiveView: React.FC = () => {
   const store = useTheaterStore();
+  const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [searchQuery, setSearchQuery] = useState("");
   const [showOccupancyMap, setShowOccupancyMap] = useState(false);
 
-  const currentEvent = store.events.find((e) => e.id === selectedEventId) || findActiveEventForDate(store.events) || store.events[0];
+  const currentEvent = store.events.find((e) => e.id === selectedEventId) || upcomingEvents[0] || findActiveEventForDate(store.events) || store.events[0];
   const eventSeats = store.seatsByEvent[currentEvent.id] || [];
 
   const checkedInTickets = useMemo(() => {
@@ -61,21 +62,21 @@ export const AcomodadoresLiveView: React.FC = () => {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Recepción y orientación de espectadores ingresando a sala.</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto min-w-0 max-w-full">
           <select
             value={selectedEventId}
             onChange={(e) => setSelectedEventId(e.target.value)}
-            className="px-3.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none"
+            className="w-full sm:w-auto min-w-0 max-w-full sm:max-w-xs truncate text-ellipsis overflow-hidden px-3.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none cursor-pointer"
           >
-            {store.events.map((evt) => (
+            {upcomingEvents.map((evt) => (
               <option key={evt.id} value={evt.id}>
-                {evt.title} ({evt.time} hrs)
+                {evt.title.length > 32 ? `${evt.title.slice(0, 30)}...` : evt.title} ({evt.time} hrs)
               </option>
             ))}
           </select>
           <button
             onClick={() => setShowOccupancyMap(!showOccupancyMap)}
-            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-colors ${
+            className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-colors shrink-0 ${
               showOccupancyMap
                 ? "bg-teatro-blue text-white border-teatro-blue"
                 : "bg-slate-100 dark:bg-[#071324] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-[#1a3357]"
