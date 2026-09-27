@@ -30,35 +30,7 @@ export const CivicMobileMenu: React.FC<CivicMobileMenuProps> = ({
     onClose();
   };
 
-  if (!isSuperAdmin) {
-    return (
-      <div className="md:hidden bg-white dark:bg-[#071324] border-b border-slate-200 dark:border-[#192f52] px-4 py-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-150">
-        <button
-          onClick={() => handleSelect("registro-horas")}
-          className={`w-full text-left px-3.5 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-            activeTab === "registro-horas"
-              ? "bg-teatro-blue text-white shadow-xs"
-              : "text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-[#0b1a30] border border-slate-200 dark:border-[#1a3357]"
-          }`}
-        >
-          <Clock className="w-4 h-4 text-teal-500" />
-          <span>Registro de Horarios (Personal)</span>
-        </button>
 
-        <button
-          onClick={() => handleSelect("reporte-incidencias")}
-          className={`w-full text-left px-3.5 py-3 rounded-2xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-            activeTab === "reporte-incidencias"
-              ? "bg-muni-red text-white shadow-xs"
-              : "text-slate-800 dark:text-slate-100 bg-slate-50 dark:bg-[#0b1a30] border border-slate-200 dark:border-[#1a3357]"
-          }`}
-        >
-          <AlertTriangle className="w-4 h-4 text-rose-500" />
-          <span>Reporte de Incidencias de Sala</span>
-        </button>
-      </div>
-    );
-  }
 
   return (
     <div className="md:hidden bg-white dark:bg-[#071324] border-b border-slate-200 dark:border-[#192f52] px-4 py-3 space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
@@ -100,6 +72,30 @@ export const CivicMobileMenu: React.FC<CivicMobileMenuProps> = ({
           </span>
         </button>
       )}
+
+      <button
+        onClick={() => handleSelect("registro-horas")}
+        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
+          activeTab === "registro-horas"
+            ? "bg-teal-600 text-white shadow-xs"
+            : "text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+        }`}
+      >
+        <Clock className="w-4 h-4 text-teal-500" />
+        <span>Registro de Horarios (Personal)</span>
+      </button>
+
+      <button
+        onClick={() => handleSelect("reporte-incidencias")}
+        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
+          activeTab === "reporte-incidencias"
+            ? "bg-rose-600 text-white shadow-xs"
+            : "text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+        }`}
+      >
+        <AlertTriangle className="w-4 h-4 text-rose-500" />
+        <span>Reporte de Incidencias de Sala</span>
+      </button>
 
       {hasStaffRole && (
         <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">

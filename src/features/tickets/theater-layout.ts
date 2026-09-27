@@ -1,22 +1,21 @@
 import { Seat, SeatStats, ZoneId } from "./types";
 
-export const PLATEA_BAJA_ROWS = ["A", "B", "C", "D"] as const;
-export const NIVEL_MEDIO_ROWS = ["E", "F", "G", "H", "I", "J"] as const;
-export const BALCON_ALTO_ROWS = ["K", "L", "M", "N", "O"] as const;
+export const PLATEA_BAJA_ROWS = ["A", "B", "C", "D", "E", "F", "G"] as const;
+export const NIVEL_MEDIO_ROWS = ["H", "I", "J", "K", "L", "M"] as const;
+export const BALCON_ALTO_ROWS = ["N", "Ñ", "O", "P", "Q", "R"] as const;
 
 // Aliases para compatibilidad
-export const PLANTA_BAJA_ROWS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"] as const;
-export const BALCON_ROWS = ["K", "L", "M", "N", "O"] as const;
+export const PLANTA_BAJA_ROWS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"] as const;
+export const BALCON_ROWS = ["N", "Ñ", "O", "P", "Q", "R"] as const;
 
-// Aforo Oficial: 220 butacas (Platea Baja 62 + Nivel Medio 96 + Balcón 62)
+// Aforo Oficial del Plano Arquitectónico: 225 butacas (Platea Baja 82 + Nivel Medio 69 + Balcón 74)
 export const ROW_CONFIG_PLANTA_BAJA: Record<string, number> = {
-  A: 14, // 7 izq, 7 der (Fila Protocolo VIP frontal)
-  B: 16, C: 16, D: 16, E: 16, F: 16, G: 16, H: 16, I: 16, J: 16, // 8 izq, 8 der
+  A: 12, B: 12, C: 12, D: 10, E: 10, F: 13, G: 13, // Platea Baja (82 butacas)
+  H: 7, I: 12, J: 12, K: 12, L: 12, M: 14,          // Nivel Medio (69 butacas)
 };
 
 export const ROW_CONFIG_BALCON: Record<string, number> = {
-  K: 12, L: 12, M: 12, N: 12, // 4 filas centradas de 12
-  O: 14,                      // 1 fila posterior de 14
+  N: 12, Ñ: 12, O: 12, P: 12, Q: 12, R: 14,          // Balcón Superior (74 butacas)
 };
 
 export function getZoneLevelName(zone: ZoneId): string {
@@ -35,16 +34,17 @@ export function getZoneLevelName(zone: ZoneId): string {
 
 export function generateInitialSeats(
   vipRowsPB: string[] = ["A"],
-  vipRowsBalcon: string[] = ["K"]
+  vipRowsBalcon: string[] = ["N"]
 ): Seat[] {
   const seats: Seat[] = [];
 
-  // 1. Nivel 1: Platea Baja (62 butacas) - Delante del descanso / pasarela
+  // 1. Nivel 1: Platea Baja (82 butacas) - Filas A-G
   for (const row of PLATEA_BAJA_ROWS) {
     const isVip = vipRowsPB.includes(row);
-    const count = ROW_CONFIG_PLANTA_BAJA[row] || 16;
+    const count = ROW_CONFIG_PLANTA_BAJA[row] || 12;
     for (let num = 1; num <= count; num++) {
       const formattedNum = num < 10 ? `0${num}` : `${num}`;
+      const isWheelchair = (row === "D" || row === "E") && (num === 3 || num === 4);
       seats.push({
         id: `PB-${row}-${formattedNum}`,
         zone: "PLATEA_BAJA" as ZoneId,
@@ -52,15 +52,16 @@ export function generateInitialSeats(
         number: num,
         label: `Platea ${row}-${formattedNum}`,
         isVip,
+        isWheelchairAccessible: isWheelchair,
         status: "AVAILABLE",
       });
     }
   }
 
-  // 2. Nivel 2: Nivel Medio (96 butacas) - Detrás de pasarela de acceso y gradas
+  // 2. Nivel 2: Nivel Medio (69 butacas) - Filas H-M
   for (const row of NIVEL_MEDIO_ROWS) {
     const isVip = vipRowsPB.includes(row);
-    const count = ROW_CONFIG_PLANTA_BAJA[row] || 16;
+    const count = ROW_CONFIG_PLANTA_BAJA[row] || 12;
     for (let num = 1; num <= count; num++) {
       const formattedNum = num < 10 ? `0${num}` : `${num}`;
       seats.push({
@@ -70,12 +71,13 @@ export function generateInitialSeats(
         number: num,
         label: `Medio ${row}-${formattedNum}`,
         isVip,
+        isWheelchairAccessible: false,
         status: "AVAILABLE",
       });
     }
   }
 
-  // 3. Nivel 3: Balcón Superior (62 butacas)
+  // 3. Nivel 3: Balcón Superior (74 butacas) - Filas N-R
   for (const row of BALCON_ALTO_ROWS) {
     const isVip = vipRowsBalcon.includes(row);
     const count = ROW_CONFIG_BALCON[row] || 12;
@@ -88,6 +90,7 @@ export function generateInitialSeats(
         number: num,
         label: `Balcón ${row}-${formattedNum}`,
         isVip,
+        isWheelchairAccessible: false,
         status: "AVAILABLE",
       });
     }

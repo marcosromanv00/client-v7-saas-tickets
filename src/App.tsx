@@ -12,7 +12,6 @@ import { IncidentsDashboardView } from "./features/incidents/IncidentsDashboardV
 import { StaffDutyHubView } from "./features/staff/StaffDutyHubView";
 import { StandaloneTimeTrackingView } from "./features/public-forms/StandaloneTimeTrackingView";
 import { StandaloneIncidentReportView } from "./features/public-forms/StandaloneIncidentReportView";
-import { SystemLockdownView } from "./features/public-forms/SystemLockdownView";
 import { LoginModal } from "./features/auth/LoginModal";
 import { CitizenAccountDrawer } from "./features/auth/CitizenAccountDrawer";
 import { TicketPassModal } from "./features/tickets/TicketPassModal";
@@ -21,6 +20,8 @@ import { Ticket } from "./features/tickets/types";
 import { useAuthStore } from "./features/auth/useAuthStore";
 import { useTheme } from "./features/theme/theme-store";
 import { Toaster } from "sonner";
+
+import { PrivateAccessGuard } from "./components/layout/PrivateAccessGuard";
 
 const VALID_TABS: ActiveTab[] = [
   "home", "public", "taquilla", "puerta", "sala",
@@ -50,7 +51,8 @@ function getInitialActiveTab(): ActiveTab {
 
 export function App() {
   const { theme } = useTheme();
-  const { isSuperAdmin } = useAuthStore();
+  const { isSuperAdmin, isProducer, isStaff, isAdminStaff } = useAuthStore();
+  const canAccessPrivate = isSuperAdmin || isProducer || isStaff || isAdminStaff;
   const [activeTab, setActiveTabState] = useState<ActiveTab>(getInitialActiveTab);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCitizenDrawerOpen, setIsCitizenDrawerOpen] = useState(false);
@@ -90,19 +92,27 @@ export function App() {
       />
 
       <main className="flex-1">
-        {activeTab === "registro-horas" ? (
-          <StandaloneTimeTrackingView />
-        ) : activeTab === "reporte-incidencias" ? (
-          <StandaloneIncidentReportView />
-        ) : !isSuperAdmin ? (
-          <SystemLockdownView
+        {/* Capa 1: Formularios Públicos Standalone */}
+        {activeTab === "registro-horas" && <StandaloneTimeTrackingView />}
+        {activeTab === "reporte-incidencias" && <StandaloneIncidentReportView />}
+
+        {/* Capa 2: Vistas Públicas de Cartelera & Portal Cívico */}
+        {activeTab === "home" && <AdminHomeMenuView onSelectTab={handleTabChange} />}
+        {activeTab === "public" && (
+          <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />
+        )}
+
+        {/* Capa 3: Módulos Operativos y Privados (Custodiados con PrivateAccessGuard) */}
+        {!canAccessPrivate && !["home", "public", "registro-horas", "reporte-incidencias"].includes(activeTab) && (
+          <PrivateAccessGuard
+            tabName={activeTab}
             onOpenLoginModal={() => setIsLoginModalOpen(true)}
-            onNavigateToTab={(t) => handleTabChange(t as ActiveTab)}
+            onGoToPublic={() => handleTabChange("public")}
           />
-        ) : (
+        )}
+
+        {canAccessPrivate && (
           <>
-            {activeTab === "home" && <AdminHomeMenuView onSelectTab={handleTabChange} />}
-            {activeTab === "public" && <PublicEventView onOpenMyTickets={() => setIsCitizenDrawerOpen(true)} />}
             {activeTab === "taquilla" && <TaquillaExpressView />}
             {activeTab === "puerta" && <DoorScannerView />}
             {activeTab === "sala" && <AcomodadoresLiveView />}
@@ -127,7 +137,7 @@ export function App() {
         <TicketPassModal ticket={selectedTicketForPass} onClose={() => setSelectedTicketForPass(null)} />
       )}
 
-      {isSuperAdmin && !isStandaloneRoute && (
+      {canAccessPrivate && !isStandaloneRoute && (
         <>
           <BottomNavBar activeTab={activeTab} onTabChange={handleTabChange} />
           <VerificationFAB activeTab={activeTab} onOpenVerification={() => handleTabChange("puerta")} />
@@ -136,7 +146,7 @@ export function App() {
 
       <Toaster position="top-center" richColors theme={theme} closeButton />
 
-      {isSuperAdmin && activeTab !== "public" && activeTab !== "home" && !isStandaloneRoute && (
+      {canAccessPrivate && activeTab !== "public" && activeTab !== "home" && !isStandaloneRoute && (
         <CivicFooter onSelectAdminTab={(tab) => handleTabChange(tab)} />
       )}
     </div>

@@ -50,7 +50,8 @@ export function DoorScannerView() {
     if (res.status === "VALID" && res.ticket) {
       setValidationOutcome("SUCCESS");
       setActiveTicket(res.ticket);
-      if (currentEvent.mode === "GENERAL_ADMISSION") {
+      const deliversBracelet = currentEvent.mode === "GENERAL_ADMISSION" || currentEvent.ticketStyle !== "UNICO" || currentEvent.braceletColorId !== undefined;
+      if (deliversBracelet) {
         store.updateBraceletCount(currentEvent.id, 1, `QR: ${res.ticket.citizenName}`);
       }
     } else if (res.status === "RELEASED_NO_SHOW" && res.ticket) {

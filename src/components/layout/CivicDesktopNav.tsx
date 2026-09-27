@@ -24,32 +24,7 @@ export const CivicDesktopNav: React.FC<CivicDesktopNavProps> = ({
   userTicketsCount,
   openIncidentsCount,
 }) => {
-  if (!isSuperAdmin) {
-    return (
-      <nav className="hidden md:flex items-center gap-2">
-        <button
-          onClick={() => onTabChange("registro-horas")}
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === "registro-horas"
-              ? "bg-teatro-blue text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-          }`}
-        >
-          Registro Horas
-        </button>
-        <button
-          onClick={() => onTabChange("reporte-incidencias")}
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-            activeTab === "reporte-incidencias"
-              ? "bg-muni-red text-white shadow-xs"
-              : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-          }`}
-        >
-          Reporte Incidencias
-        </button>
-      </nav>
-    );
-  }
+  const hasStaffPrivileges = isSuperAdmin || (currentUser && currentUser.role !== "CITIZEN");
 
   return (
     <nav className="hidden md:flex items-center gap-1.5">
@@ -75,6 +50,30 @@ export const CivicDesktopNav: React.FC<CivicDesktopNavProps> = ({
         Cartelera
       </button>
 
+      <button
+        onClick={() => onTabChange("registro-horas")}
+        className={`px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          activeTab === "registro-horas"
+            ? "bg-teal-600 text-white shadow-xs"
+            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+        }`}
+        title="Formulario independiente de control horario para colaboradores"
+      >
+        Horarios
+      </button>
+
+      <button
+        onClick={() => onTabChange("reporte-incidencias")}
+        className={`px-2.5 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+          activeTab === "reporte-incidencias"
+            ? "bg-rose-600 text-white shadow-xs"
+            : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+        }`}
+        title="Formulario de reporte de incidencias y averías"
+      >
+        Incidencias
+      </button>
+
       {currentUser && isCitizen && (
         <button
           onClick={onOpenCitizenDrawer}
@@ -90,31 +89,41 @@ export const CivicDesktopNav: React.FC<CivicDesktopNavProps> = ({
         </button>
       )}
 
-      <div className="flex items-center gap-1 pl-2 border-l border-slate-200 dark:border-slate-800">
-        {[
-          { id: "taquilla" as ActiveTab, label: "Taquilla", color: "bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold" },
-          { id: "puerta" as ActiveTab, label: "Puerta", color: "bg-teal-500/15 text-teal-700 dark:text-teal-300 font-semibold" },
-          { id: "sala" as ActiveTab, label: "Acomodadores", color: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold" },
-          { id: "incidencias" as ActiveTab, label: "Incidencias", color: "bg-rose-500/15 text-rose-700 dark:text-rose-300 font-semibold", badge: openIncidentsCount },
-          { id: "personal" as ActiveTab, label: "Personal", color: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold" },
-          { id: "admin" as ActiveTab, label: "Aforo & Admins", color: "bg-teatro-blue/15 text-teatro-blue dark:text-blue-300 font-semibold" },
-        ].map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onTabChange(item.id)}
-            className={`relative px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-              activeTab === item.id ? item.color : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <span>{item.label}</span>
-            {item.badge !== undefined && item.badge > 0 && (
-              <span className="ml-1 px-1 py-0.2 rounded-full text-[9px] bg-rose-500 text-white font-bold font-mono">
-                {item.badge}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+      {hasStaffPrivileges ? (
+        <div className="flex items-center gap-1 pl-2 border-l border-slate-200 dark:border-slate-800">
+          {[
+            { id: "taquilla" as ActiveTab, label: "Taquilla", color: "bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold" },
+            { id: "puerta" as ActiveTab, label: "Puerta", color: "bg-teal-500/15 text-teal-700 dark:text-teal-300 font-semibold" },
+            { id: "sala" as ActiveTab, label: "Acomodadores", color: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold" },
+            { id: "incidencias" as ActiveTab, label: "Mesa Incidencias", color: "bg-rose-500/15 text-rose-700 dark:text-rose-300 font-semibold", badge: openIncidentsCount },
+            { id: "personal" as ActiveTab, label: "Personal", color: "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold" },
+            { id: "admin" as ActiveTab, label: "Aforo & Admins", color: "bg-teatro-blue/15 text-teatro-blue dark:text-blue-300 font-semibold" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className={`relative px-2 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                activeTab === item.id ? item.color : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              }`}
+            >
+              <span>{item.label}</span>
+              {item.badge !== undefined && item.badge > 0 && (
+                <span className="ml-1 px-1 py-0.2 rounded-full text-[9px] bg-rose-500 text-white font-bold font-mono">
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <button
+          onClick={() => onTabChange("admin")}
+          className="ml-1 px-2.5 py-1.5 rounded-lg text-2xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          title="Acceso al área de administración y operaciones de teatro"
+        >
+          Área Operativa ➔
+        </button>
+      )}
     </nav>
   );
 };

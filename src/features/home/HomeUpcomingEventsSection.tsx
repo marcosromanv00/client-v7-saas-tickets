@@ -73,8 +73,19 @@ export const HomeUpcomingEventsSection: React.FC<HomeUpcomingEventsSectionProps>
                   <Clock className="w-3 h-3 text-slate-400" />
                   {evt.time} hrs
                 </span>
-                <span className={`font-semibold ${isGeneral ? "text-emerald-600 dark:text-emerald-400" : "text-teatro-blue dark:text-blue-400"}`}>
-                  {isGeneral ? "Orden de Llegada" : "Butacas Numeradas"}
+                <span className="flex items-center gap-1.5 font-semibold text-teatro-blue dark:text-blue-400">
+                  <span
+                    className="w-2 h-2 rounded-full ring-1 ring-slate-300 dark:ring-slate-700"
+                    style={{ backgroundColor: evt.braceletColorHex || "#004ea2" }}
+                    title={`Brazalete: ${evt.braceletColorName || "Oficial"}`}
+                  />
+                  <span>
+                    {evt.ticketStyle === "HIBRIDO"
+                      ? "Híbrido"
+                      : isGeneral
+                      ? "Brazalete"
+                      : "Numerado"}
+                  </span>
                 </span>
               </div>
             </div>

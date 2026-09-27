@@ -34,6 +34,11 @@ export const OFFICIAL_AGENDA_EVENTS: TheaterEvent[] = [
     date: "2026-09-27", time: "18:00", durationMinutes: 100, genre: "Pop / Balada Costarricense", isPrivate: false,
     description: "Presentación exclusiva del grupo nacional Escats en el escenario del Teatro Municipal. Disfrute de éxitos emblemáticos del repertorio pop nacional en un ambiente acústico de primer nivel.",
     posterUrl: "/posters/sinfonica.jpg",
+    braceletColorId: "blanco",
+    braceletColorName: "Blanco Puro Oficial",
+    braceletColorHex: "#ffffff",
+    totalCapacity: 157,
+    ticketStyle: "HIBRIDO",
   }),
 
   // 4. TEATRO: EL ROPERO DE ELVIRILLA (SÁBADO 3 OCT)

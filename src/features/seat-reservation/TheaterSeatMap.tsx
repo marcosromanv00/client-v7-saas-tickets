@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { Seat } from "../tickets/types";
 import { ClaySeat } from "./ClaySeat";
 import { groupSeatsByRow, PLATEA_BAJA_ROWS, NIVEL_MEDIO_ROWS, BALCON_ALTO_ROWS } from "../tickets/theater-layout";
+import { splitRowByBlueprint } from "./theater-seat-map.utils";
 
 interface TheaterSeatMapProps {
   seats: Seat[];
@@ -27,17 +28,12 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
   const nmCount = seats.filter((s) => s.zone === "NIVEL_MEDIO" || NIVEL_MEDIO_ROWS.includes(s.row as any)).length;
   const balconCount = seats.filter((s) => s.zone === "BALCON_ALTO" || s.zone === "BALCON").length;
 
-  const renderRowBlock = (rows: readonly string[], isSingleBlock = false) => (
+  const renderRowBlock = (rows: readonly string[]) => (
     <div className={`flex flex-col items-center ${isFitToScreen ? "gap-0.5 sm:gap-1" : "gap-1 sm:gap-1.5"}`}>
       {rows.map((rowLetter) => {
         const rowSeats = seatsByRow[rowLetter] || [];
-        const isVip = rowLetter === "A" || rowLetter === "K";
-        const maxWing = 7; // Regla: máximo 7 asientos por ala
-        const splitIndex = Math.ceil(rowSeats.length / 2);
-        const leftRaw = isSingleBlock ? rowSeats : rowSeats.slice(0, splitIndex);
-        const rightRaw = isSingleBlock ? [] : rowSeats.slice(splitIndex);
-        const leftBlock = leftRaw.slice(0, maxWing);
-        const rightBlock = rightRaw.slice(0, maxWing);
+        const isVip = rowLetter === "A" || rowLetter === "N";
+        const layout = splitRowByBlueprint(rowLetter, rowSeats);
 
         return (
           <div key={rowLetter} className="flex items-center justify-center gap-0.5 sm:gap-1.5">
@@ -45,22 +41,35 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
               {rowLetter}
             </span>
             <div className="flex items-center gap-0.5 sm:gap-1">
-              {leftBlock.map((seat) => (
+              {layout.left.map((seat) => (
                 <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} compact={isFitToScreen} />
               ))}
+              {layout.showWheelchair && (
+                <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-md bg-blue-500/15 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-[10px] flex items-center justify-center select-none" title="Espacio Accesible Silla de Ruedas">
+                  ♿
+                </span>
+              )}
             </div>
-            {!isSingleBlock && (
-              <>
-                <div className="w-1.5 sm:w-3.5 h-4 sm:h-6 flex items-center justify-center">
-                  <span className="w-px h-full bg-slate-200 dark:bg-slate-700/60" />
-                </div>
-                <div className="flex items-center gap-0.5 sm:gap-1">
-                  {rightBlock.map((seat) => (
+            {layout.hasAisle && (
+              <div className="w-1.5 sm:w-3.5 h-4 sm:h-6 flex items-center justify-center">
+                <span className="w-px h-full bg-slate-200 dark:bg-slate-700/60" />
+              </div>
+            )}
+            <div className="flex items-center gap-0.5 sm:gap-1">
+              {layout.right.map((seat) => (
+                <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} compact={isFitToScreen} />
+              ))}
+              {layout.outer && layout.outer.length > 0 && (
+                <>
+                  <div className="w-1 sm:w-2 h-4 sm:h-6 flex items-center justify-center">
+                    <span className="w-px h-full bg-slate-300 dark:bg-slate-700" />
+                  </div>
+                  {layout.outer.map((seat) => (
                     <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} compact={isFitToScreen} />
                   ))}
-                </div>
-              </>
-            )}
+                </>
+              )}
+            </div>
             <span className={`w-3 sm:w-4 text-left font-mono text-[8px] sm:text-[10px] ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500"}`}>
               {rowLetter}
             </span>
@@ -72,7 +81,6 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
 
   return (
     <div className={`bg-white dark:bg-[#0b1a30] rounded-3xl border border-slate-200 dark:border-teatro-navy-border ${isFitToScreen ? "p-2 sm:p-4" : "p-2.5 sm:p-5"} shadow-sm relative select-none transition-all`}>
-      {/* 1. ESCENARIO COMPACTO CON ARCO DE NEÓN */}
       <div className="relative max-w-sm mx-auto mb-1.5 text-center">
         <div className="relative w-full h-5 flex items-center justify-center">
           <svg className="w-full h-6 overflow-visible" viewBox="0 0 320 28" fill="none">
@@ -80,11 +88,10 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
           </svg>
         </div>
         <span className="text-[8px] sm:text-[9px] font-mono tracking-widest uppercase text-teatro-blue dark:text-blue-400 font-bold block -mt-1">
-          ESCENARIO • TEATRO MUNICIPAL (MÁX 7 POR ALA)
+          ESCENARIO • TEATRO MUNICIPAL (225 BUTACAS OFICIALES)
         </span>
       </div>
 
-      {/* 2. BARRA DE CONTROL: NIVELES Y MODO AJUSTAR A PANTALLA */}
       <div className="flex items-center justify-between gap-1.5 mb-2.5 flex-wrap">
         <div className="flex items-center gap-1 flex-wrap">
           {[
@@ -109,7 +116,6 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
           ))}
         </div>
 
-        {/* Botón Ajustar a Pantalla */}
         <button
           type="button"
           onClick={() => setIsFitToScreen(!isFitToScreen)}
@@ -124,18 +130,15 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
         </button>
       </div>
 
-      {/* 3. MATRIZ DE BUTACAS POR NIVEL Y PASARELA DE ACCESO */}
       <div className="overflow-x-auto pb-2">
         <div className="min-w-fit flex flex-col items-center">
-          {/* NIVEL 1: PLATEA BAJA */}
           {(activeZone === "TODOS" || activeZone === "PLATEA_BAJA") && (
             <div className="w-full flex flex-col items-center mb-2">
-              <span className="text-[9px] font-mono uppercase text-slate-400 mb-1">Nivel 1: Platea Baja (62 butacas)</span>
-              {renderRowBlock(PLATEA_BAJA_ROWS, false)}
+              <span className="text-[9px] font-mono uppercase text-slate-400 mb-1">Nivel 1: Platea Baja (82 butacas)</span>
+              {renderRowBlock(PLATEA_BAJA_ROWS)}
             </div>
           )}
 
-          {/* PASARELA / DESCANSO PRINCIPAL Y ACCESO POR LA IZQUIERDA DESDE LOBBY */}
           {(activeZone === "TODOS" || activeZone === "PLATEA_BAJA" || activeZone === "NIVEL_MEDIO") && (
             <div className="w-full max-w-lg my-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#071324] border border-dashed border-teatro-blue/30 dark:border-blue-500/30 flex items-center justify-between gap-2 text-[10px] font-mono select-none">
               <div className="flex items-center gap-1.5 text-muni-red dark:text-red-400 font-bold">
@@ -153,27 +156,24 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
             </div>
           )}
 
-          {/* NIVEL 2: NIVEL MEDIO */}
           {(activeZone === "TODOS" || activeZone === "NIVEL_MEDIO") && (
             <div className="w-full flex flex-col items-center mb-3">
-              <span className="text-[9px] font-mono uppercase text-slate-400 mb-1">Nivel 2: Nivel Medio (96 butacas)</span>
-              {renderRowBlock(NIVEL_MEDIO_ROWS, false)}
+              <span className="text-[9px] font-mono uppercase text-slate-400 mb-1">Nivel 2: Nivel Medio (69 butacas)</span>
+              {renderRowBlock(NIVEL_MEDIO_ROWS)}
             </div>
           )}
 
-          {/* NIVEL 3: BALCÓN SUPERIOR */}
           {(activeZone === "TODOS" || activeZone === "BALCON_ALTO") && (
             <div className={`w-full flex flex-col items-center ${activeZone === "TODOS" ? "pt-2 border-t border-slate-200 dark:border-teatro-navy-border" : ""}`}>
               <div className="mb-1.5 px-2.5 py-0.5 rounded-full bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] text-[9px] font-mono text-slate-500 uppercase tracking-wider">
-                Nivel 3: Balcón Superior (62 butacas)
+                Nivel 3: Balcón Superior (74 butacas)
               </div>
-              {renderRowBlock(BALCON_ALTO_ROWS, true)}
+              {renderRowBlock(BALCON_ALTO_ROWS)}
             </div>
           )}
         </div>
       </div>
 
-      {/* 4. LEYENDA VISUAL COMPACTA */}
       <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-teatro-navy-border flex flex-wrap items-center justify-center gap-3 sm:gap-5 text-xs text-slate-700 dark:text-slate-200">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-xs clay-seat-available" />
@@ -190,6 +190,10 @@ export const TheaterSeatMap: React.FC<TheaterSeatMapProps> = ({
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-xs clay-seat-vip" />
           <span className="text-[10px] text-teatro-gold dark:text-amber-400 font-semibold">Protocolo VIP</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px]">♿</span>
+          <span className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">Accesible Ley 7600</span>
         </div>
       </div>
     </div>
