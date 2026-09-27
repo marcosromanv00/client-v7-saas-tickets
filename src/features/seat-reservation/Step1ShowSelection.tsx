@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { TheaterEvent } from "../tickets/types";
+import { TheaterEvent, Seat } from "../tickets/types";
 import { Clock, Calendar, ArrowRight, AlertTriangle } from "lucide-react";
 import { motion } from "motion/react";
 import { evaluateEventCutoff } from "../tickets/cutoff-utils";
 import { SeasonShowcaseGrid } from "./SeasonShowcaseGrid";
+import { AdminOccupancySimulationPanel } from "./AdminOccupancySimulationPanel";
 
 interface Step1ShowSelectionProps {
   events: TheaterEvent[];
@@ -14,10 +15,11 @@ interface Step1ShowSelectionProps {
   selectedTime: string;
   onSelectTime: (time: string) => void;
   onProceedToSeats: () => void;
+  seats?: Seat[];
 }
 
 export const Step1ShowSelection: React.FC<Step1ShowSelectionProps> = ({
-  events, selectedEvent, onSelectEvent, selectedDate, onSelectDate, selectedTime, onSelectTime, onProceedToSeats,
+  events, selectedEvent, onSelectEvent, selectedDate, onSelectDate, selectedTime, onSelectTime, onProceedToSeats, seats = [],
 }) => {
   const [showFullDesc, setShowFullDesc] = useState(false);
   const SPANISH_MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"];
@@ -40,17 +42,11 @@ export const Step1ShowSelection: React.FC<Step1ShowSelectionProps> = ({
 
           <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/95 text-teatro-blue shadow-xs">
-                {selectedEvent.genre}
-              </span>
+              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/95 text-teatro-blue shadow-xs">{selectedEvent.genre}</span>
               {selectedEvent.isPrivate ? (
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-400 text-slate-950 shadow-xs flex items-center gap-1">
-                  🔒 Gala Privada • Invitación Directa
-                </span>
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-400 text-slate-950 shadow-xs flex items-center gap-1">🔒 Gala Privada • Invitación</span>
               ) : (
-                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-muni-red text-white shadow-xs">
-                  Entrada Libre
-                </span>
+                <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-muni-red text-white shadow-xs">Entrada Libre</span>
               )}
               <span className="flex items-center gap-1 text-[11px] text-slate-200 bg-black/45 px-2.5 py-1 rounded-full backdrop-blur-md">
                 <Clock className="w-3 h-3 text-teatro-gold" /> {selectedEvent.durationMinutes} min
@@ -182,6 +178,9 @@ export const Step1ShowSelection: React.FC<Step1ShowSelectionProps> = ({
           </div>
         </div>
       </div>
+
+      {/* 2. PANEL DE OCUPACIÓN Y SIMULACIÓN DE SALA EN VIVO (ADMIN/SUPERADMIN) */}
+      <AdminOccupancySimulationPanel event={selectedEvent} seats={seats} />
 
       {/* 3. CARTELERA COMPLETA DE LA TEMPORADA OFICIAL */}
       <SeasonShowcaseGrid events={events} selectedEvent={selectedEvent} onSelectEvent={onSelectEvent} />

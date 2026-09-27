@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
     "@types/jsbarcode": "^3.11.4",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",

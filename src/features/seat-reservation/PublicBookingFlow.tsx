@@ -149,6 +149,7 @@ export const PublicBookingFlow: React.FC<PublicBookingFlowProps> = ({ onOpenMyTi
           selectedTime={selectedTime}
           onSelectTime={setSelectedTime}
           onProceedToSeats={() => setCurrentStep("seats")}
+          seats={seats}
         />
       )}
       {currentStep === "seats" && (

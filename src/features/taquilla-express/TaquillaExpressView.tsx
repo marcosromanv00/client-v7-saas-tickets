@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { Users, QrCode, Grid, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
+import { TaquillaExpressHeader } from "./TaquillaExpressHeader";
 import { CitizenSearchForm } from "./CitizenSearchForm";
 import { QuickRegisterModal } from "./QuickRegisterModal";
 import { GroupSuggestionModal } from "./GroupSuggestionModal";
@@ -105,55 +106,24 @@ export function TaquillaExpressView() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 pb-28 space-y-7 text-slate-900 dark:text-slate-100">
-      {/* Header Taquilla */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-[#0b1a30] p-6 rounded-3xl border border-slate-200 dark:border-teatro-navy-border shadow-sm">
-        <div>
-          <span className="text-[10px] font-mono uppercase text-teatro-blue dark:text-blue-400 tracking-widest font-semibold">Mesa 1 • Registro & Walk-In</span>
-          <h1 className="text-xl text-slate-900 dark:text-white font-bold tracking-tight mt-0.5">Taquilla Presencial y Asignación de Butacas</h1>
-          <div className="mt-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] text-xs">
-            <span className="w-2.5 h-2.5 rounded-full ring-2 ring-white dark:ring-slate-900 shrink-0" style={{ backgroundColor: currentEvent.braceletColorHex || "#004ea2" }} />
-            <span className="text-slate-600 dark:text-slate-300">
-              Brazalete: <strong className="text-slate-900 dark:text-white font-bold">{currentEvent.braceletColorName || "Azul Rey"}</strong>
-              {isGeneralAdmissionEvent(currentEvent) && (
-                <span className="ml-1.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  • {store.braceletCountersByEvent?.[currentEvent.id]?.deliveredCount || 0} entregados
-                </span>
-              )}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 max-w-full">
-          <select
-            value={selectedEventId}
-            onChange={(e) => {
-              setSelectedEventId(e.target.value);
-              setSearchedTicket(null);
-              setSearchFeedback(null);
-              setSelectedSeatIds([]);
-            }}
-            className="w-full sm:w-auto min-w-0 max-w-full sm:max-w-xs truncate text-ellipsis overflow-hidden px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none cursor-pointer"
-          >
-            {upcomingEvents.map((evt) => (
-              <option key={evt.id} value={evt.id}>
-                {evt.title.length > 32 ? `${evt.title.slice(0, 30)}...` : evt.title} ({evt.time} hrs)
-              </option>
-            ))}
-          </select>
-          <button onClick={() => setIsGroupModalOpen(true)} className="px-3.5 py-2 bg-teatro-blue hover:bg-teatro-blue-hover text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs">
-            <Users className="w-3.5 h-3.5" />
-            <span>Sugerir Grupo</span>
-          </button>
-          <button onClick={() => setIsDeskQrOpen(true)} className="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#071324] dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border border-slate-200 dark:border-[#1a3357]">
-            <QrCode className="w-3.5 h-3.5 text-teatro-blue" />
-            <span>QR Mesa</span>
-          </button>
-          <button onClick={() => setShowMatrix(!showMatrix)} className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer border transition-colors ${showMatrix ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-300" : "bg-slate-100 dark:bg-[#071324] text-slate-700 dark:text-slate-200 border-slate-200 dark:border-[#1a3357]"}`}>
-            <Grid className="w-3.5 h-3.5" />
-            <span>{showMatrix ? "Ocultar Matriz" : "Ver Matriz"}</span>
-          </button>
-        </div>
-      </div>
+      {/* Header Taquilla con soporte para admin de modificar color y butacas */}
+      <TaquillaExpressHeader
+        currentEvent={currentEvent}
+        selectedEventId={selectedEventId}
+        onSelectEventId={(id) => {
+          setSelectedEventId(id);
+          setSearchedTicket(null);
+          setSearchFeedback(null);
+          setSelectedSeatIds([]);
+        }}
+        upcomingEvents={upcomingEvents}
+        isGeneralAdmission={isGeneralAdmissionEvent(currentEvent)}
+        deliveredCount={store.braceletCountersByEvent?.[currentEvent.id]?.deliveredCount || 0}
+        onOpenGroupModal={() => setIsGroupModalOpen(true)}
+        onOpenDeskQr={() => setIsDeskQrOpen(true)}
+        showMatrix={showMatrix}
+        onToggleMatrix={() => setShowMatrix(!showMatrix)}
+      />
 
       <TaquillaMetricsBar capacity={capacity} />
 

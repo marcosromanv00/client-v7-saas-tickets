@@ -23,6 +23,7 @@ export function EventConfigModal({
   const [date, setDate] = useState(event.date);
   const [time, setTime] = useState(event.time);
   const [duration, setDuration] = useState(event.durationMinutes);
+  const [totalCapacity, setTotalCapacity] = useState(event.totalCapacity || 220);
   const [mode, setMode] = useState<EventMode>(event.mode);
   const [selectedColorId, setSelectedColorId] = useState(event.braceletColorId || "azul-rey");
   const [registrationEnabled, setRegistrationEnabled] = useState(event.registrationEnabled);
@@ -44,6 +45,7 @@ export function EventConfigModal({
       date,
       time,
       durationMinutes: Number(duration),
+      totalCapacity: Math.max(10, Math.min(220, Number(totalCapacity) || 220)),
       mode,
       braceletColorId: chosenColor.id,
       braceletColorName: chosenColor.name,
@@ -79,38 +81,22 @@ export function EventConfigModal({
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             <div>
               <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Fecha</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-teatro-blue"
-                required
-              />
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs" required />
             </div>
             <div>
-              <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Hora Inicio</label>
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-teatro-blue"
-                required
-              />
+              <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Hora</label>
+              <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs" required />
             </div>
             <div>
-              <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Duración (min)</label>
-              <input
-                type="number"
-                min="15"
-                max="300"
-                value={duration}
-                onChange={(e) => setDuration(parseInt(e.target.value) || 90)}
-                className="w-full px-2.5 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-teatro-blue"
-                required
-              />
+              <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Duración</label>
+              <input type="number" min="15" max="300" value={duration} onChange={(e) => setDuration(parseInt(e.target.value) || 90)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs" required />
+            </div>
+            <div>
+              <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Butacas</label>
+              <input type="number" min="10" max="220" value={totalCapacity} onChange={(e) => setTotalCapacity(parseInt(e.target.value) || 220)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs font-mono font-bold" required title="Cantidad total de butacas disponibles para esta función" />
             </div>
           </div>
 

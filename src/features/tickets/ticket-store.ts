@@ -8,6 +8,7 @@ import { executeBooking, BookTicketPayload } from "./ticket-booking-handler";
 import { executeBatchBooking, BatchBookGroupPayload } from "./batch-booking-handler";
 import { theaterSync, TheaterSyncEventType } from "./sync-channel";
 import { executeUpdateBraceletCount, executeResetBraceletCount } from "../bracelet-counter/bracelet-counter-handler";
+import { dispatchAttendancePush, setupRealtimeAttendanceListener, dispatchEventCapacityPush } from "./attendance-sync-dispatcher";
 
 export type { TheaterState } from "./ticket-store-types";
 
@@ -16,23 +17,31 @@ const listeners = new Set<() => void>();
 
 function notify(broadcastType?: TheaterSyncEventType) {
   if (typeof localStorage !== "undefined") {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      console.warn("Storage write error", e);
-    }
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn("Storage write error", e); }
   }
-  if (broadcastType) {
-    theaterSync.broadcast(broadcastType);
-  }
+  if (broadcastType) theaterSync.broadcast(broadcastType);
   listeners.forEach((l) => l());
 }
 
-// Sincronización multi-pestaña
+// Sincronización multi-pestaña local
 theaterSync.subscribe(() => {
   state = loadInitialState();
   listeners.forEach((l) => l());
 });
+
+// Sincronización en tiempo real con Supabase Postgres
+if (typeof window !== "undefined") {
+  setupRealtimeAttendanceListener(state.events.map((e) => e.id), (eventId, count) => {
+    const cur = state.braceletCountersByEvent?.[eventId];
+    if (cur && cur.deliveredCount !== count) {
+      state = {
+        ...state,
+        braceletCountersByEvent: { ...state.braceletCountersByEvent, [eventId]: { ...cur, deliveredCount: count } },
+      };
+      notify();
+    }
+  });
+}
 
 export const theaterStore = {
   getSnapshot: (): TheaterState => state,
@@ -42,27 +51,18 @@ export const theaterStore = {
   },
 
   toggleRegistration: (eventId: string, enabled: boolean) => {
-    state = {
-      ...state,
-      events: state.events.map((e) => (e.id === eventId ? { ...e, registrationEnabled: enabled } : e)),
-    };
+    state = { ...state, events: state.events.map((e) => (e.id === eventId ? { ...e, registrationEnabled: enabled } : e)) };
     notify();
   },
 
   updateEvent: (updated: TheaterEvent) => {
     state = { ...state, events: state.events.map((e) => (e.id === updated.id ? updated : e)) };
+    dispatchEventCapacityPush(updated.id, updated.totalCapacity);
     notify();
   },
 
   setEventBraceletColor: (eventId: string, color: BraceletColor) => {
-    state = {
-      ...state,
-      events: state.events.map((e) =>
-        e.id === eventId
-          ? { ...e, braceletColorId: color.id, braceletColorName: color.name, braceletColorHex: color.hex }
-          : e
-      ),
-    };
+    state = { ...state, events: state.events.map((e) => (e.id === eventId ? { ...e, braceletColorId: color.id, braceletColorName: color.name, braceletColorHex: color.hex } : e)) };
     notify();
   },
 
@@ -82,11 +82,8 @@ export const theaterStore = {
       state = updatedState;
       notify();
       logAuditEvent({
-        actorId: "system-auto",
-        actorName: "Regla 15 Minutos de Aforo",
-        actorRole: "PRODUCER",
-        action: "TICKET_CHECKIN",
-        targetEntity: "sala",
+        actorId: "system-auto", actorName: "Regla 15 Minutos de Aforo", actorRole: "PRODUCER",
+        action: "TICKET_CHECKIN", targetEntity: "sala",
         details: `Corte de 15 min: ${releasedCount} boletos no acreditados liberados para walk-ins`,
       });
     }
@@ -107,6 +104,18 @@ export const theaterStore = {
     if (res.success && res.updatedState) {
       state = res.updatedState;
       notify("TICKET_CHECKED_IN");
+      if (res.ticket) {
+        const totalChecked = state.tickets.filter((t) => t.eventId === res.ticket!.eventId && t.checkedIn).length;
+        dispatchAttendancePush({
+          eventId: res.ticket.eventId,
+          delta: 1,
+          newTotal: totalChecked,
+          entryType: "QR_SCAN",
+          citizenName: res.ticket.citizenName,
+          seatLabel: res.ticket.seatLabel || undefined,
+          notes: `Check-in ${res.ticket.seatLabel || "General"}`,
+        });
+      }
     }
     return { success: res.success, error: res.error, ticket: res.ticket, status: res.status };
   },
@@ -125,10 +134,7 @@ export const theaterStore = {
     if (!guest) return { success: false };
     const updatedCount = Math.min(guest.ticketsCount, guest.redeemedCount + count);
     const updated: SpecialGuestEntry = { ...guest, redeemedCount: updatedCount };
-    state = {
-      ...state,
-      specialGuests: state.specialGuests.map((g) => (g.id === guestId ? updated : g)),
-    };
+    state = { ...state, specialGuests: state.specialGuests.map((g) => (g.id === guestId ? updated : g)) };
     notify("TICKET_CHECKED_IN");
     return { success: true, guest: updated };
   },
@@ -145,18 +151,9 @@ export const theaterStore = {
   toggleTicketSeated: (ticketId: string): { success: boolean; isSeated: boolean } => {
     const ticket = state.tickets.find((t) => t.id === ticketId);
     if (!ticket) return { success: false, isSeated: false };
-
     const newSeated = !ticket.isSeated;
-    const updated: Ticket = {
-      ...ticket,
-      isSeated: newSeated,
-      seatedAt: newSeated ? new Date().toISOString() : null,
-    };
-
-    state = {
-      ...state,
-      tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)),
-    };
+    const updated: Ticket = { ...ticket, isSeated: newSeated, seatedAt: newSeated ? new Date().toISOString() : null };
+    state = { ...state, tickets: state.tickets.map((t) => (t.id === ticketId ? updated : t)) };
     notify("TICKET_SEATED");
     return { success: true, isSeated: newSeated };
   },
@@ -180,6 +177,7 @@ export const theaterStore = {
     const res = executeUpdateBraceletCount(state, eventId, delta, notes);
     state = res.updatedState;
     notify("BRACELET_COUNT_UPDATED");
+    dispatchAttendancePush({ eventId, delta, newTotal: res.count, entryType: "BRACELET", notes });
     return res;
   },
 
