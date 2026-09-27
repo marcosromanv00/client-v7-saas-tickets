@@ -3,8 +3,9 @@ import { Ticket as TicketIcon, User, LogOut, Menu, X } from "lucide-react";
 import { useAuthStore } from "../../features/auth/useAuthStore";
 import { useTheaterStore } from "../../features/tickets/useTheaterStore";
 import { ThemeToggle } from "./ThemeToggle";
+import { CivicMobileMenu } from "./CivicMobileMenu";
 
-export type ActiveTab = "public" | "taquilla" | "puerta" | "sala" | "admin";
+export type ActiveTab = "home" | "public" | "taquilla" | "puerta" | "sala" | "admin";
 
 interface CivicHeaderProps {
   activeTab: ActiveTab;
@@ -38,7 +39,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* MARCA E IDENTIDAD INSTITUCIONAL: TEATRO MUNICIPAL DE ALAJUELA */}
-          <div onClick={() => onTabChange("public")} className="flex items-center gap-2.5 cursor-pointer group select-none" title="Ir a inicio de cartelera">
+          <div onClick={() => onTabChange("home")} className="flex items-center gap-2.5 cursor-pointer group select-none" title="Ir a inicio de centro operativo">
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-teatro-blue-light dark:bg-teatro-blue/20 border border-teatro-blue/30 dark:border-blue-500/30 flex items-center justify-center text-teatro-blue dark:text-blue-400 shadow-xs group-hover:scale-105 group-hover:bg-teatro-blue group-hover:text-white dark:group-hover:bg-blue-600 transition-all">
               <TicketIcon className="w-5 h-5" />
             </div>
@@ -50,6 +51,17 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
 
           {/* NAVEGACIÓN PÚBLICA PRINCIPAL */}
           <nav className="hidden md:flex items-center gap-2">
+            <button
+              onClick={() => onTabChange("home")}
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === "home"
+                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs"
+                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
+              }`}
+            >
+              Panel Central
+            </button>
+
             <button
               onClick={() => onTabChange("public")}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
@@ -158,37 +170,15 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
         </div>
       </div>
 
-      {/* MENÚ MÓVIL */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-[#071324] border-b border-slate-200 dark:border-[#192f52] px-4 py-3 space-y-2">
-          <button
-            onClick={() => { onTabChange("public"); setMobileMenuOpen(false); }}
-            className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            Cartelera de Obras
-          </button>
-          {currentUser && isCitizen && (
-            <button
-              onClick={() => { onOpenCitizenDrawer(); setMobileMenuOpen(false); }}
-              className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-teatro-blue dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
-            >
-              <span>Mis Entradas</span>
-              <span className="font-mono text-[10px] bg-muni-red text-white px-2 py-0.5 rounded-full">{userTicketsCount}</span>
-            </button>
-          )}
-          {hasStaffRole && (
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">
-              <span className="text-[10px] font-mono uppercase text-slate-400 px-3">Módulos de Personal</span>
-              <div className="grid grid-cols-2 gap-1 px-1">
-                <button onClick={() => { onTabChange("taquilla"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-600 dark:text-amber-400 hover:bg-slate-100">Taquilla</button>
-                <button onClick={() => { onTabChange("puerta"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-teal-600 dark:text-teal-400 hover:bg-slate-100">Puerta</button>
-                <button onClick={() => { onTabChange("sala"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-slate-100">Acomodadores</button>
-                <button onClick={() => { onTabChange("admin"); setMobileMenuOpen(false); }} className="text-left px-2.5 py-1.5 rounded-lg text-xs font-medium text-teatro-blue dark:text-blue-400 hover:bg-slate-100">Aforo</button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {/* MENÚ MÓVIL (APERTURA VERTICAL) */}
+      <CivicMobileMenu
+        isOpen={mobileMenuOpen}
+        activeTab={activeTab}
+        onTabChange={onTabChange}
+        onClose={() => setMobileMenuOpen(false)}
+        onOpenCitizenDrawer={onOpenCitizenDrawer}
+        userTicketsCount={userTicketsCount}
+      />
     </header>
   );
 };
