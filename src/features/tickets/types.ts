@@ -3,13 +3,16 @@ import { z } from "zod";
 export const EventModeSchema = z.enum(["SEATED_NUMBERED", "GENERAL_ADMISSION"]);
 export type EventMode = z.infer<typeof EventModeSchema>;
 
+export const TicketStyleSchema = z.enum(["UNICO", "HIBRIDO"]);
+export type TicketStyle = z.infer<typeof TicketStyleSchema>;
+
 export const EventStatusSchema = z.enum(["DRAFT", "ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"]);
 export type EventStatus = z.infer<typeof EventStatusSchema>;
 
 export const ZoneIdSchema = z.enum([
-  "PLATEA_BAJA",  // Nivel 1: Platea Baja (filas A-D, frente al escenario)
-  "NIVEL_MEDIO",  // Nivel 2: Nivel Medio (filas E-J, detrás de la pasarela y gradas)
-  "BALCON_ALTO",  // Nivel 3: Balcón Superior (filas K-O)
+  "PLATEA_BAJA",  // Nivel 1: Platea Baja (filas A-G, frente al escenario)
+  "NIVEL_MEDIO",  // Nivel 2: Nivel Medio (filas H-M, detrás de la pasarela y gradas)
+  "BALCON_ALTO",  // Nivel 3: Balcón Superior (filas N-R)
   "PLANTA_BAJA",  // Alias de compatibilidad (Niveles 1 y 2 combinados)
   "BALCON",       // Alias de compatibilidad
 ]);
@@ -25,6 +28,7 @@ export const SeatSchema = z.object({
   number: z.number().int().positive(),
   label: z.string(), // ej. "Platea A-01"
   isVip: z.boolean().default(false),
+  isWheelchairAccessible: z.boolean().optional(),
   status: SeatStatusSchema.default("AVAILABLE"),
 });
 export type Seat = z.infer<typeof SeatSchema>;
@@ -89,6 +93,7 @@ export const TheaterEventSchema = z.object({
   time: z.string(), // HH:MM
   durationMinutes: z.number().int().positive(),
   mode: EventModeSchema,
+  ticketStyle: TicketStyleSchema.default("HIBRIDO"),
   status: EventStatusSchema,
   isPrivate: z.boolean().default(false),
   braceletColorId: z.string().default("azul-rey"),

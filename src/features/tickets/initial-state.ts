@@ -17,16 +17,19 @@ export function loadInitialState(): TheaterState {
           parsed.events = INITIAL_EVENTS.map((initEvt) => {
             const saved = parsed.events.find((e: TheaterEvent) => e.id === initEvt.id);
             if (!saved) return initEvt;
+
+            // Para Escats hoy 27 de Septiembre, asegurar parámetros oficiales solicitados
+            const isEscats = initEvt.id === "evt-escats-27";
+
             return {
               ...initEvt,
               ...saved,
-              // Preservar siempre la definición oficial de modo y aforo del evento
-              mode: initEvt.mode,
-              totalCapacity: initEvt.totalCapacity,
-              // Preservar personalizaciones de color de brazalete y switches
-              braceletColorId: saved.braceletColorId || initEvt.braceletColorId,
-              braceletColorName: saved.braceletColorName || initEvt.braceletColorName,
-              braceletColorHex: saved.braceletColorHex || initEvt.braceletColorHex,
+              mode: saved.mode || initEvt.mode,
+              ticketStyle: saved.ticketStyle || initEvt.ticketStyle || "HIBRIDO",
+              totalCapacity: isEscats ? 157 : (saved.totalCapacity || initEvt.totalCapacity),
+              braceletColorId: isEscats ? "blanco" : (saved.braceletColorId || initEvt.braceletColorId),
+              braceletColorName: isEscats ? "Blanco Puro Oficial" : (saved.braceletColorName || initEvt.braceletColorName),
+              braceletColorHex: isEscats ? "#ffffff" : (saved.braceletColorHex || initEvt.braceletColorHex),
               registrationEnabled:
                 saved.registrationEnabled !== undefined
                   ? saved.registrationEnabled
@@ -43,6 +46,13 @@ export function loadInitialState(): TheaterState {
         }
         if (!parsed.braceletColors || parsed.braceletColors.length === 0) {
           parsed.braceletColors = DEFAULT_BRACELET_COLORS;
+        } else {
+          // Asegurar que colores predeterminados nuevos (ej: blanco) estén en el catálogo
+          for (const defCol of DEFAULT_BRACELET_COLORS) {
+            if (!parsed.braceletColors.some((c: { id: string }) => c.id === defCol.id)) {
+              parsed.braceletColors.push(defCol);
+            }
+          }
         }
         if (!parsed.seatsByEvent) parsed.seatsByEvent = {};
         if (!parsed.braceletCountersByEvent) parsed.braceletCountersByEvent = {};

@@ -2,6 +2,12 @@ import { BraceletColor } from "./types";
 
 export const DEFAULT_BRACELET_COLORS: BraceletColor[] = [
   {
+    id: "blanco",
+    name: "Blanco Puro Oficial",
+    hex: "#ffffff",
+    description: "Brazalete Blanco Puro Oficial - Función Domingo 27 (¡Escats en Concierto!)",
+  },
+  {
     id: "verde-neon",
     name: "Verde Neón Oficial",
     hex: "#10b981",

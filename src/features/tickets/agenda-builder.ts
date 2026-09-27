@@ -1,4 +1,4 @@
-import { TheaterEvent, EventMode } from "./types";
+import { TheaterEvent, EventMode, TicketStyle } from "./types";
 
 export interface EventDef {
   id: string;
@@ -13,9 +13,11 @@ export interface EventDef {
   posterUrl: string;
   extraDates?: string[];
   mode?: EventMode;
+  ticketStyle?: TicketStyle;
   braceletColorId?: string;
   braceletColorName?: string;
   braceletColorHex?: string;
+  totalCapacity?: number;
 }
 
 const SPANISH_DAYS = ["DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB"];
@@ -31,6 +33,8 @@ export function buildEvent(def: EventDef): TheaterEvent {
     };
   });
 
+  const totalCap = def.totalCapacity || 225;
+
   return {
     id: def.id,
     title: def.title,
@@ -39,16 +43,17 @@ export function buildEvent(def: EventDef): TheaterEvent {
     time: def.time,
     durationMinutes: def.durationMinutes,
     mode: def.mode || "SEATED_NUMBERED",
+    ticketStyle: def.ticketStyle || "HIBRIDO",
     status: "ACTIVE",
     isPrivate: def.isPrivate,
     braceletColorId: def.braceletColorId || "azul-rey",
     braceletColorName: def.braceletColorName || "Azul Rey",
     braceletColorHex: def.braceletColorHex || "#004ea2",
-    totalCapacity: 220,
-    plantaBajaCapacity: 158,
-    balconCapacity: 62,
+    totalCapacity: totalCap,
+    plantaBajaCapacity: Math.min(totalCap, 82),
+    balconCapacity: Math.max(0, totalCap - 151),
     vipRowsPlantaBaja: ["A"],
-    vipRowsBalcon: ["K"],
+    vipRowsBalcon: ["N"],
     registrationEnabled: true,
     description: def.description,
     location: "Sala Principal, Teatro Municipal de Alajuela",
