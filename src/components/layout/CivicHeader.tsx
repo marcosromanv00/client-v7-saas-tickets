@@ -4,8 +4,20 @@ import { useAuthStore } from "../../features/auth/useAuthStore";
 import { useTheaterStore } from "../../features/tickets/useTheaterStore";
 import { ThemeToggle } from "./ThemeToggle";
 import { CivicMobileMenu } from "./CivicMobileMenu";
+import { CivicDesktopNav } from "./CivicDesktopNav";
+import { useIncidentStore } from "../../features/incidents/useIncidentStore";
 
-export type ActiveTab = "home" | "public" | "taquilla" | "puerta" | "sala" | "admin";
+export type ActiveTab =
+  | "home"
+  | "public"
+  | "taquilla"
+  | "puerta"
+  | "sala"
+  | "admin"
+  | "incidencias"
+  | "personal"
+  | "registro-horas"
+  | "reporte-incidencias";
 
 interface CivicHeaderProps {
   activeTab: ActiveTab;
@@ -21,8 +33,11 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
   onOpenCitizenDrawer,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const { currentUser, isCitizen, isSuperAdmin, isProducer, isStaff, logout } = useAuthStore();
+  const { currentUser, isCitizen, isSuperAdmin, logout } = useAuthStore();
   const store = useTheaterStore();
+  const { incidents } = useIncidentStore();
+
+  const openIncidentsCount = incidents.filter((i) => i.status === "ABIERTA").length;
 
   const userTicketsCount = currentUser
     ? store.tickets.filter(
@@ -31,8 +46,6 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
           (currentUser.name && t.citizenName.toLowerCase().includes(currentUser.name.toLowerCase()))
       ).length
     : 0;
-
-  const hasStaffRole = isSuperAdmin || isProducer || isStaff;
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#071324]/95 backdrop-blur-xl text-slate-900 dark:text-slate-100 border-b border-slate-200 dark:border-[#192f52] transition-colors duration-200">
@@ -49,91 +62,17 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
             </div>
           </div>
 
-          {/* NAVEGACIÓN PÚBLICA PRINCIPAL */}
-          <nav className="hidden md:flex items-center gap-2">
-            <button
-              onClick={() => onTabChange("home")}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === "home"
-                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
-              }`}
-            >
-              Panel Central
-            </button>
-
-            <button
-              onClick={() => onTabChange("public")}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                activeTab === "public"
-                  ? "bg-teatro-blue text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60"
-              }`}
-            >
-              Cartelera de Obras
-            </button>
-
-            {currentUser && isCitizen && (
-              <button
-                onClick={onOpenCitizenDrawer}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
-              >
-                <TicketIcon className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" />
-                <span>Mis Entradas</span>
-                {userTicketsCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-muni-red text-white font-bold font-mono">
-                    {userTicketsCount}
-                  </span>
-                )}
-              </button>
-            )}
-
-            {/* Acceso a Módulos Operativos para Personal */}
-            {hasStaffRole && (
-              <div className="flex items-center gap-1 pl-2 border-l border-slate-200 dark:border-slate-800">
-                <button
-                  onClick={() => onTabChange("taquilla")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                    activeTab === "taquilla"
-                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  Taquilla
-                </button>
-                <button
-                  onClick={() => onTabChange("puerta")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                    activeTab === "puerta"
-                      ? "bg-teal-500/15 text-teal-700 dark:text-teal-300 font-semibold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  Puerta
-                </button>
-                <button
-                  onClick={() => onTabChange("sala")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                    activeTab === "sala"
-                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  Acomodadores
-                </button>
-                <button
-                  onClick={() => onTabChange("admin")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                    activeTab === "admin"
-                      ? "bg-teatro-blue/15 text-teatro-blue dark:text-blue-300 font-semibold"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
-                >
-                  Aforo & Admins
-                </button>
-              </div>
-            )}
-          </nav>
+          {/* NAVEGACIÓN DESKTOP CON MODOS SUPERADMIN Y STANDALONE */}
+          <CivicDesktopNav
+            activeTab={activeTab}
+            onTabChange={onTabChange}
+            isSuperAdmin={isSuperAdmin}
+            currentUser={currentUser}
+            isCitizen={isCitizen}
+            onOpenCitizenDrawer={onOpenCitizenDrawer}
+            userTicketsCount={userTicketsCount}
+            openIncidentsCount={openIncidentsCount}
+          />
 
           {/* PERFIL & CONMUTADOR DE TEMA */}
           <div className="flex items-center gap-2">
