@@ -10,38 +10,38 @@ describe("Teatro Municipal - Sistema de Tiquetería y Aforo", () => {
     theaterStore.resetStore();
   });
 
-  describe("1. Distribución Espacial del Teatro (220 Butacas Oficiales)", () => {
-    it("debe generar exactamente 220 butacas (62 Platea Baja, 96 Nivel Medio y 62 Balcón)", () => {
-      const seats = generateInitialSeats(["A"], ["K"]);
-      expect(seats.length).toBe(220);
+  describe("1. Distribución Espacial del Teatro (225 Butacas Oficiales del Plano Arquitectónico)", () => {
+    it("debe generar exactamente 225 butacas (82 Platea Baja, 69 Nivel Medio y 74 Balcón)", () => {
+      const seats = generateInitialSeats(["A"], ["N"]);
+      expect(seats.length).toBe(225);
 
       const pbSeats = seats.filter((s) => s.zone === "PLATEA_BAJA");
       const nmSeats = seats.filter((s) => s.zone === "NIVEL_MEDIO");
       const balconSeats = seats.filter((s) => s.zone === "BALCON_ALTO");
 
-      expect(pbSeats.length).toBe(62);
-      expect(nmSeats.length).toBe(96);
-      expect(balconSeats.length).toBe(62);
+      expect(pbSeats.length).toBe(82);
+      expect(nmSeats.length).toBe(69);
+      expect(balconSeats.length).toBe(74);
     });
 
-    it("debe marcar correctamente las filas VIP de protocolo (Fila A y Fila K)", () => {
-      const seats = generateInitialSeats(["A"], ["K"]);
+    it("debe marcar correctamente las filas VIP de protocolo (Fila A y Fila N)", () => {
+      const seats = generateInitialSeats(["A"], ["N"]);
       const filaA = seats.filter((s) => s.row === "A");
-      const filaK = seats.filter((s) => s.row === "K");
+      const filaN = seats.filter((s) => s.row === "N");
       const filaB = seats.filter((s) => s.row === "B");
 
       expect(filaA.every((s) => s.isVip)).toBe(true);
-      expect(filaK.every((s) => s.isVip)).toBe(true);
+      expect(filaN.every((s) => s.isVip)).toBe(true);
       expect(filaB.every((s) => !s.isVip)).toBe(true);
     });
 
     it("debe calcular estadísticas de butacas correctamente", () => {
-      const seats = generateInitialSeats(["A"], ["K"]);
+      const seats = generateInitialSeats(["A"], ["N"]);
       const stats = calculateSeatStats(seats);
 
-      expect(stats.total).toBe(220);
-      expect(stats.available).toBe(220);
-      expect(stats.vip).toBe(26);
+      expect(stats.total).toBe(225);
+      expect(stats.available).toBe(225);
+      expect(stats.vip).toBe(24);
     });
   });
 

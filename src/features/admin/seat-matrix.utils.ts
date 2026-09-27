@@ -73,6 +73,7 @@ export function convertMatrixToSeats(
             number: seatNum,
             label: `${labelPrefix} ${row.rowLetter}-${formattedNum}`,
             isVip: cell === "VIP",
+            isWheelchairAccessible: (row.rowLetter === "D" || row.rowLetter === "E") && (seatNum === 3 || seatNum === 4),
             status: "AVAILABLE",
           });
           seatNum++;
@@ -87,42 +88,55 @@ export function convertMatrixToSeats(
   return result;
 }
 
-// Genera la distribución oficial de los 3 niveles del Teatro Municipal (220 butacas)
+// Genera la distribución oficial de los 3 niveles del Teatro Municipal (225 butacas)
 export function getOfficialPresetMatrix(): {
   plateaBaja: MatrixRow[];
   nivelMedio: MatrixRow[];
   balcon: MatrixRow[];
 } {
-  // Nivel 1: Platea Baja (62 butacas) - Delante de pasarela de acceso
+  // Nivel 1: Platea Baja (82 butacas) - Filas A-G
   const plateaBaja: MatrixRow[] = PLATEA_BAJA_ROWS.map((rowLetter) => {
     const cells: CellType[] = Array(MATRIX_COLS).fill("EMPTY");
     const isVip = rowLetter === "A";
 
-    if (rowLetter === "A") {
-      for (let c = 1; c <= 7; c++) cells[c] = isVip ? "VIP" : "SEAT";
-      for (let c = 10; c <= 16; c++) cells[c] = isVip ? "VIP" : "SEAT";
+    if (rowLetter === "A" || rowLetter === "B" || rowLetter === "C") {
+      for (let c = 2; c <= 6; c++) cells[c] = isVip ? "VIP" : "SEAT"; // 5
+      for (let c = 9; c <= 15; c++) cells[c] = isVip ? "VIP" : "SEAT"; // 7 -> 12
+    } else if (rowLetter === "D" || rowLetter === "E") {
+      for (let c = 3; c <= 5; c++) cells[c] = "SEAT"; // 3
+      for (let c = 9; c <= 15; c++) cells[c] = "SEAT"; // 7 -> 10
     } else {
-      for (let c = 0; c <= 7; c++) cells[c] = "SEAT";
-      for (let c = 10; c <= 17; c++) cells[c] = "SEAT";
+      // F, G
+      for (let c = 1; c <= 6; c++) cells[c] = "SEAT"; // 6
+      for (let c = 9; c <= 15; c++) cells[c] = "SEAT"; // 7 -> 13
     }
     return { rowLetter, zone: "PLATEA_BAJA" as ZoneId, cells };
   });
 
-  // Nivel 2: Nivel Medio (96 butacas) - Detrás de pasarela de acceso y gradas
+  // Nivel 2: Nivel Medio (69 butacas) - Filas H-M
   const nivelMedio: MatrixRow[] = NIVEL_MEDIO_ROWS.map((rowLetter) => {
     const cells: CellType[] = Array(MATRIX_COLS).fill("EMPTY");
-    for (let c = 0; c <= 7; c++) cells[c] = "SEAT";
-    for (let c = 10; c <= 17; c++) cells[c] = "SEAT";
+    if (rowLetter === "H") {
+      for (let c = 9; c <= 15; c++) cells[c] = "SEAT"; // 7
+    } else if (rowLetter === "M") {
+      for (let c = 1; c <= 7; c++) cells[c] = "SEAT"; // 7
+      for (let c = 10; c <= 14; c++) cells[c] = "SEAT"; // 5
+      for (let c = 16; c <= 17; c++) cells[c] = "SEAT"; // 2 -> 14
+    } else {
+      // I, J, K, L
+      for (let c = 1; c <= 7; c++) cells[c] = "SEAT"; // 7
+      for (let c = 10; c <= 14; c++) cells[c] = "SEAT"; // 5 -> 12
+    }
     return { rowLetter, zone: "NIVEL_MEDIO" as ZoneId, cells };
   });
 
-  // Nivel 3: Balcón Superior (62 butacas) - 4x12 centradas + 1x14 detrás
+  // Nivel 3: Balcón Superior (74 butacas) - Filas N-R
   const balcon: MatrixRow[] = BALCON_ALTO_ROWS.map((rowLetter) => {
     const cells: CellType[] = Array(MATRIX_COLS).fill("EMPTY");
-    if (rowLetter === "O") {
-      for (let c = 2; c <= 15; c++) cells[c] = "SEAT";
+    if (rowLetter === "R") {
+      for (let c = 2; c <= 15; c++) cells[c] = "SEAT"; // 14
     } else {
-      for (let c = 3; c <= 14; c++) cells[c] = rowLetter === "K" ? "VIP" : "SEAT";
+      for (let c = 3; c <= 14; c++) cells[c] = rowLetter === "N" ? "VIP" : "SEAT"; // 12
     }
     return { rowLetter, zone: "BALCON_ALTO" as ZoneId, cells };
   });
