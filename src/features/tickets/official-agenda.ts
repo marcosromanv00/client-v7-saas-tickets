@@ -37,7 +37,7 @@ export const OFFICIAL_AGENDA_EVENTS: TheaterEvent[] = [
     braceletColorId: "blanco",
     braceletColorName: "Blanco Puro Oficial",
     braceletColorHex: "#ffffff",
-    totalCapacity: 157,
+    totalCapacity: 185,
     ticketStyle: "HIBRIDO",
   }),
 

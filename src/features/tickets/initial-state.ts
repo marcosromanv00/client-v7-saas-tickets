@@ -26,7 +26,7 @@ export function loadInitialState(): TheaterState {
               ...saved,
               mode: saved.mode || initEvt.mode,
               ticketStyle: saved.ticketStyle || initEvt.ticketStyle || "HIBRIDO",
-              totalCapacity: isEscats ? 157 : (saved.totalCapacity || initEvt.totalCapacity),
+              totalCapacity: isEscats ? 185 : (saved.totalCapacity || initEvt.totalCapacity),
               braceletColorId: isEscats ? "blanco" : (saved.braceletColorId || initEvt.braceletColorId),
               braceletColorName: isEscats ? "Blanco Puro Oficial" : (saved.braceletColorName || initEvt.braceletColorName),
               braceletColorHex: isEscats ? "#ffffff" : (saved.braceletColorHex || initEvt.braceletColorHex),
@@ -42,7 +42,24 @@ export function loadInitialState(): TheaterState {
 
         // Función de sábado 26 es 100% brazalete sin listas ni padrón previo
         if (Array.isArray(parsed.tickets)) {
-          parsed.tickets = parsed.tickets.filter((t: Ticket) => t.eventId !== "evt-pato-barraza-26");
+          parsed.tickets = parsed.tickets
+            .filter((t: Ticket) => t.eventId !== "evt-pato-barraza-26")
+            .map((t: Ticket) =>
+              t.id === "tkt-003" && t.eventId === "evt-escats-27"
+                ? { ...t, eventId: "evt-reapertura-25", qrCodeValue: "TM-TKT-003-REAPERTURA-PB-C-06" }
+                : t
+            );
+        }
+
+        if (!Array.isArray(parsed.specialGuests)) {
+          parsed.specialGuests = INITIAL_SPECIAL_GUESTS;
+        } else {
+          // Asegurar sincronización de listas oficiales de invitados (ej: Escats 28 cupos)
+          for (const initGuest of INITIAL_SPECIAL_GUESTS) {
+            if (!parsed.specialGuests.some((g: { id: string }) => g.id === initGuest.id)) {
+              parsed.specialGuests.push(initGuest);
+            }
+          }
         }
         if (!parsed.braceletColors || parsed.braceletColors.length === 0) {
           parsed.braceletColors = DEFAULT_BRACELET_COLORS;

@@ -35,7 +35,7 @@ export const BraceletHeaderBanner: React.FC<BraceletHeaderBannerProps> = ({
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-teatro-blue dark:text-blue-400">
-              Función Sábado 26 • Orden de Llegada
+              {currentEvent.genre || "Función Oficial"} • {currentEvent.date}
             </span>
 
             {isFull ? (

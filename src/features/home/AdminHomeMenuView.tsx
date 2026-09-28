@@ -32,6 +32,9 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
   const delivered = counterData.deliveredCount;
   const total = currentEvent?.totalCapacity || 220;
   const available = Math.max(0, total - delivered);
+  const eventGuests = store.specialGuests.filter((g) => g.eventId === currentEvent?.id);
+  const guestCount = eventGuests.reduce((acc, g) => acc + Math.max(0, g.ticketsCount - g.redeemedCount), 0);
+  const publicCapacity = total - guestCount;
 
   const handleSelectEvent = (evt: TheaterEvent) => {
     if (onSelectEventForBooking) {
@@ -70,7 +73,7 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
           />
           <div className="text-left leading-tight">
             <span className="flex items-center gap-1 text-[10px] font-mono text-slate-400 uppercase">
-              Función de Hoy ({currentEvent?.date}) • {total} butacas
+              Hoy ({currentEvent?.date}) • {total} cupos {guestCount > 0 ? `(${publicCapacity} púb. + ${guestCount} invit.)` : ""}
               {canManage && <Sliders className="w-2.5 h-2.5 text-teatro-blue dark:text-blue-400" />}
             </span>
             <span className="text-xs font-bold text-slate-900 dark:text-white">
@@ -90,7 +93,7 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
           icon={<QrCode className="w-5 h-5 text-emerald-400" />}
           badge={
             <span className="px-2.5 py-1 rounded-full text-2xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-xs">
-              {delivered}/{total} entregados • {available} libres
+              {delivered}/{total} entregados • {available} libres {guestCount > 0 ? `(${publicCapacity} público)` : ""}
             </span>
           }
           onClick={() => onSelectTab("puerta")}

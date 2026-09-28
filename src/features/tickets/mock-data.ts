@@ -46,6 +46,27 @@ export const INITIAL_SPECIAL_GUESTS: SpecialGuestEntry[] = [
     notes: "Cupos de cortesía oficial para autoridades ministeriales",
     redeemedCount: 0,
   },
+  // Invitaciones y reservas especiales para Escats (Domingo 27 de Septiembre: 28 brazaletes invitados)
+  {
+    id: "sp-escats-01",
+    eventId: "evt-escats-27",
+    name: "Producción & Banda Escats",
+    citizenId: null,
+    seatId: null,
+    ticketsCount: 16,
+    notes: "Músicos, equipo técnico y comitiva oficial de Kin Rivera",
+    redeemedCount: 0,
+  },
+  {
+    id: "sp-escats-02",
+    eventId: "evt-escats-27",
+    name: "Protocolo Municipal & Invitados Especiales",
+    citizenId: null,
+    seatId: null,
+    ticketsCount: 12,
+    notes: "Reserva de honor y cortesías institucionales del municipio",
+    redeemedCount: 0,
+  },
 ];
 
 export const INITIAL_TICKETS: Ticket[] = [
@@ -87,14 +108,14 @@ export const INITIAL_TICKETS: Ticket[] = [
   },
   {
     id: "tkt-003",
-    eventId: "evt-escats-27",
+    eventId: "evt-reapertura-25",
     citizenName: "Mariana Rojas Castro",
     citizenId: "2-0741-0852",
     citizenPhone: "8999-3322",
     seatId: "PB-C-06",
     seatLabel: "Platea C-06",
     zone: "PLATEA_BAJA",
-    qrCodeValue: "TM-TKT-003-ESCATS-PB-C-06",
+    qrCodeValue: "TM-TKT-003-REAPERTURA-PB-C-06",
     shortCode: "MR06",
     isVipGuest: false,
     checkedIn: false,

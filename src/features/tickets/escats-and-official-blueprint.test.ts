@@ -3,6 +3,7 @@ import { theaterStore } from "./ticket-store";
 import { DEFAULT_BRACELET_COLORS } from "./bracelet-utils";
 import { generateInitialSeats } from "./theater-layout";
 import { splitRowByBlueprint } from "../seat-reservation/theater-seat-map.utils";
+import { computeDynamicCapacity } from "./capacity-calculator";
 import { TheaterEvent } from "./types";
 
 describe("Escats Concierto, Brazaletes Blancos, Estilos de Entrada y Plano 225", () => {
@@ -17,14 +18,28 @@ describe("Escats Concierto, Brazaletes Blancos, Estilos de Entrada y Plano 225",
     expect(white?.name).toContain("Blanco");
   });
 
-  it("configura la función de Escats de hoy 27 de Septiembre con brazaletes blancos y 157 cupos", () => {
-    const escats = theaterStore.getSnapshot().events.find((e) => e.id === "evt-escats-27");
+  it("configura la función de Escats de hoy 27 de Septiembre con 157 cupos para público y 28 brazaletes de invitados", () => {
+    const snap = theaterStore.getSnapshot();
+    const escats = snap.events.find((e) => e.id === "evt-escats-27");
     expect(escats).toBeDefined();
     expect(escats?.date).toBe("2026-09-27");
     expect(escats?.braceletColorId).toBe("blanco");
     expect(escats?.braceletColorHex.toLowerCase()).toBe("#ffffff");
-    expect(escats?.totalCapacity).toBe(157);
+    expect(escats?.totalCapacity).toBe(185);
     expect(escats?.ticketStyle).toBe("HIBRIDO");
+
+    // Verificar las reservas de invitados de honor y banda Escats (28 cupos en total)
+    const escatsGuests = snap.specialGuests.filter((g) => g.eventId === "evt-escats-27");
+    const totalGuestBracelets = escatsGuests.reduce((acc, g) => acc + g.ticketsCount, 0);
+    expect(totalGuestBracelets).toBe(28);
+
+    // Verificar cálculo dinámico de aforo: exactamente 157 disponibles para público
+    const seats = snap.seatsByEvent[escats!.id] || [];
+    const capacity = computeDynamicCapacity(escats!, snap.tickets, snap.specialGuests, seats);
+    expect(capacity.totalCapacity).toBe(185);
+    expect(capacity.preReservedCount).toBe(28);
+    expect(capacity.availableRemaining).toBe(157);
+    expect(capacity.specialGuestsCount).toBe(28);
   });
 
   it("permite cambiar el estilo de entradas entre ÚNICO e HÍBRIDO y persistirlo reactivamente", () => {
