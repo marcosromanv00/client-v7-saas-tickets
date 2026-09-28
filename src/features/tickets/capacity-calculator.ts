@@ -10,6 +10,8 @@ export interface DynamicCapacityReport {
   availableRemaining: number;
   vipReservedCount: number;
   percentageOccupied: number;
+  specialGuestsCount: number;
+  publicAvailable: number;
 }
 
 export function computeDynamicCapacity(
@@ -49,5 +51,7 @@ export function computeDynamicCapacity(
     availableRemaining,
     vipReservedCount,
     percentageOccupied,
+    specialGuestsCount: pendingSpecialTickets,
+    publicAvailable: availableRemaining,
   };
 }

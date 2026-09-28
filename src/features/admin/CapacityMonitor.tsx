@@ -27,7 +27,11 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
             <Armchair className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" /> Capacidad Total
           </span>
           <p className="text-2xl font-bold font-mono text-slate-900 dark:text-white mt-1">{capacity.totalCapacity}</p>
-          <span className="text-[10px] text-slate-400 font-mono">120 Platea • 70 Balcón</span>
+          <span className="text-[10px] text-slate-400 font-mono">
+            {capacity.specialGuestsCount > 0
+              ? `${capacity.availableRemaining} público • ${capacity.specialGuestsCount} invitados`
+              : `${capacity.plantaBajaTotal} Platea • ${capacity.balconTotal} Balcón`}
+          </span>
         </div>
 
         <div className="bg-slate-50 dark:bg-[#071324] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-[#1a3357] shadow-xs">
@@ -36,7 +40,9 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
           </span>
           <p className="text-2xl font-bold font-mono text-teatro-blue dark:text-blue-400 mt-1">{capacity.preReservedCount}</p>
           <span className="text-[10px] text-teatro-blue/80 dark:text-blue-400/80 font-mono">
-            {capacity.percentageOccupied}% del aforo
+            {capacity.specialGuestsCount > 0
+              ? `${capacity.specialGuestsCount} invitados reservados`
+              : `${capacity.percentageOccupied}% del aforo`}
           </span>
         </div>
 
@@ -53,7 +59,9 @@ export function CapacityMonitor({ capacity, eventTitle }: CapacityMonitorProps) 
             <AlertCircle className="w-3.5 h-3.5" /> Walk-In Disponible
           </span>
           <p className="text-2xl font-bold font-mono text-teatro-gold dark:text-amber-400 mt-1">{capacity.availableRemaining}</p>
-          <span className="text-[10px] text-teatro-gold/80 dark:text-amber-400/80 font-mono">Orden de llegada</span>
+          <span className="text-[10px] text-teatro-gold/80 dark:text-amber-400/80 font-mono">
+            {capacity.specialGuestsCount > 0 ? "Brazaletes libres público" : "Orden de llegada"}
+          </span>
         </div>
       </div>
 
