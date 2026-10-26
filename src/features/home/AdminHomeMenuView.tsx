@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { QrCode, Ticket, Armchair, Shield, Calendar, Sliders, AlertTriangle, Users } from "lucide-react";
+import { Ticket, Armchair, Shield, Calendar, Sliders, AlertTriangle, Users } from "lucide-react";
 import { ActiveTab } from "../../components/layout/CivicHeader";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { useAuthStore } from "../auth/useAuthStore";
@@ -30,7 +30,7 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
   const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const counterData = store.braceletCountersByEvent?.[currentEvent?.id || ""] || { deliveredCount: 0 };
   const delivered = counterData.deliveredCount;
-  const total = currentEvent?.totalCapacity || 220;
+  const total = currentEvent?.totalCapacity || 225;
   const available = Math.max(0, total - delivered);
   const eventGuests = store.specialGuests.filter((g) => g.eventId === currentEvent?.id);
   const guestCount = eventGuests.reduce((acc, g) => acc + Math.max(0, g.ticketsCount - g.redeemedCount), 0);
@@ -85,39 +85,20 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
 
       {/* 2. Cuadrícula Bento Editorial */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-        {/* Card 1: Control de Puerta & Brazaletes (Destacada en desktop) */}
+        {/* Card 1: Boletería & Entrega de Brazaletes (Destacada en desktop) */}
         <HomeBentoCard
-          title="Control de Acceso y Puerta"
-          subtitle="Contador táctil de brazaletes, aforo en sala y acreditación rápida de público."
-          imageSrc="/posters/theater-entrance.jpg"
-          icon={<QrCode className="w-5 h-5 text-emerald-400" />}
-          badge={
-            <span className="px-2.5 py-1 rounded-full text-2xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 backdrop-blur-xs">
-              {delivered}/{total} entregados • {available} libres {guestCount > 0 ? `(${publicCapacity} público)` : ""}
-            </span>
-          }
-          onClick={() => onSelectTab("puerta")}
+          title="Boletería & Entrega de Brazaletes"
+          subtitle={`Mostrador de entrega de brazaletes de acceso. ${delivered} de ${total} entregados (${available} disponibles).`}
+          imageSrc="/posters/theater-box-office.jpg"
+          icon={<Ticket className="w-5 h-5 text-amber-400" />}
+          onClick={() => onSelectTab("taquilla")}
           className="sm:col-span-2 lg:col-span-2"
         />
 
-        {/* Card 2: Taquilla Express */}
+        {/* Card 2: Control de Sala & Acomodadores */}
         <HomeBentoCard
-          title="Taquilla Express"
-          subtitle="Emisión rápida de boletos, registro express y entregas de cortesías en mostrador."
-          imageSrc="/posters/theater-box-office.jpg"
-          icon={<Ticket className="w-5 h-5 text-amber-400" />}
-          badge={
-            <span className="px-2.5 py-1 rounded-full text-2xs font-mono text-amber-300 bg-amber-500/20 border border-amber-500/30 backdrop-blur-xs">
-              Ventanilla
-            </span>
-          }
-          onClick={() => onSelectTab("taquilla")}
-        />
-
-        {/* Card 3: Control de Sala & Acomodadores */}
-        <HomeBentoCard
-          title="Control de Sala y Acomodadores"
-          subtitle="Monitoreo de ocupación en vivo, mapa interactivo y orientación de espectadores."
+          title="Sala & Acomodadores"
+          subtitle="Monitoreo de ocupación en vivo, mapa táctil por bloques y control de cupos libres en sala."
           imageSrc="/posters/gala-inaugural.jpg"
           icon={<Armchair className="w-5 h-5 text-blue-400" />}
           onClick={() => onSelectTab("sala")}
@@ -126,14 +107,9 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
         {/* Card 4: Cartelera Oficial */}
         <HomeBentoCard
           title="Cartelera Oficial y Reservas"
-          subtitle="Explora las 4 funciones activas de temporada, selección de butacas y reservas."
+          subtitle="Programación de temporada, selección de butacas y reservas de público general."
           imageSrc="/posters/sinfonica.jpg"
           icon={<Calendar className="w-5 h-5 text-rose-400" />}
-          badge={
-            <span className="px-2.5 py-1 rounded-full text-2xs font-mono text-white bg-muni-red/80 backdrop-blur-xs">
-              Temporada 2026
-            </span>
-          }
           onClick={() => onSelectTab("public")}
         />
 
@@ -149,23 +125,20 @@ export const AdminHomeMenuView: React.FC<AdminHomeMenuViewProps> = ({
         {/* Card 6: Mesa de Incidencias en Sala */}
         <HomeBentoCard
           title="Mesa de Incidencias"
-          subtitle="Registro ágil de contingencias, asientos duplicados y resolución en sala."
+          subtitle={
+            openIncidents > 0
+              ? `${openIncidents} incidencia${openIncidents > 1 ? "s" : ""} pendiente${openIncidents > 1 ? "s" : ""} de resolución en sala.`
+              : "Registro ágil de contingencias y notas de acomodación."
+          }
           imageSrc="/posters/theater-entrance.jpg"
           icon={<AlertTriangle className="w-5 h-5 text-rose-400" />}
-          badge={
-            openIncidents > 0 ? (
-              <span className="px-2.5 py-1 rounded-full text-2xs font-mono font-bold bg-rose-500/25 text-rose-300 border border-rose-500/40">
-                {openIncidents} abiertas
-              </span>
-            ) : undefined
-          }
           onClick={() => onSelectTab("incidencias")}
         />
 
         {/* Card 7: Personal y Control Horario */}
         <HomeBentoCard
           title="Personal & Turnos"
-          subtitle="Acreditación con cédula, reloj de entrada/salida y asignación de puestos."
+          subtitle="Acreditación de equipo de trabajo, registro horario y asignación de puestos."
           imageSrc="/posters/theater-box-office.jpg"
           icon={<Users className="w-5 h-5 text-indigo-400" />}
           onClick={() => onSelectTab("personal")}

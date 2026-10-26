@@ -15,7 +15,7 @@ export function executeUpdateBraceletCount(
   notes?: string
 ): UpdateBraceletResult {
   const event = state.events.find((e) => e.id === eventId);
-  const maxCapacity = event ? event.totalCapacity : 220;
+  const maxCapacity = event ? event.totalCapacity : 225;
 
   const currentCounter = state.braceletCountersByEvent?.[eventId] || {
     eventId,

@@ -34,6 +34,8 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
     store.resetBraceletCount(currentEvent.id);
   };
 
+  const lastDeliveryDelta = counterData.history?.find((h) => h.delta > 0)?.delta || 1;
+
   return (
     <div className="space-y-4 max-w-2xl mx-auto">
       {/* 1. Cabecera Informativa con Color Oficial del Brazalete */}
@@ -47,6 +49,7 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
         metrics={metrics}
         onAddDelta={handleAddDelta}
         onReset={handleReset}
+        lastDeliveryDelta={lastDeliveryDelta}
       />
 
       {/* 4. Historial Desplegable de Entregas Realizadas */}

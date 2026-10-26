@@ -72,7 +72,7 @@ export const TaquillaExpressHeader: React.FC<TaquillaExpressHeaderProps> = ({
 
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] text-[11px] font-mono text-slate-600 dark:text-slate-300">
               <Armchair className="w-3 h-3 text-teatro-blue dark:text-blue-400" />
-              <span>{currentEvent.totalCapacity || 220} butacas</span>
+              <span>{currentEvent.totalCapacity || 225} butacas</span>
             </div>
 
             {canManage && (

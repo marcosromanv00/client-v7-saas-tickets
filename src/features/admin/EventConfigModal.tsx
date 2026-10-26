@@ -23,31 +23,47 @@ export function EventConfigModal({
   const [title, setTitle] = useState(event.title);
   const [date, setDate] = useState(event.date);
   const [time, setTime] = useState(event.time);
-  const [duration, setDuration] = useState(event.durationMinutes);
-  const [totalCapacity, setTotalCapacity] = useState(event.totalCapacity || 225);
-  const [mode, setMode] = useState<EventMode>(event.mode);
-  const [ticketStyle, setTicketStyle] = useState<TicketStyle>(event.ticketStyle || "HIBRIDO");
-  const [selectedColorId, setSelectedColorId] = useState(event.braceletColorId || "azul-rey");
+  const [duration, setDuration] = useState<string | number>(event.durationMinutes || 90);
+  const [totalCapacity, setTotalCapacity] = useState<string | number>(event.totalCapacity || 225);
+  const [mode, setMode] = useState<EventMode>(event.mode || "GENERAL_ADMISSION");
+  const [ticketStyle, setTicketStyle] = useState<TicketStyle>(event.ticketStyle || "UNICO");
+  const [selectedColorId, setSelectedColorId] = useState(event.braceletColorId || "blanco");
   const [registrationEnabled, setRegistrationEnabled] = useState(event.registrationEnabled);
   const [isPrivate, setIsPrivate] = useState(event.isPrivate);
 
   if (!isOpen) return null;
 
+  const handleCapacityBlur = () => {
+    const val = Number(totalCapacity);
+    if (isNaN(val) || totalCapacity === "" || val < 10) {
+      setTotalCapacity(10);
+    } else if (val > 225) {
+      setTotalCapacity(225);
+    } else {
+      setTotalCapacity(Math.round(val));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const chosenColor = braceletColors.find((c) => c.id === selectedColorId) || {
-      id: "azul-rey",
-      name: "Azul Rey",
-      hex: "#004ea2",
+      id: "blanco",
+      name: "Blanco Puro Oficial",
+      hex: "#ffffff",
     };
+
+    const parsedCap = Number(totalCapacity);
+    const safeCap = isNaN(parsedCap) ? (event.totalCapacity || 225) : Math.max(10, Math.min(225, Math.round(parsedCap)));
+    const parsedDur = Number(duration);
+    const safeDur = isNaN(parsedDur) ? (event.durationMinutes || 90) : Math.max(15, Math.min(360, Math.round(parsedDur)));
 
     onSave({
       ...event,
       title: title.trim(),
       date,
       time,
-      durationMinutes: Number(duration),
-      totalCapacity: Math.max(10, Math.min(225, Number(totalCapacity) || 225)),
+      durationMinutes: safeDur,
+      totalCapacity: safeCap,
       mode,
       ticketStyle,
       braceletColorId: chosenColor.id,
@@ -95,11 +111,11 @@ export function EventConfigModal({
             </div>
             <div>
               <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Duración</label>
-              <input type="number" min="15" max="300" value={duration} onChange={(e) => setDuration(parseInt(e.target.value) || 90)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs" required />
+              <input type="number" min="15" max="360" value={duration} onChange={(e) => setDuration(e.target.value)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs" required />
             </div>
             <div>
               <label className="block font-mono text-slate-700 dark:text-slate-300 mb-1 font-medium">Butacas</label>
-              <input type="number" min="10" max="225" value={totalCapacity} onChange={(e) => setTotalCapacity(parseInt(e.target.value) || 225)} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs font-mono font-bold" required title="Cantidad total de butacas disponibles para esta función" />
+              <input type="number" min="10" max="225" value={totalCapacity} onChange={(e) => setTotalCapacity(e.target.value)} onBlur={handleCapacityBlur} className="w-full px-2 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-slate-900 dark:text-white text-xs font-mono font-bold" required title="Cantidad total de butacas disponibles para esta función" />
             </div>
           </div>
 
@@ -147,21 +163,11 @@ export function EventConfigModal({
           <div className="bg-slate-50 dark:bg-[#071324] p-3 rounded-2xl border border-slate-200 dark:border-[#1a3357] space-y-2">
             <label className="flex items-center justify-between cursor-pointer">
               <span className="font-medium text-slate-800 dark:text-slate-200">Habilitar Registros Públicos</span>
-              <input
-                type="checkbox"
-                checked={registrationEnabled}
-                onChange={(e) => setRegistrationEnabled(e.target.checked)}
-                className="w-4 h-4 text-teatro-blue rounded focus:ring-teatro-blue accent-teatro-blue"
-              />
+              <input type="checkbox" checked={registrationEnabled} onChange={(e) => setRegistrationEnabled(e.target.checked)} className="w-4 h-4 text-teatro-blue rounded accent-teatro-blue" />
             </label>
             <label className="flex items-center justify-between cursor-pointer">
               <span className="font-medium text-slate-800 dark:text-slate-200">Función Privada (Protocolo)</span>
-              <input
-                type="checkbox"
-                checked={isPrivate}
-                onChange={(e) => setIsPrivate(e.target.checked)}
-                className="w-4 h-4 text-teatro-blue rounded focus:ring-teatro-blue accent-teatro-blue"
-              />
+              <input type="checkbox" checked={isPrivate} onChange={(e) => setIsPrivate(e.target.checked)} className="w-4 h-4 text-teatro-blue rounded accent-teatro-blue" />
             </label>
           </div>
 

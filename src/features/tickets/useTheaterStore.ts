@@ -17,6 +17,8 @@ export interface TheaterStoreHook extends TheaterState {
   checkInByCode: typeof theaterStore.checkInByCode;
   checkInByQr: typeof theaterStore.checkInByQr;
   addSpecialGuest: typeof theaterStore.addSpecialGuest;
+  toggleSeatOccupancy: typeof theaterStore.toggleSeatOccupancy;
+  fillRowOccupancy: typeof theaterStore.fillRowOccupancy;
   updateBraceletCount: typeof theaterStore.updateBraceletCount;
   resetBraceletCount: typeof theaterStore.resetBraceletCount;
   resetStore: typeof theaterStore.resetStore;
@@ -46,6 +48,8 @@ export function useTheaterStore(): TheaterStoreHook {
     checkInByCode: theaterStore.checkInByCode,
     checkInByQr: theaterStore.checkInByQr,
     addSpecialGuest: theaterStore.addSpecialGuest,
+    toggleSeatOccupancy: theaterStore.toggleSeatOccupancy,
+    fillRowOccupancy: theaterStore.fillRowOccupancy,
     updateBraceletCount: theaterStore.updateBraceletCount,
     resetBraceletCount: theaterStore.resetBraceletCount,
     resetStore: theaterStore.resetStore,
