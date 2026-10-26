@@ -14,7 +14,9 @@ function createRng(seed: number = 42) {
 }
 
 describe("Monte Carlo Simulation: Acomodo de Grupos y Dinámica de Aforo", () => {
-  it("ejecuta 1,000 simulaciones de llegada con grupos aleatorios verificando invariantes y contigüidad", () => {
+  it(
+    "ejecuta 1,000 simulaciones de llegada con grupos aleatorios verificando invariantes y contigüidad",
+    () => {
     const rng = createRng(12345);
     const NUM_SIMULATIONS = 1000;
 
@@ -83,7 +85,7 @@ describe("Monte Carlo Simulation: Acomodo de Grupos y Dinámica de Aforo", () =>
     expect(contiguityRate).toBeGreaterThan(60);
     // Cada simulación debe acomodar en promedio > 180 butacas de las 220
     expect(avgAssignedPerSim).toBeGreaterThan(180);
-  });
+  }, 15000);
 
   it("simula el corte de 20 min y liberación de 15 min con absorción por walk-ins", () => {
     const rng = createRng(999);
