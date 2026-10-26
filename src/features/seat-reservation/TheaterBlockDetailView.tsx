@@ -10,7 +10,7 @@ import {
   TheaterBlockId,
   calculateBlockMetrics,
 } from "./theater-blocks.config";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface TheaterBlockDetailViewProps {
   blockId: TheaterBlockId;
@@ -45,46 +45,45 @@ export const TheaterBlockDetailView: React.FC<TheaterBlockDetailViewProps> = ({
       transition={{ type: "spring", stiffness: 360, damping: 26 }}
       className="w-full flex flex-col items-center select-none"
     >
-      {/* 1. Navegación de Bloques */}
-      <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200 dark:border-slate-800">
+      {/* 1. Navegación Rápida y Selector de Bloque */}
+      <div className="w-full flex items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-slate-100 dark:border-slate-800">
         <button
           type="button"
           onClick={onBackToMacro}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-xs font-semibold transition-all cursor-pointer touch-manipulation"
+          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-2xs font-semibold transition-all cursor-pointer touch-manipulation shrink-0"
         >
-          <ArrowLeft className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" />
-          <span>Ver todas las zonas</span>
+          <ArrowLeft className="w-3 h-3 text-teatro-blue dark:text-blue-400" />
+          <span>Volver</span>
         </button>
 
-        <div className="flex items-center justify-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1 shrink-0">
           {THEATER_BLOCK_LIST.map((b) => (
             <button
               key={b.id}
               type="button"
               onClick={() => onSelectBlock(b.id)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all cursor-pointer touch-manipulation ${
-                b.id === blockId ? `${b.themeColor.pillBg} shadow-xs font-bold` : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              className={`px-2 py-0.5 rounded text-2xs font-mono font-medium transition-all cursor-pointer touch-manipulation ${
+                b.id === blockId
+                  ? `${b.themeColor.pillBg} shadow-2xs font-bold`
+                  : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               {b.shortName}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* 2. Banner de Información de Zona */}
-      <div className="w-full max-w-lg mb-2.5 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: currentBlock.themeColor.accent }} />
-          <span className="font-semibold text-slate-900 dark:text-white">{currentBlock.name}</span>
-          <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">({metrics.available} libres de {metrics.total})</span>
-        </div>
-        {metrics.selected > 0 && (
-          <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400 font-mono text-[11px]">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            {metrics.selected} butaca{metrics.selected > 1 ? "s" : ""}
+        <div className="flex items-center gap-1.5 text-2xs font-mono shrink-0">
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: currentBlock.themeColor.accent }} />
+          <span className="font-bold text-slate-800 dark:text-slate-200">
+            {metrics.available}<span className="font-normal text-slate-400">/{metrics.total}</span>
           </span>
-        )}
+          {metrics.selected > 0 && (
+            <span className="ml-1 text-emerald-600 dark:text-emerald-400 font-bold">
+              ({metrics.selected} sel)
+            </span>
+          )}
+        </div>
       </div>
 
       {/* 3. Parrilla de Butacas con Zoom Aumentado */}
