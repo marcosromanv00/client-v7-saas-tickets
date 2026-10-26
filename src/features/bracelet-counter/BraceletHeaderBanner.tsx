@@ -86,7 +86,7 @@ export const BraceletHeaderBanner: React.FC<BraceletHeaderBannerProps> = ({
 
           <div className="inline-flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] text-xs font-mono text-slate-600 dark:text-slate-300">
             <Armchair className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400" />
-            <span>{currentEvent.totalCapacity || 220} butacas</span>
+            <span>{currentEvent.totalCapacity || 225} butacas</span>
           </div>
 
           {canManage && (
