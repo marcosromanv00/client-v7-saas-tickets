@@ -92,31 +92,35 @@ describe("Escats Concierto, Brazaletes Blancos, Estilos de Entrada y Plano 225",
     const rowM = seats.filter((s) => s.row === "M");
     const rowN = seats.filter((s) => s.row === "N");
 
-    // Fila A: 5 en ala izquierda y 7 en ala derecha
+    // Fila A: 7 en bloque izquierdo (12..6) y 5 en bloque derecho (5..1)
     const splitA = splitRowByBlueprint("A", rowA);
-    expect(splitA.left.length).toBe(5);
-    expect(splitA.right.length).toBe(7);
+    expect(splitA.left.length).toBe(7);
+    expect(splitA.right.length).toBe(5);
     expect(splitA.hasAisle).toBe(true);
 
-    // Fila D: 3 en ala izquierda con espacio accesible y 7 en ala derecha
+    // Fila D: 7 en bloque izquierdo (10..4) y 3 en bloque derecho (3..1) con espacio accesible a la derecha
     const splitD = splitRowByBlueprint("D", rowD);
-    expect(splitD.left.length).toBe(3);
-    expect(splitD.right.length).toBe(7);
+    expect(splitD.left.length).toBe(7);
+    expect(splitD.right.length).toBe(3);
     expect(splitD.showWheelchair).toBe(true);
 
-    // Fila H: 7 butacas en una sola ala (espacio abierto en sector izquierdo por escaleras de descanso)
+    // Fila H: 7 butacas en bloque derecho (7..1) y 7 slots vacíos a la izquierda (pasillo de vestíbulo abierto)
     const splitH = splitRowByBlueprint("H", rowH);
     expect(splitH.right.length).toBe(7);
     expect(splitH.left.length).toBe(0);
+    expect(splitH.emptyLeftSlots).toBe(7);
 
-    // Fila M: 7 izq, 5 der, 2 exterior (asientos 13 y 14)
+    // Fila M: 2 exterior izquierdo (asientos 14 y 13), 5 en bloque izquierdo (12..8), 7 en bloque derecho (7..1)
     const splitM = splitRowByBlueprint("M", rowM);
-    expect(splitM.left.length).toBe(7);
-    expect(splitM.right.length).toBe(5);
-    expect(splitM.outer?.length).toBe(2);
+    expect(splitM.outerLeft?.length).toBe(2);
+    expect(splitM.left.length).toBe(5);
+    expect(splitM.right.length).toBe(7);
 
-    // Fila N: 12 continuas en balcón
+    // Fila N: 5 en bloque izquierdo (12..8) + 7 en bloque derecho (7..1) continuas sin pasillo central (12 totales)
     const splitN = splitRowByBlueprint("N", rowN);
-    expect(splitN.left.length).toBe(12);
+    expect(splitN.left.length).toBe(5);
+    expect(splitN.right.length).toBe(7);
+    expect(splitN.hasAisle).toBe(false);
+    expect(splitN.left.length + splitN.right.length).toBe(12);
   });
 });

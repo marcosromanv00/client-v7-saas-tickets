@@ -9,15 +9,20 @@ import { executeBatchBooking, BatchBookGroupPayload } from "./batch-booking-hand
 import { theaterSync, TheaterSyncEventType } from "./sync-channel";
 import { executeUpdateBraceletCount, executeResetBraceletCount } from "../bracelet-counter/bracelet-counter-handler";
 import { dispatchAttendancePush, setupRealtimeAttendanceListener, dispatchEventCapacityPush } from "./attendance-sync-dispatcher";
+import { scheduleStorageSave, flushStorageSaveSync } from "./storage-sync-debouncer";
+import { executeToggleSeatOccupancy, executeFillRowOccupancy } from "../acomodadores/acomodadores-seat-handler";
 
 export type { TheaterState } from "./ticket-store-types";
 
 let state: TheaterState = loadInitialState();
 const listeners = new Set<() => void>();
+const lastLocalCounterUpdate: Record<string, number> = {};
 
-function notify(broadcastType?: TheaterSyncEventType) {
-  if (typeof localStorage !== "undefined") {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { console.warn("Storage write error", e); }
+function notify(broadcastType?: TheaterSyncEventType, flushSync: boolean = false) {
+  if (flushSync) {
+    flushStorageSaveSync(STORAGE_KEY, state);
+  } else {
+    scheduleStorageSave(STORAGE_KEY, state);
   }
   if (broadcastType) theaterSync.broadcast(broadcastType);
   listeners.forEach((l) => l());
@@ -29,11 +34,16 @@ theaterSync.subscribe(() => {
   listeners.forEach((l) => l());
 });
 
-// Sincronización en tiempo real con Supabase Postgres
+// Sincronización en tiempo real con Supabase Postgres protegida contra ecos de ráfaga
 if (typeof window !== "undefined") {
   setupRealtimeAttendanceListener(state.events.map((e) => e.id), (eventId, count) => {
     const cur = state.braceletCountersByEvent?.[eventId];
-    if (cur && cur.deliveredCount !== count) {
+    if (!cur) return;
+    const timeSinceLocal = Date.now() - (lastLocalCounterUpdate[eventId] || 0);
+    if (timeSinceLocal < 4000 && count < cur.deliveredCount) {
+      return;
+    }
+    if (cur.deliveredCount !== count) {
       state = {
         ...state,
         braceletCountersByEvent: { ...state.braceletCountersByEvent, [eventId]: { ...cur, deliveredCount: count } },
@@ -107,13 +117,8 @@ export const theaterStore = {
       if (res.ticket) {
         const totalChecked = state.tickets.filter((t) => t.eventId === res.ticket!.eventId && t.checkedIn).length;
         dispatchAttendancePush({
-          eventId: res.ticket.eventId,
-          delta: 1,
-          newTotal: totalChecked,
-          entryType: "QR_SCAN",
-          citizenName: res.ticket.citizenName,
-          seatLabel: res.ticket.seatLabel || undefined,
-          notes: `Check-in ${res.ticket.seatLabel || "General"}`,
+          eventId: res.ticket.eventId, delta: 1, newTotal: totalChecked, entryType: "QR_SCAN",
+          citizenName: res.ticket.citizenName, seatLabel: res.ticket.seatLabel || undefined, notes: `Check-in ${res.ticket.seatLabel || "General"}`,
         });
       }
     }
@@ -141,10 +146,7 @@ export const theaterStore = {
 
   batchBookGroup: (payload: BatchBookGroupPayload) => {
     const { updatedState, result } = executeBatchBooking(state, payload);
-    if (result.success) {
-      state = updatedState;
-      notify("TICKET_CHECKED_IN");
-    }
+    if (result.success) { state = updatedState; notify("TICKET_CHECKED_IN"); }
     return result;
   },
 
@@ -158,22 +160,19 @@ export const theaterStore = {
     return { success: true, isSeated: newSeated };
   },
 
-  checkInByCode: (code: string): { success: boolean; error?: string; ticket?: Ticket; status?: string } => {
+  checkInByCode: (code: string) => {
     const ticket = findTicketByAnyCode(state.tickets, code);
-    if (!ticket) {
-      return { success: false, error: `Código "${code}" no encontrado en la base de datos.`, status: "NOT_FOUND" };
-    }
-    return theaterStore.checkInTicket(ticket.id);
+    return ticket ? theaterStore.checkInTicket(ticket.id) : { success: false, error: `Código "${code}" no encontrado.`, status: "NOT_FOUND" };
   },
 
   checkInByQr: (qrValue: string) => theaterStore.checkInByCode(qrValue),
 
-  addSpecialGuest: (guest: SpecialGuestEntry) => {
-    state = { ...state, specialGuests: [guest, ...state.specialGuests] };
-    notify();
-  },
+  addSpecialGuest: (guest: SpecialGuestEntry) => { state = { ...state, specialGuests: [guest, ...state.specialGuests] }; notify(); },
+  toggleSeatOccupancy: (eventId: string, seatId: string) => { state = executeToggleSeatOccupancy(state, eventId, seatId); notify("TICKET_SEATED"); },
+  fillRowOccupancy: (eventId: string, rowLetter: string, fill: boolean) => { state = executeFillRowOccupancy(state, eventId, rowLetter, fill); notify("TICKET_SEATED"); },
 
   updateBraceletCount: (eventId: string, delta: number, notes?: string) => {
+    lastLocalCounterUpdate[eventId] = Date.now();
     const res = executeUpdateBraceletCount(state, eventId, delta, notes);
     state = res.updatedState;
     notify("BRACELET_COUNT_UPDATED");
@@ -182,13 +181,14 @@ export const theaterStore = {
   },
 
   resetBraceletCount: (eventId: string) => {
+    lastLocalCounterUpdate[eventId] = Date.now();
     state = executeResetBraceletCount(state, eventId);
-    notify("BRACELET_COUNT_UPDATED");
+    notify("BRACELET_COUNT_UPDATED", true);
   },
 
   resetStore: () => {
     if (typeof localStorage !== "undefined") localStorage.removeItem(STORAGE_KEY);
     state = loadInitialState();
-    notify();
+    notify(undefined, true);
   },
 };

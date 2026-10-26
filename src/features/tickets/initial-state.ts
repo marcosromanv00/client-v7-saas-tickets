@@ -4,13 +4,16 @@ import { generateInitialSeats } from "./theater-layout";
 import { DEFAULT_BRACELET_COLORS } from "./bracelet-utils";
 import { Seat, TheaterEvent, Ticket } from "./types";
 
-export const STORAGE_KEY = "tm_theater_state_v4_agenda";
-export const LEGACY_STORAGE_KEY = "tm_theater_state_v3_agenda";
+export const STORAGE_KEY = "tm_theater_state_v5_multishow";
+export const LEGACY_STORAGE_KEY = "tm_theater_state_v4_agenda";
 
 export function loadInitialState(): TheaterState {
   if (typeof localStorage !== "undefined") {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+      const raw =
+        localStorage.getItem(STORAGE_KEY) ||
+        localStorage.getItem(LEGACY_STORAGE_KEY) ||
+        localStorage.getItem("tm_theater_state_v3_agenda");
       if (raw) {
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed.events) && parsed.events.length > 0) {
@@ -24,12 +27,12 @@ export function loadInitialState(): TheaterState {
             return {
               ...initEvt,
               ...saved,
-              mode: saved.mode || initEvt.mode,
-              ticketStyle: saved.ticketStyle || initEvt.ticketStyle || "HIBRIDO",
-              totalCapacity: isEscats ? 185 : (saved.totalCapacity || initEvt.totalCapacity),
-              braceletColorId: isEscats ? "blanco" : (saved.braceletColorId || initEvt.braceletColorId),
-              braceletColorName: isEscats ? "Blanco Puro Oficial" : (saved.braceletColorName || initEvt.braceletColorName),
-              braceletColorHex: isEscats ? "#ffffff" : (saved.braceletColorHex || initEvt.braceletColorHex),
+              mode: saved.mode || initEvt.mode || "GENERAL_ADMISSION",
+              ticketStyle: saved.ticketStyle || initEvt.ticketStyle || "UNICO",
+              totalCapacity: isEscats ? 185 : (saved.totalCapacity === 220 ? 225 : (saved.totalCapacity || initEvt.totalCapacity || 225)),
+              braceletColorId: isEscats ? "blanco" : (saved.braceletColorId || initEvt.braceletColorId || "blanco"),
+              braceletColorName: isEscats ? "Blanco Puro Oficial" : (saved.braceletColorName || initEvt.braceletColorName || "Blanco Puro Oficial"),
+              braceletColorHex: isEscats ? "#ffffff" : (saved.braceletColorHex || initEvt.braceletColorHex || "#ffffff"),
               registrationEnabled:
                 saved.registrationEnabled !== undefined
                   ? saved.registrationEnabled
