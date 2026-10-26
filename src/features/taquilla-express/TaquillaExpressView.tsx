@@ -70,11 +70,11 @@ export function TaquillaExpressView() {
     .slice(0, 5);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-4 sm:py-6 pb-28 space-y-4 text-slate-900 dark:text-slate-100 select-none">
+    <div className="w-full max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 pb-20 sm:pb-24 space-y-2.5 text-slate-900 dark:text-slate-100 select-none overflow-x-hidden min-w-0">
       {/* 1. Selector Superior de Función y Pestañas */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2">
-          <span className="text-2xs font-mono uppercase tracking-widest text-slate-400 font-semibold">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-800 w-full min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0 w-full sm:w-auto">
+          <span className="text-2xs font-mono uppercase tracking-wider text-slate-400 font-semibold shrink-0">
             Función:
           </span>
           <select
@@ -84,42 +84,42 @@ export function TaquillaExpressView() {
               setSearchedTicket(null);
               setSearchFeedback(null);
             }}
-            className="px-3 py-1.5 bg-white dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-bold text-slate-900 dark:text-white cursor-pointer"
+            className="w-full sm:w-72 truncate min-w-0 px-2.5 py-1.5 bg-white dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-bold text-slate-900 dark:text-white cursor-pointer outline-none"
           >
             {upcomingEvents.map((evt) => (
               <option key={evt.id} value={evt.id}>
-                {evt.title} ({evt.time} hrs)
+                {evt.title.length > 28 ? `${evt.title.slice(0, 26)}...` : evt.title} ({evt.time})
               </option>
             ))}
           </select>
         </div>
 
         {/* Selector de Modo: Brazaletes (Default) vs Cortesías */}
-        <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357]">
+        <div className="grid grid-cols-2 p-0.5 rounded-xl bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] w-full sm:w-auto shrink-0">
           <button
             type="button"
             onClick={() => setActiveSubView("brazaletes")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeSubView === "brazaletes"
                 ? "bg-white dark:bg-slate-800 text-teatro-blue dark:text-blue-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <TicketIcon className="w-3.5 h-3.5" />
-            <span>Entrega de Brazaletes</span>
+            <span className="truncate">Brazaletes</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveSubView("cortesias")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+            className={`flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
               activeSubView === "cortesias"
                 ? "bg-white dark:bg-slate-800 text-teatro-blue dark:text-blue-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Search className="w-3.5 h-3.5" />
-            <span>Búsqueda & Cortesías</span>
+            <span className="truncate">Cortesías</span>
           </button>
         </div>
       </div>
