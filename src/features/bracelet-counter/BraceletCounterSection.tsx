@@ -1,11 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { TheaterEvent } from "../tickets/types";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { calculateBraceletMetrics } from "./bracelet-counter-utils";
-import { BraceletHeaderBanner } from "./BraceletHeaderBanner";
-import { BraceletMetricsCard } from "./BraceletMetricsCard";
+import { BraceletTelemetryBar } from "./BraceletTelemetryBar";
 import { BraceletTactilePad } from "./BraceletTactilePad";
-import { BraceletHistoryDrawer } from "./BraceletHistoryDrawer";
+import { BraceletHistoryModal } from "./BraceletHistoryModal";
 
 interface BraceletCounterSectionProps {
   currentEvent: TheaterEvent;
@@ -15,6 +14,7 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
   currentEvent,
 }) => {
   const store = useTheaterStore();
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const counterData = store.braceletCountersByEvent?.[currentEvent.id] || {
     eventId: currentEvent.id,
@@ -37,14 +37,16 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
   const lastDeliveryDelta = counterData.history?.find((h) => h.delta > 0)?.delta || 1;
 
   return (
-    <div className="space-y-4 max-w-2xl mx-auto">
-      {/* 1. Cabecera Informativa con Color Oficial del Brazalete */}
-      <BraceletHeaderBanner currentEvent={currentEvent} metrics={metrics} />
+    <div className="space-y-2 max-w-lg mx-auto w-full min-w-0">
+      {/* 1. Barra Compacta de Telemetría y Controles (Single Screen) */}
+      <BraceletTelemetryBar
+        currentEvent={currentEvent}
+        metrics={metrics}
+        historyCount={counterData.history?.length || 0}
+        onOpenHistory={() => setIsHistoryOpen(true)}
+      />
 
-      {/* 2. Medidor Visual de Aforo e Impacto en Vivo */}
-      <BraceletMetricsCard metrics={metrics} />
-
-      {/* 3. Clicker Táctil Principal para Contabilizar Entradas */}
+      {/* 2. Teclado Táctil de Alta Frecuencia para Boletería */}
       <BraceletTactilePad
         metrics={metrics}
         onAddDelta={handleAddDelta}
@@ -52,8 +54,13 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
         lastDeliveryDelta={lastDeliveryDelta}
       />
 
-      {/* 4. Historial Desplegable de Entregas Realizadas */}
-      <BraceletHistoryDrawer history={counterData.history} />
+      {/* 3. Modal de Auditoría de Historial bajo demanda */}
+      <BraceletHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        history={counterData.history || []}
+      />
     </div>
   );
 };
+
