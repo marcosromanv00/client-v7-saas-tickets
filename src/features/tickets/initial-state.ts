@@ -77,7 +77,7 @@ export function loadInitialState(): TheaterState {
         if (!parsed.seatsByEvent) parsed.seatsByEvent = {};
         if (!parsed.braceletCountersByEvent) parsed.braceletCountersByEvent = {};
         for (const evt of INITIAL_EVENTS) {
-          if (!parsed.seatsByEvent[evt.id]) {
+          if (!parsed.seatsByEvent[evt.id] || parsed.seatsByEvent[evt.id].length < 225) {
             parsed.seatsByEvent[evt.id] = generateInitialSeats(evt.vipRowsPlantaBaja, evt.vipRowsBalcon);
           }
           if (!parsed.braceletCountersByEvent[evt.id]) {
