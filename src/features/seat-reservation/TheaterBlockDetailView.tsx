@@ -23,6 +23,12 @@ interface TheaterBlockDetailViewProps {
   onFillRow?: (rowLetter: string, fill: boolean) => void;
 }
 
+const BLOCK_TAB_LABELS: Record<TheaterBlockId, string> = {
+  PLATEA_BAJA: "Platea",
+  NIVEL_MEDIO: "Medio",
+  BALCON_ALTO: "Balcón",
+};
+
 export const TheaterBlockDetailView: React.FC<TheaterBlockDetailViewProps> = ({
   blockId,
   seats,
@@ -62,13 +68,13 @@ export const TheaterBlockDetailView: React.FC<TheaterBlockDetailViewProps> = ({
               key={b.id}
               type="button"
               onClick={() => onSelectBlock(b.id)}
-              className={`px-2 py-0.5 rounded text-2xs font-mono font-medium transition-all cursor-pointer touch-manipulation ${
+              className={`px-2 py-0.5 rounded text-2xs font-mono font-medium transition-all cursor-pointer touch-manipulation whitespace-nowrap ${
                 b.id === blockId
                   ? `${b.themeColor.pillBg} shadow-2xs font-bold`
                   : "bg-slate-100 dark:bg-[#071324] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              {b.shortName}
+              {BLOCK_TAB_LABELS[b.id] || b.shortName}
             </button>
           ))}
         </div>
@@ -88,9 +94,10 @@ export const TheaterBlockDetailView: React.FC<TheaterBlockDetailViewProps> = ({
 
       {/* 3. Parrilla de Butacas con Zoom Aumentado */}
       <div className="w-full overflow-x-auto pb-4 pt-1">
-        <div className="min-w-fit mx-auto flex flex-col items-center gap-1.5 sm:gap-2">
+        <div className="min-w-fit mx-auto flex flex-col items-center gap-1 sm:gap-2">
           {currentBlock.rows.map((rowLetter) => {
             const rowSeats = seatsByRow[rowLetter] || [];
+            if (rowSeats.length === 0) return null;
             const isVip = rowLetter === "A" || rowLetter === "N";
             const layout = splitRowByBlueprint(rowLetter, rowSeats);
             const isRowFull = rowSeats.length > 0 && rowSeats.every((s) => s.status !== "AVAILABLE");
@@ -98,14 +105,14 @@ export const TheaterBlockDetailView: React.FC<TheaterBlockDetailViewProps> = ({
             return (
               <div key={rowLetter} className="flex items-center justify-center gap-1 sm:gap-2 w-full">
                 {/* Etiqueta Izquierda de Fila */}
-                <span className={`w-4 sm:w-5 text-center font-mono text-[10px] sm:text-xs shrink-0 ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500 font-semibold"}`}>
+                <span className={`w-3.5 sm:w-5 text-center font-mono text-[10px] sm:text-xs shrink-0 ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500 font-semibold"}`}>
                   {rowLetter}
                 </span>
 
                 {/* Bloque Izquierdo: Anclado a la derecha hacia el pasillo central */}
-                <div className="w-[260px] sm:w-[360px] flex items-center justify-end gap-1 sm:gap-1.5 shrink-0">
+                <div className="w-[164px] sm:w-[260px] flex items-center justify-end gap-0.5 sm:gap-1.5 shrink-0">
                   {layout.outerLeft && layout.outerLeft.length > 0 && (
-                    <div className="flex items-center gap-1 sm:gap-1.5 mr-1 sm:mr-1.5">
+                    <div className="flex items-center gap-0.5 sm:gap-1.5 mr-0.5 sm:mr-1">
                       {layout.outerLeft.map((seat) => (
                         <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} zoomed={true} />
                       ))}
@@ -118,28 +125,28 @@ export const TheaterBlockDetailView: React.FC<TheaterBlockDetailViewProps> = ({
 
                 {/* Pasillo Central con Línea Guía Vertical */}
                 {layout.hasAisle ? (
-                  <div className="w-3 sm:w-5 h-7 sm:h-9 flex items-center justify-center shrink-0">
+                  <div className="w-2.5 sm:w-4 h-7 sm:h-9 flex items-center justify-center shrink-0">
                     <span className="w-px h-full bg-slate-200 dark:bg-slate-700/80" />
                   </div>
                 ) : (
-                  <div className="w-2 sm:w-3 shrink-0" />
+                  <div className="w-1 sm:w-2 shrink-0" />
                 )}
 
                 {/* Bloque Derecho: Anclado a la izquierda desde el pasillo central */}
-                <div className="w-[230px] sm:w-[320px] flex items-center justify-start gap-1 sm:gap-1.5 shrink-0">
+                <div className="w-[164px] sm:w-[260px] flex items-center justify-start gap-0.5 sm:gap-1.5 shrink-0">
                   {layout.right.map((seat) => (
                     <ClaySeat key={seat.id} seat={seat} isSelected={selectedSeatIds.includes(seat.id)} onSelect={onToggleSeat} disabled={seat.isVip && !allowVipSelection} zoomed={true} />
                   ))}
                   {layout.showWheelchair && (
-                    <div className="flex items-center gap-1 ml-1 sm:ml-1.5">
-                      <span className="w-5 h-5 rounded-md bg-blue-500/15 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-xs flex items-center justify-center select-none" title="Accesible Ley 7600">♿</span>
-                      <span className="w-5 h-5 rounded-md bg-blue-500/15 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-xs flex items-center justify-center select-none" title="Accesible Ley 7600">♿</span>
+                    <div className="flex items-center gap-0.5 ml-0.5 sm:ml-1">
+                      <span className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded bg-blue-500/15 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-[10px] flex items-center justify-center select-none" title="Accesible Ley 7600">♿</span>
+                      <span className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded bg-blue-500/15 border border-blue-500/30 text-blue-600 dark:text-blue-400 text-[10px] flex items-center justify-center select-none" title="Accesible Ley 7600">♿</span>
                     </div>
                   )}
                 </div>
 
                 {/* Etiqueta Derecha de Fila */}
-                <span className={`w-4 sm:w-5 text-center font-mono text-[10px] sm:text-xs shrink-0 ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500 font-semibold"}`}>
+                <span className={`w-3.5 sm:w-5 text-center font-mono text-[10px] sm:text-xs shrink-0 ${isVip ? "text-teatro-gold dark:text-amber-400 font-bold" : "text-slate-400 dark:text-slate-500 font-semibold"}`}>
                   {rowLetter}
                 </span>
 
