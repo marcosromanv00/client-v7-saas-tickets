@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { Ticket as TicketIcon, Search, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useTheaterStore } from "../tickets/useTheaterStore";
+import { TaquillaHeaderPanel } from "./TaquillaHeaderPanel";
 import { BraceletCounterSection } from "../bracelet-counter/BraceletCounterSection";
+import { BraceletColorPickerModal } from "../bracelet-counter/BraceletColorPickerModal";
+import { EventConfigModal } from "../admin/EventConfigModal";
+import { BraceletHistoryModal } from "../bracelet-counter/BraceletHistoryModal";
 import { CitizenSearchForm } from "./CitizenSearchForm";
 import { QuickRegisterModal } from "./QuickRegisterModal";
 import { SearchResultCard } from "./SearchResultCard";
 import { RecentEntriesList } from "./RecentEntriesList";
-import { Ticket, ZoneId } from "../tickets/types";
+import { BraceletColor, Ticket, ZoneId } from "../tickets/types";
 import {
   getDefaultActiveEventId,
   findActiveEventForDate,
@@ -21,12 +25,22 @@ export function TaquillaExpressView() {
   const [activeSubView, setActiveSubView] = useState<"brazaletes" | "cortesias">("brazaletes");
   const [searchedTicket, setSearchedTicket] = useState<Ticket | null>(null);
   const [searchFeedback, setSearchFeedback] = useState<string | null>(null);
+
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isQuickRegisterOpen, setIsQuickRegisterOpen] = useState(false);
 
   const currentEvent =
     store.events.find((e) => e.id === selectedEventId) ||
     findActiveEventForDate(store.events) ||
     store.events[0];
+
+  const counterData = store.braceletCountersByEvent?.[currentEvent.id] || {
+    eventId: currentEvent.id,
+    deliveredCount: 0,
+    history: [],
+  };
 
   const handleSearch = (idQuery: string) => {
     setSearchFeedback(null);
@@ -65,66 +79,35 @@ export function TaquillaExpressView() {
     return { success: false, error: res.error };
   };
 
+  const handleSaveColor = (color: BraceletColor) => {
+    store.setEventBraceletColor(currentEvent.id, color);
+  };
+
   const recentEntries = store.tickets
     .filter((t) => t.eventId === currentEvent.id && t.checkedIn)
     .slice(0, 5);
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 pb-20 sm:pb-24 space-y-2.5 text-slate-900 dark:text-slate-100 select-none overflow-x-hidden min-w-0">
-      {/* 1. Selector Superior de Función y Pestañas */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-800 w-full min-w-0">
-        <div className="flex items-center gap-1.5 min-w-0 w-full sm:w-auto">
-          <span className="text-2xs font-mono uppercase tracking-wider text-slate-400 font-semibold shrink-0">
-            Función:
-          </span>
-          <select
-            value={selectedEventId}
-            onChange={(e) => {
-              setSelectedEventId(e.target.value);
-              setSearchedTicket(null);
-              setSearchFeedback(null);
-            }}
-            className="w-full sm:w-72 truncate min-w-0 px-2.5 py-1.5 bg-white dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs font-bold text-slate-900 dark:text-white cursor-pointer outline-none"
-          >
-            {upcomingEvents.map((evt) => (
-              <option key={evt.id} value={evt.id}>
-                {evt.title.length > 28 ? `${evt.title.slice(0, 26)}...` : evt.title} ({evt.time})
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="w-full max-w-lg mx-auto px-3 sm:px-4 py-2 sm:py-3 pb-24 space-y-3 text-slate-900 dark:text-slate-100 select-none overflow-x-hidden min-w-0">
+      {/* 1. ZONA SUPERIOR: Información de Evento, Botones Utils y Pestañas */}
+      <TaquillaHeaderPanel
+        currentEvent={currentEvent}
+        upcomingEvents={upcomingEvents}
+        selectedEventId={selectedEventId}
+        onSelectEventId={(id) => {
+          setSelectedEventId(id);
+          setSearchedTicket(null);
+          setSearchFeedback(null);
+        }}
+        activeSubView={activeSubView}
+        onSelectSubView={setActiveSubView}
+        historyCount={counterData.history?.length || 0}
+        onOpenHistory={() => setIsHistoryOpen(true)}
+        onOpenConfig={() => setIsConfigOpen(true)}
+        onOpenColorPicker={() => setIsColorPickerOpen(true)}
+      />
 
-        {/* Selector de Modo: Brazaletes (Default) vs Cortesías */}
-        <div className="grid grid-cols-2 p-0.5 rounded-xl bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] w-full sm:w-auto shrink-0">
-          <button
-            type="button"
-            onClick={() => setActiveSubView("brazaletes")}
-            className={`flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              activeSubView === "brazaletes"
-                ? "bg-white dark:bg-slate-800 text-teatro-blue dark:text-blue-400 shadow-2xs"
-                : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <TicketIcon className="w-3.5 h-3.5" />
-            <span className="truncate">Brazaletes</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSubView("cortesias")}
-            className={`flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              activeSubView === "cortesias"
-                ? "bg-white dark:bg-slate-800 text-teatro-blue dark:text-blue-400 shadow-2xs"
-                : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
-            }`}
-          >
-            <Search className="w-3.5 h-3.5" />
-            <span className="truncate">Cortesías</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 2. Vista Principal de Entrega de Brazaletes (Por Defecto) */}
+      {/* 2. ZONAS MEDIA E INFERIOR: Telemetría Radial y Botonera Ergonómica */}
       {activeSubView === "brazaletes" ? (
         <BraceletCounterSection currentEvent={currentEvent} />
       ) : (
@@ -151,6 +134,30 @@ export function TaquillaExpressView() {
           <RecentEntriesList entries={recentEntries} />
         </div>
       )}
+
+      {/* Modales Utilitarios Bajo Demanda */}
+      <BraceletColorPickerModal
+        isOpen={isColorPickerOpen}
+        onClose={() => setIsColorPickerOpen(false)}
+        currentColorHex={currentEvent.braceletColorHex}
+        currentColorName={currentEvent.braceletColorName}
+        availableColors={store.braceletColors}
+        onSaveColor={handleSaveColor}
+      />
+
+      <EventConfigModal
+        isOpen={isConfigOpen}
+        onClose={() => setIsConfigOpen(false)}
+        event={currentEvent}
+        braceletColors={store.braceletColors}
+        onSave={(updated) => store.updateEvent(updated)}
+      />
+
+      <BraceletHistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        history={counterData.history || []}
+      />
 
       <QuickRegisterModal
         isOpen={isQuickRegisterOpen}

@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { TheaterEvent } from "../tickets/types";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { calculateBraceletMetrics } from "./bracelet-counter-utils";
-import { BraceletTelemetryBar } from "./BraceletTelemetryBar";
+import { BraceletRadialTelemetry } from "./BraceletRadialTelemetry";
 import { BraceletTactilePad } from "./BraceletTactilePad";
-import { BraceletHistoryModal } from "./BraceletHistoryModal";
 
 interface BraceletCounterSectionProps {
   currentEvent: TheaterEvent;
@@ -14,7 +13,6 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
   currentEvent,
 }) => {
   const store = useTheaterStore();
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const counterData = store.braceletCountersByEvent?.[currentEvent.id] || {
     eventId: currentEvent.id,
@@ -37,30 +35,17 @@ export const BraceletCounterSection: React.FC<BraceletCounterSectionProps> = ({
   const lastDeliveryDelta = counterData.history?.find((h) => h.delta > 0)?.delta || 1;
 
   return (
-    <div className="space-y-2 max-w-lg mx-auto w-full min-w-0">
-      {/* 1. Barra Compacta de Telemetría y Controles (Single Screen) */}
-      <BraceletTelemetryBar
-        currentEvent={currentEvent}
-        metrics={metrics}
-        historyCount={counterData.history?.length || 0}
-        onOpenHistory={() => setIsHistoryOpen(true)}
-      />
+    <div className="space-y-3 max-w-md mx-auto w-full min-w-0">
+      {/* 2. ZONA MEDIA: Telemetría Radial de Ocupación (App Mobile) */}
+      <BraceletRadialTelemetry metrics={metrics} />
 
-      {/* 2. Teclado Táctil de Alta Frecuencia para Boletería */}
+      {/* 3. ZONA INFERIOR: Botonera Táctil Ergonómica con Conmutador de Acción */}
       <BraceletTactilePad
         metrics={metrics}
         onAddDelta={handleAddDelta}
         onReset={handleReset}
         lastDeliveryDelta={lastDeliveryDelta}
       />
-
-      {/* 3. Modal de Auditoría de Historial bajo demanda */}
-      <BraceletHistoryModal
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
-        history={counterData.history || []}
-      />
     </div>
   );
 };
-

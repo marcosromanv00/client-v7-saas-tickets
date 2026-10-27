@@ -70,7 +70,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               }`}
             >
               {item.icon}
-              <span className="text-[11px] font-medium leading-tight mt-0.5 tracking-tight">{item.label}</span>
+              <span className="text-[10px] sm:text-[11px] font-medium leading-tight mt-0.5 tracking-tight truncate max-w-full text-center">
+                {item.label}
+              </span>
             </button>
           );
         })}

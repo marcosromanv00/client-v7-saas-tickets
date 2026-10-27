@@ -21,8 +21,10 @@ export function getRowsForZone(zone: ZoneId): readonly string[] {
 export function buildMatrixFromSeats(seats: Seat[], zone: ZoneId): MatrixRow[] {
   const rows = getRowsForZone(zone);
   const seatsByRow: Record<string, Seat[]> = {};
+  const pbRows: readonly string[] = PLATEA_BAJA_ROWS;
+  const nmRows: readonly string[] = NIVEL_MEDIO_ROWS;
   seats.forEach((s) => {
-    if (s.zone === zone || (zone === "PLATEA_BAJA" && s.zone === "PLANTA_BAJA" && PLATEA_BAJA_ROWS.includes(s.row as any)) || (zone === "NIVEL_MEDIO" && s.zone === "PLANTA_BAJA" && NIVEL_MEDIO_ROWS.includes(s.row as any)) || (zone === "BALCON_ALTO" && s.zone === "BALCON")) {
+    if (s.zone === zone || (zone === "PLATEA_BAJA" && s.zone === "PLANTA_BAJA" && pbRows.includes(s.row)) || (zone === "NIVEL_MEDIO" && s.zone === "PLANTA_BAJA" && nmRows.includes(s.row)) || (zone === "BALCON_ALTO" && s.zone === "BALCON")) {
       if (!seatsByRow[s.row]) seatsByRow[s.row] = [];
       seatsByRow[s.row].push(s);
     }
