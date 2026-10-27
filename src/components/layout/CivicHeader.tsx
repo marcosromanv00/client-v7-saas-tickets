@@ -1,5 +1,5 @@
 import React from "react";
-import { Ticket as TicketIcon, User, LogOut, Menu, X } from "lucide-react";
+import { Ticket as TicketIcon, User, Menu, X } from "lucide-react";
 import { useAuthStore } from "../../features/auth/useAuthStore";
 import { useTheaterStore } from "../../features/tickets/useTheaterStore";
 import { ThemeToggle } from "./ThemeToggle";
@@ -33,7 +33,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
   onOpenCitizenDrawer,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const { currentUser, isCitizen, isSuperAdmin, logout } = useAuthStore();
+  const { currentUser, isCitizen, isSuperAdmin } = useAuthStore();
   const store = useTheaterStore();
   const { incidents } = useIncidentStore();
 
@@ -79,29 +79,36 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
             <ThemeToggle />
 
             {currentUser ? (
-              <div className="flex items-center gap-2 bg-slate-100 dark:bg-[#0c1e36] border border-slate-200 dark:border-[#1a3357] rounded-2xl p-1 pr-2.5">
-                <button onClick={isCitizen ? onOpenCitizenDrawer : undefined} className="flex items-center gap-2 text-xs text-slate-800 dark:text-slate-100 px-2 py-1">
-                  <div className="w-6 h-6 rounded-full bg-teatro-blue text-white flex items-center justify-center font-bold text-[10px]">{currentUser.name.slice(0, 2).toUpperCase()}</div>
-                  <span className="font-medium max-w-27.5 truncate hidden sm:inline">{currentUser.name}</span>
-                </button>
-                <button onClick={logout} title="Cerrar Sesión" className="p-1 text-slate-400 hover:text-muni-red rounded-lg transition-colors cursor-pointer">
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-[#0c1e36] dark:hover:bg-[#122847] border border-slate-200 dark:border-[#1a3357] rounded-2xl p-1 pr-2.5 transition-colors cursor-pointer select-none"
+                title="Abrir menú y perfil"
+              >
+                <div className="w-6 h-6 rounded-full bg-teatro-blue text-white flex items-center justify-center font-bold text-[10px] shadow-2xs">
+                  {currentUser.name.slice(0, 2).toUpperCase()}
+                </div>
+                <span className="font-medium text-xs text-slate-800 dark:text-slate-100 max-w-28 truncate hidden sm:inline">
+                  {currentUser.name}
+                </span>
+              </button>
             ) : (
               <button
+                type="button"
                 onClick={onOpenLoginModal}
                 className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muni-red hover:bg-muni-red-hover text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
               >
                 <User className="w-3.5 h-3.5" />
-                <span>Acceso / Mi Cuenta</span>
+                <span className="hidden sm:inline">Acceso / Mi Cuenta</span>
+                <span className="sm:hidden">Acceso</span>
               </button>
             )}
 
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              aria-label="Menú"
+              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Menú principal"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -109,7 +116,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
         </div>
       </div>
 
-      {/* MENÚ MÓVIL (APERTURA VERTICAL) */}
+      {/* SIDEBAR / MENÚ LATERAL DESLIZANTE */}
       <CivicMobileMenu
         isOpen={mobileMenuOpen}
         activeTab={activeTab}
@@ -117,6 +124,7 @@ export const CivicHeader: React.FC<CivicHeaderProps> = ({
         onClose={() => setMobileMenuOpen(false)}
         onOpenCitizenDrawer={onOpenCitizenDrawer}
         userTicketsCount={userTicketsCount}
+        onOpenLoginModal={onOpenLoginModal}
       />
     </header>
   );

@@ -1,7 +1,18 @@
 import React from "react";
-import { Home, Ticket as TicketIcon, QrCode, Zap, Armchair, Shield, AlertTriangle, Users, Clock } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Ticket as TicketIcon, X } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { ActiveTab } from "./CivicHeader";
 import { useAuthStore } from "../../features/auth/useAuthStore";
+import { useIncidentStore } from "../../features/incidents/useIncidentStore";
+import {
+  NavItem,
+  getMainItems,
+  getOpsItems,
+  getAdminItems,
+  getToolsItems,
+} from "./civic-menu.config";
+import { CivicSidebarFooter } from "./CivicSidebarFooter";
 
 interface CivicMobileMenuProps {
   isOpen: boolean;
@@ -10,6 +21,7 @@ interface CivicMobileMenuProps {
   onClose: () => void;
   onOpenCitizenDrawer: () => void;
   userTicketsCount: number;
+  onOpenLoginModal?: () => void;
 }
 
 export const CivicMobileMenu: React.FC<CivicMobileMenuProps> = ({
@@ -19,164 +31,152 @@ export const CivicMobileMenu: React.FC<CivicMobileMenuProps> = ({
   onClose,
   onOpenCitizenDrawer,
   userTicketsCount,
+  onOpenLoginModal,
 }) => {
-  const { currentUser, isCitizen, isSuperAdmin, isProducer, isStaff } = useAuthStore();
+  const { currentUser, isCitizen, isSuperAdmin, isProducer, isStaff, logout } = useAuthStore();
+  const { incidents } = useIncidentStore();
+  const openIncidentsCount = incidents.filter((i) => i.status === "ABIERTA").length;
   const hasStaffRole = isSuperAdmin || isProducer || isStaff;
-
-  if (!isOpen) return null;
 
   const handleSelect = (tab: ActiveTab) => {
     onTabChange(tab);
     onClose();
   };
 
-
-
-  return (
-    <div className="md:hidden bg-white dark:bg-[#071324] border-b border-slate-200 dark:border-[#192f52] px-4 py-3 space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
+  const renderItem = (item: NavItem) => {
+    const isActive = activeTab === item.id;
+    return (
       <button
-        onClick={() => handleSelect("home")}
-        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-          activeTab === "home"
-            ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs"
-            : "text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+        key={item.id}
+        type="button"
+        onClick={() => handleSelect(item.id)}
+        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors cursor-pointer ${
+          isActive
+            ? "bg-teatro-blue/10 dark:bg-teatro-blue/20 text-teatro-blue dark:text-blue-400 font-semibold border-l-2 border-teatro-blue dark:border-blue-400"
+            : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-medium"
         }`}
       >
-        <Home className="w-4 h-4 text-teatro-blue dark:text-blue-400" />
-        <span>Panel Central / Inicio</span>
-      </button>
-
-      <button
-        onClick={() => handleSelect("public")}
-        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-          activeTab === "public"
-            ? "bg-teatro-blue text-white shadow-xs"
-            : "text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
-        }`}
-      >
-        <TicketIcon className="w-4 h-4 text-rose-500" />
-        <span>Cartelera de Obras</span>
-      </button>
-
-      {currentUser && isCitizen && (
-        <button
-          onClick={() => {
-            onOpenCitizenDrawer();
-            onClose();
-          }}
-          className="w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold text-teatro-blue dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between cursor-pointer"
-        >
-          <span>Mis Entradas</span>
-          <span className="font-mono text-2xs bg-muni-red text-white px-2 py-0.5 rounded-full">
-            {userTicketsCount}
+        <div className="flex items-center gap-2.5">
+          {item.icon}
+          <span>{item.label}</span>
+        </div>
+        {item.badge !== undefined && item.badge > 0 && (
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold bg-rose-500 text-white">
+            {item.badge}
           </span>
-        </button>
-      )}
-
-      <button
-        onClick={() => handleSelect("registro-horas")}
-        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-          activeTab === "registro-horas"
-            ? "bg-teal-600 text-white shadow-xs"
-            : "text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
-        }`}
-      >
-        <Clock className="w-4 h-4 text-teal-500" />
-        <span>Registro de Horarios (Personal)</span>
+        )}
       </button>
+    );
+  };
 
-      <button
-        onClick={() => handleSelect("reporte-incidencias")}
-        className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors cursor-pointer ${
-          activeTab === "reporte-incidencias"
-            ? "bg-rose-600 text-white shadow-xs"
-            : "text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
-        }`}
-      >
-        <AlertTriangle className="w-4 h-4 text-rose-500" />
-        <span>Reporte de Incidencias de Sala</span>
-      </button>
+  if (typeof document === "undefined") return null;
 
-      {hasStaffRole && (
-        <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-1">
-          <span className="text-[10px] font-mono uppercase text-slate-400 px-3 block mb-1">
-            Módulos de Personal (Apertura Vertical)
-          </span>
-          <div className="flex flex-col space-y-1">
-            <button
-              onClick={() => handleSelect("puerta")}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
-                activeTab === "puerta"
-                  ? "bg-teal-600 text-white shadow-xs"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <QrCode className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-              <span>Control de Puerta & Brazaletes</span>
-            </button>
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            onClick={onClose}
+          />
 
-            <button
-              onClick={() => handleSelect("taquilla")}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
-                activeTab === "taquilla"
-                  ? "bg-amber-500 text-white shadow-xs"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <Zap className="w-4 h-4 text-amber-500" />
-              <span>Taquilla Express & Venta</span>
-            </button>
+          <motion.aside
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
+            className="relative w-80 max-w-[85vw] h-full bg-white dark:bg-[#071324] border-l border-slate-200 dark:border-[#192f52] text-slate-900 dark:text-slate-100 shadow-2xl flex flex-col z-10 select-none overflow-hidden"
+          >
+            <div className="p-4 border-b border-slate-200 dark:border-[#192f52] flex items-center justify-between bg-slate-50/80 dark:bg-[#0b1a30]/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-teatro-blue/10 dark:bg-teatro-blue/20 border border-teatro-blue/30 dark:border-blue-500/30 flex items-center justify-center text-teatro-blue dark:text-blue-400">
+                  <TicketIcon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-xs text-slate-900 dark:text-white leading-tight">Menú Principal</h3>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Teatro Municipal de Alajuela</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                aria-label="Cerrar menú"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
-            <button
-              onClick={() => handleSelect("sala")}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
-                activeTab === "sala"
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <Armchair className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Control de Sala & Acomodadores</span>
-            </button>
+            <div className="flex-1 overflow-y-auto p-3 space-y-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 px-3 block">
+                  Navegación
+                </span>
+                {getMainItems().map(renderItem)}
+                {currentUser && isCitizen && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onOpenCitizenDrawer();
+                      onClose();
+                    }}
+                    className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-teatro-blue dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <TicketIcon className="w-4 h-4" />
+                      <span>Mis Entradas</span>
+                    </div>
+                    {userTicketsCount > 0 && (
+                      <span className="font-mono text-2xs bg-muni-red text-white px-2 py-0.5 rounded-full font-bold">
+                        {userTicketsCount}
+                      </span>
+                    )}
+                  </button>
+                )}
+              </div>
 
-            <button
-              onClick={() => handleSelect("incidencias")}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
-                activeTab === "incidencias"
-                  ? "bg-rose-600 text-white shadow-xs"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <AlertTriangle className="w-4 h-4 text-rose-500" />
-              <span>Mesa de Incidencias en Sala</span>
-            </button>
+              {hasStaffRole && (
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 px-3 block">
+                    Operaciones de Sala
+                  </span>
+                  {getOpsItems().map(renderItem)}
+                </div>
+              )}
 
-            <button
-              onClick={() => handleSelect("personal")}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
-                activeTab === "personal"
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <Users className="w-4 h-4 text-indigo-500" />
-              <span>Personal, Roles & Mi Turno</span>
-            </button>
+              {hasStaffRole && (
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 px-3 block">
+                    Gestión & Turnos
+                  </span>
+                  {getAdminItems(openIncidentsCount).map(renderItem)}
+                </div>
+              )}
 
-            <button
-              onClick={() => handleSelect("admin")}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2.5 transition-colors cursor-pointer ${
-                activeTab === "admin"
-                  ? "bg-teatro-blue text-white shadow-xs"
-                  : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-              }`}
-            >
-              <Shield className="w-4 h-4 text-teatro-blue dark:text-blue-400" />
-              <span>Administración de Aforo</span>
-            </button>
-          </div>
+              {hasStaffRole && (
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 px-3 block">
+                    Herramientas de Apoyo
+                  </span>
+                  {getToolsItems().map(renderItem)}
+                </div>
+              )}
+            </div>
+
+            <CivicSidebarFooter
+              currentUser={currentUser}
+              onClose={onClose}
+              onLogout={logout}
+              onOpenLoginModal={onOpenLoginModal}
+            />
+          </motion.aside>
         </div>
       )}
-    </div>
+    </AnimatePresence>,
+    document.body
   );
 };
