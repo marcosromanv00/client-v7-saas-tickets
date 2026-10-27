@@ -67,13 +67,7 @@ export function DoorScannerView() {
     }
   };
 
-  useEffect(() => {
-    if (isGeneralAdmission) {
-      setViewMode("BRAZALETES");
-    } else if (viewMode === "BRAZALETES") {
-      setViewMode("LIST");
-    }
-  }, [currentEvent.id, isGeneralAdmission]);
+  const effectiveViewMode = viewMode === "BRAZALETES" && !isGeneralAdmission ? "LIST" : viewMode;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28 space-y-6 text-slate-900 dark:text-slate-100 transition-colors">
@@ -95,7 +89,7 @@ export function DoorScannerView() {
               <button
                 onClick={() => setViewMode("LIST")}
                 className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "LIST"
+                  effectiveViewMode === "LIST"
                     ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-xs"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
@@ -107,7 +101,7 @@ export function DoorScannerView() {
               <button
                 onClick={() => setViewMode("SCANNER")}
                 className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "SCANNER"
+                  effectiveViewMode === "SCANNER"
                     ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-xs"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
@@ -119,7 +113,7 @@ export function DoorScannerView() {
               <button
                 onClick={() => setViewMode("BRAZALETES")}
                 className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  viewMode === "BRAZALETES"
+                  effectiveViewMode === "BRAZALETES"
                     ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-xs"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
@@ -135,9 +129,9 @@ export function DoorScannerView() {
           </div>
 
           {/* Vista Activa */}
-          {viewMode === "BRAZALETES" ? (
+          {effectiveViewMode === "BRAZALETES" ? (
             <BraceletCounterSection currentEvent={currentEvent} />
-          ) : viewMode === "LIST" ? (
+          ) : effectiveViewMode === "LIST" ? (
             <AttendeeVerificationView currentEvent={currentEvent} />
           ) : (
             <DoorOpticalScannerSection

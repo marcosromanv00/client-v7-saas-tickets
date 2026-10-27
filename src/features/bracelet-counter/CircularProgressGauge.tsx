@@ -86,7 +86,7 @@ export const CircularProgressGauge: React.FC<CircularProgressGaugeProps> = ({
           <span className="text-sm font-sans font-medium text-slate-400 dark:text-slate-500 ml-0.5">%</span>
         </div>
         <span className="text-2xs font-sans font-medium text-slate-500 dark:text-slate-400 mt-1">
-          {isFull ? "Aforo completo" : "Ocupación en sala"}
+          {isFull ? "Aforo completo" : "Ocupación"}
         </span>
       </div>
     </div>
