@@ -65,56 +65,56 @@
 
 /* Tactile Claymorph Seat Styles */
 .clay-seat-available {
-  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-  border: 1px solid #cbd5e1;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #94a3b8;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), inset 0 1px 0 #ffffff;
 }
 .dark .clay-seat-available {
-  background: linear-gradient(180deg, #132746 0%, #0c1a30 100%);
-  border: 1px solid #1e355b;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #0f223a 0%, #081628 100%);
+  border: 1px solid #1e3a63;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .clay-seat-available:hover {
-  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
   border-color: #004ea2;
-  box-shadow: 0 3px 6px rgba(0, 78, 162, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 6px rgba(0, 78, 162, 0.25), inset 0 1px 0 #ffffff;
 }
 .dark .clay-seat-available:hover {
-  background: linear-gradient(180deg, #1a355f 0%, #102342 100%);
+  background: linear-gradient(180deg, #173358 0%, #0d1e34 100%);
   border-color: #38bdf8;
-  box-shadow: 0 3px 6px rgba(56, 189, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 6px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .clay-seat-selected {
   background: linear-gradient(180deg, #0056b8 0%, #004ea2 100%);
   border: 1px solid #003c80;
-  box-shadow: 0 4px 10px rgba(0, 78, 162, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 3px 8px rgba(0, 78, 162, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 .dark .clay-seat-selected {
   background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
   border: 1px solid #60a5fa;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 .clay-seat-occupied {
-  background: #e2e8f0;
-  border: 1px solid #cbd5e1;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
-  opacity: 0.5;
+  background: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  opacity: 0.6;
 }
 .dark .clay-seat-occupied {
-  background: #081324;
-  border: 1px solid #0f223f;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
-  opacity: 0.4;
+  background: #060e1a;
+  border: 1px dashed #14243a;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  opacity: 0.5;
 }
 .clay-seat-vip {
-  background: linear-gradient(180deg, #fef9ee 0%, #fdf0d5 100%);
-  border: 1px solid #c59223;
-  box-shadow: 0 2px 4px rgba(197, 146, 35, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #fef9ee 0%, #fef0d2 100%);
+  border: 1px solid #d97706;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.2), inset 0 1px 0 #ffffff;
 }
 .dark .clay-seat-vip {
-  background: linear-gradient(180deg, #2a2010 0%, #1c1507 100%);
+  background: linear-gradient(180deg, #271c0c 0%, #1a1206 100%);
   border: 1px solid #f59e0b;
-  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* Boleto troquelado con ranuras laterales */

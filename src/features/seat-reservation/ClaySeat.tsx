@@ -34,76 +34,63 @@ export function ClaySeat({
   const isClickable = isAvailable && !disabled;
 
   const sizeClass = zoomed
-    ? "w-7.5 h-9.5 sm:w-10 sm:h-12"
+    ? "w-6 h-7 sm:w-8 sm:h-9"
     : compact
-    ? "w-4.5 h-6 sm:w-8 sm:h-9.5"
-    : "w-6 h-7.5 sm:w-8.5 sm:h-10";
+    ? "w-4.5 h-5.5 sm:w-7 sm:h-8"
+    : "w-5.5 h-6.5 sm:w-7.5 sm:h-8.5";
 
   const fontSizeClass = zoomed
-    ? "text-[10px] sm:text-[12px]"
+    ? "text-[10px] sm:text-xs"
     : compact
-    ? "text-[7px] sm:text-[10px]"
+    ? "text-[7px] sm:text-[9px]"
     : "text-[8px] sm:text-[10px]";
 
   return (
     <motion.button
       type="button"
-      layout
-      whileHover={isClickable ? { scale: 1.15, y: -2 } : undefined}
-      whileTap={isClickable ? { scale: 0.92 } : undefined}
-      animate={{ scale: isSelected ? 1.12 : 1 }}
-      transition={{ type: "spring", stiffness: 450, damping: 24 }}
+      whileHover={isClickable ? { scale: 1.1, y: -1 } : undefined}
+      whileTap={isClickable ? { scale: 0.94 } : undefined}
+      animate={{ scale: isSelected ? 1.08 : 1 }}
+      transition={{ type: "spring", stiffness: 420, damping: 24 }}
       onClick={() => isClickable && onSelect(seat)}
       disabled={!isClickable}
       aria-label={`Butaca ${seat.label} - ${isSelected ? "Seleccionada" : seat.status}`}
-      className={`group relative flex flex-col items-center justify-between select-none transition-all p-0 sm:p-0.5 touch-manipulation ${sizeClass} ${
+      className={`group relative rounded-md sm:rounded-lg flex flex-col items-center justify-between select-none transition-all p-0.5 touch-manipulation ${sizeClass} ${stateClass} ${
         isClickable ? "cursor-pointer" : "cursor-not-allowed pointer-events-none"
       }`}
     >
-      {/* 1. COJÍN DEL ASIENTO (HACIA EL ESCENARIO • PARTE SUPERIOR) */}
-      <div className="relative w-full flex items-center justify-between">
-        {/* Apoyabrazos izquierdo */}
-        <div
-          className={`${zoomed ? "w-1 sm:w-2 h-3.5 sm:h-5" : "w-0.5 sm:w-1.5 h-2.5 sm:h-4"} rounded-full transition-colors ${
-            isSelected
-              ? "bg-teatro-blue-hover dark:bg-blue-400"
-              : isOccupied
-              ? "bg-slate-300 dark:bg-slate-700"
-              : isVip
-              ? "bg-teatro-gold dark:bg-amber-400"
-              : "bg-slate-300 dark:bg-slate-600"
-          }`}
-        />
-
-        {/* Superficie del asiento acolchado con número mirando al proscenio */}
-        <div
-          className={`flex-1 ${zoomed ? "h-4.5 sm:h-6" : "h-3.5 sm:h-5"} mx-0.5 rounded-t-xs sm:rounded-t-md flex items-center justify-center font-mono font-bold tracking-tighter leading-none transition-all duration-200 ${fontSizeClass} ${stateClass}`}
-        >
-          {seat.number}
-        </div>
-
-        {/* Apoyabrazos derecho */}
-        <div
-          className={`${zoomed ? "w-1 sm:w-2 h-3.5 sm:h-5" : "w-0.5 sm:w-1.5 h-2.5 sm:h-4"} rounded-full transition-colors ${
-            isSelected
-              ? "bg-teatro-blue-hover dark:bg-blue-400"
-              : isOccupied
-              ? "bg-slate-300 dark:bg-slate-700"
-              : isVip
-              ? "bg-teatro-gold dark:bg-amber-400"
-              : "bg-slate-300 dark:bg-slate-600"
-          }`}
-        />
-      </div>
-
-      {/* 2. RESPALDO ERGONÓMICO DE LA BUTACA (EN LA PARTE POSTERIOR • INFERIOR) */}
+      {/* Respaldo superior sutil */}
       <div
-        className={`${zoomed ? "w-5 sm:w-7.5 h-2.5 sm:h-4" : "w-3 sm:w-6 h-1.5 sm:h-3.5"} rounded-b-xs sm:rounded-b-lg border-t-0 transition-all duration-200 ${stateClass}`}
+        className={`w-3/4 h-1 rounded-full transition-colors ${
+          isSelected
+            ? "bg-white/40"
+            : isOccupied
+            ? "bg-slate-300/40 dark:bg-slate-700/40"
+            : isVip
+            ? "bg-amber-400/60 dark:bg-amber-400/40"
+            : "bg-slate-300 dark:bg-slate-600"
+        }`}
+      />
+
+      {/* Número de butaca centrado */}
+      <span className={`font-mono font-bold leading-none tracking-tight ${fontSizeClass}`}>
+        {seat.number}
+      </span>
+
+      {/* Base acolchada inferior */}
+      <div
+        className={`w-full h-1 rounded-b-xs transition-colors ${
+          isSelected
+            ? "bg-black/10"
+            : isOccupied
+            ? "bg-transparent"
+            : "bg-black/5 dark:bg-white/5"
+        }`}
       />
 
       {/* Distintivo VIP Protocolario */}
       {isVip && !isSelected && (
-        <span className="absolute -top-1 right-0 w-2 h-2 rounded-full bg-teatro-gold dark:bg-amber-400 shadow-xs shadow-amber-500/50" />
+        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-teatro-gold dark:bg-amber-400 shadow-xs shadow-amber-500/50" />
       )}
     </motion.button>
   );
