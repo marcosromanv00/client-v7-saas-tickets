@@ -8,6 +8,7 @@ interface ClaySeatProps {
   disabled?: boolean;
   compact?: boolean;
   zoomed?: boolean;
+  allowToggleOccupied?: boolean;
 }
 
 export function ClaySeat({
@@ -17,6 +18,7 @@ export function ClaySeat({
   disabled = false,
   compact = false,
   zoomed = false,
+  allowToggleOccupied = false,
 }: ClaySeatProps) {
   const isAvailable = seat.status === "AVAILABLE";
   const isOccupied = seat.status === "OCCUPIED" || seat.status === "RESERVED";
@@ -31,7 +33,7 @@ export function ClaySeat({
     stateClass = "clay-seat-vip text-[#c59223] dark:text-amber-300 font-semibold";
   }
 
-  const isClickable = isAvailable && !disabled;
+  const isClickable = (isAvailable || allowToggleOccupied) && !disabled;
 
   const sizeClass = zoomed
     ? "w-6 h-7 sm:w-8 sm:h-9"

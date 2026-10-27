@@ -11,6 +11,7 @@ import { executeUpdateBraceletCount, executeResetBraceletCount } from "../bracel
 import { dispatchAttendancePush, setupRealtimeAttendanceListener, dispatchEventCapacityPush } from "./attendance-sync-dispatcher";
 import { scheduleStorageSave, flushStorageSaveSync } from "./storage-sync-debouncer";
 import { executeToggleSeatOccupancy, executeFillRowOccupancy } from "../acomodadores/acomodadores-seat-handler";
+import { executeBatchSetSeatOccupancy } from "../acomodadores/usher-sectors.utils";
 
 export type { TheaterState } from "./ticket-store-types";
 
@@ -170,6 +171,10 @@ export const theaterStore = {
   addSpecialGuest: (guest: SpecialGuestEntry) => { state = { ...state, specialGuests: [guest, ...state.specialGuests] }; notify(); },
   toggleSeatOccupancy: (eventId: string, seatId: string) => { state = executeToggleSeatOccupancy(state, eventId, seatId); notify("TICKET_SEATED"); },
   fillRowOccupancy: (eventId: string, rowLetter: string, fill: boolean) => { state = executeFillRowOccupancy(state, eventId, rowLetter, fill); notify("TICKET_SEATED"); },
+  batchSetSeatsOccupancy: (eventId: string, seatIds: string[], status: "AVAILABLE" | "OCCUPIED") => {
+    state = executeBatchSetSeatOccupancy(state, eventId, seatIds, status);
+    notify("TICKET_SEATED");
+  },
 
   updateBraceletCount: (eventId: string, delta: number, notes?: string) => {
     lastLocalCounterUpdate[eventId] = Date.now();
