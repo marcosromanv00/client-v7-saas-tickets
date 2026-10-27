@@ -19,7 +19,6 @@ export const CircularProgressGauge: React.FC<CircularProgressGaugeProps> = ({
 
   const clampedPercentage = Math.min(100, Math.max(0, metrics.percentageOccupied));
   const activeArcLength = (clampedPercentage / 100) * totalArcLength;
-  const activeOffset = totalArcLength - activeArcLength;
 
   const isFull = metrics.status === "FULL";
   const isWarning = metrics.status === "WARNING";
@@ -65,8 +64,8 @@ export const CircularProgressGauge: React.FC<CircularProgressGaugeProps> = ({
             fill="transparent"
             stroke={strokeColor}
             strokeWidth={strokeWidth}
-            strokeDasharray={`${totalArcLength} ${gapLength}`}
-            strokeDashoffset={activeOffset}
+            strokeDasharray={`${activeArcLength} ${fullCircumference}`}
+            strokeDashoffset={0}
             strokeLinecap="round"
             className="transition-all duration-700 ease-out"
             style={{
