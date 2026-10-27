@@ -15,31 +15,41 @@ describe("Medidor Radial y Telemetría de Boletería (Arco Abierto 220°)", () =
     expect(metrics.status).toBe("AVAILABLE");
   });
 
-  it("calcula correctamente el desplazamiento para el 50% de ocupación en arco de 220°", () => {
+  it("calcula correctamente la longitud de arco activo para el 50% de ocupación en arco de 220°", () => {
     const metrics = calculateBraceletMetrics(200, 100);
     const radius = 42;
     const fullCircumference = 2 * Math.PI * radius;
     const totalArcLength = fullCircumference * (220 / 360);
     const clamped = Math.min(100, Math.max(0, metrics.percentageOccupied));
     const activeArcLength = (clamped / 100) * totalArcLength;
-    const offset = totalArcLength - activeArcLength;
 
     expect(metrics.percentageOccupied).toBe(50);
-    expect(offset).toBeCloseTo(totalArcLength / 2, 1);
+    expect(activeArcLength).toBeCloseTo(totalArcLength / 2, 1);
   });
 
-  it("calcula el 100% (aforo completo) con offset cero", () => {
+  it("calcula el 100% (aforo completo) con longitud de arco activo igual a la longitud total", () => {
     const metrics = calculateBraceletMetrics(225, 225);
     const radius = 42;
     const fullCircumference = 2 * Math.PI * radius;
     const totalArcLength = fullCircumference * (220 / 360);
     const clamped = Math.min(100, Math.max(0, metrics.percentageOccupied));
     const activeArcLength = (clamped / 100) * totalArcLength;
-    const offset = totalArcLength - activeArcLength;
 
     expect(metrics.percentageOccupied).toBe(100);
-    expect(offset).toBe(0);
+    expect(activeArcLength).toBeCloseTo(totalArcLength, 1);
     expect(metrics.status).toBe("FULL");
+  });
+
+  it("calcula ocupaciones intermedias (ej. 9%) llenando proporcionalmente el arco en sentido horario", () => {
+    const metrics = calculateBraceletMetrics(100, 9);
+    const radius = 42;
+    const fullCircumference = 2 * Math.PI * radius;
+    const totalArcLength = fullCircumference * (220 / 360);
+    const clamped = Math.min(100, Math.max(0, metrics.percentageOccupied));
+    const activeArcLength = (clamped / 100) * totalArcLength;
+
+    expect(metrics.percentageOccupied).toBe(9);
+    expect(activeArcLength).toBeCloseTo(14.51, 1);
   });
 
   it("garantiza que los cupos disponibles y entregados sumen exactamente la capacidad total", () => {

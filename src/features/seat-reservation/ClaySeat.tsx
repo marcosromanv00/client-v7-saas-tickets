@@ -28,7 +28,7 @@ export function ClaySeat({
   if (isSelected) {
     stateClass = "clay-seat-selected text-white font-bold";
   } else if (isOccupied) {
-    stateClass = "clay-seat-occupied text-slate-400 dark:text-slate-600";
+    stateClass = "clay-seat-occupied text-white font-semibold";
   } else if (isVip) {
     stateClass = "clay-seat-vip text-[#c59223] dark:text-amber-300 font-semibold";
   }
@@ -67,7 +67,7 @@ export function ClaySeat({
           isSelected
             ? "bg-white/40"
             : isOccupied
-            ? "bg-slate-300/40 dark:bg-slate-700/40"
+            ? "bg-white/25"
             : isVip
             ? "bg-amber-400/60 dark:bg-amber-400/40"
             : "bg-slate-300 dark:bg-slate-600"
@@ -82,10 +82,8 @@ export function ClaySeat({
       {/* Base acolchada inferior */}
       <div
         className={`w-full h-1 rounded-b-xs transition-colors ${
-          isSelected
-            ? "bg-black/10"
-            : isOccupied
-            ? "bg-transparent"
+          isSelected || isOccupied
+            ? "bg-black/15"
             : "bg-black/5 dark:bg-white/5"
         }`}
       />

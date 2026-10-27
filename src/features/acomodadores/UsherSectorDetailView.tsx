@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "motion/react";
 import { ArrowLeft } from "lucide-react";
 import { Seat } from "../tickets/types";
 import { ClaySeat } from "../seat-reservation/ClaySeat";
@@ -60,41 +59,36 @@ export const UsherSectorDetailView: React.FC<UsherSectorDetailViewProps> = ({
             {metrics.available} <span className="font-normal text-slate-400">/ {metrics.total} libres</span>
           </span>
           {metrics.selected > 0 && (
-            <span className="text-blue-600 dark:text-blue-400 font-bold">
+            <span className="text-emerald-600 dark:text-emerald-400 font-bold">
               ({metrics.selected} sel)
             </span>
           )}
         </div>
       </div>
 
-      {/* 2. Selector Segmentado de Sectores (Pill Strip con deslizamiento fluido) */}
-      <div className="w-full overflow-x-auto pb-2 mb-2 scrollbar-none">
-        <div className="flex items-center gap-1 min-w-max p-0.5 rounded-xl bg-slate-100 dark:bg-[#071324] border border-slate-200 dark:border-[#162a4d]">
-          {USHER_SECTOR_LIST.map((s) => {
-            const isSelected = s.id === sectorId;
-            return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => onSelectSector(s.id)}
-                className={`relative px-2.5 py-1 rounded-lg text-2xs font-sans transition-colors cursor-pointer touch-manipulation whitespace-nowrap ${
-                  isSelected
-                    ? "text-white font-bold"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium"
-                }`}
-              >
-                {isSelected && (
-                  <motion.span
-                    layoutId="activeSectorPill"
-                    className="absolute inset-0 bg-teatro-blue rounded-lg shadow-xs"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                  />
-                )}
-                <span className="relative z-10">{s.shortName}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* 2. Selector Grid de Sectores (Sin Scroll - Adaptable Móvil/Desktop) */}
+      <div className="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-1 mb-2">
+        {USHER_SECTOR_LIST.map((s) => {
+          const isSelected = s.id === sectorId;
+          const secMetrics = calculateSectorMetrics(seats, selectedSeatIds, s);
+          return (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => onSelectSector(s.id)}
+              className={`px-2 py-1 rounded-lg text-2xs font-sans transition-all flex items-center justify-between cursor-pointer touch-manipulation ${
+                isSelected
+                  ? "bg-teatro-blue text-white shadow-xs font-semibold ring-1 ring-teatro-blue"
+                  : "bg-slate-100 hover:bg-slate-200 dark:bg-[#071324] dark:hover:bg-[#0e213b] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#162a4d] font-medium"
+              }`}
+            >
+              <span className="truncate">{s.shortName}</span>
+              <span className={`text-3xs font-mono ml-1 shrink-0 ${isSelected ? "text-blue-100 font-bold" : "text-emerald-600 dark:text-emerald-400 font-semibold"}`}>
+                {secMetrics.available}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* 3. Marco Adaptativo: bg-white en claro, bg-[#070e1b] en oscuro */}
