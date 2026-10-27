@@ -146,7 +146,7 @@ export function App() {
 
       <Toaster position="top-center" richColors theme={theme} closeButton />
 
-      {canAccessPrivate && activeTab !== "public" && activeTab !== "home" && !isStandaloneRoute && (
+      {(activeTab === "home" || activeTab === "public") && !isStandaloneRoute && (
         <CivicFooter onSelectAdminTab={(tab) => handleTabChange(tab)} />
       )}
     </div>
