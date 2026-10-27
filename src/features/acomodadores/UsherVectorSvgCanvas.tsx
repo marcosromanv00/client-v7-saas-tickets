@@ -70,9 +70,9 @@ export const UsherVectorSvgCanvas: React.FC<UsherVectorSvgCanvasProps> = ({
                 {/* Nivel en minicapitales */}
                 <text
                   x={sector.labelPosition.x}
-                  y={sector.labelPosition.y - 10}
+                  y={sector.labelPosition.y - 12}
                   textAnchor="middle"
-                  className={`${isDark ? "fill-slate-400" : "fill-slate-500"} font-sans text-[7.5px] font-bold tracking-[0.16em] uppercase pointer-events-none`}
+                  className={`${isDark ? "fill-slate-400" : "fill-slate-500"} font-sans text-[9px] font-bold tracking-[0.16em] uppercase pointer-events-none`}
                 >
                   {sector.levelLabel}
                 </text>
@@ -82,7 +82,7 @@ export const UsherVectorSvgCanvas: React.FC<UsherVectorSvgCanvasProps> = ({
                   x={sector.labelPosition.x}
                   y={sector.labelPosition.y + 6}
                   textAnchor="middle"
-                  className={`${isDark ? "fill-white" : "fill-slate-900"} font-sans text-[11px] font-semibold tracking-tight pointer-events-none`}
+                  className={`${isDark ? "fill-white" : "fill-slate-900"} font-sans text-[13px] font-semibold tracking-tight pointer-events-none`}
                 >
                   {sector.shortName}
                 </text>
@@ -90,9 +90,9 @@ export const UsherVectorSvgCanvas: React.FC<UsherVectorSvgCanvasProps> = ({
                 {/* Disponibilidad con métricas sobrias */}
                 <text
                   x={sector.statPosition.x}
-                  y={sector.statPosition.y + 2}
+                  y={sector.statPosition.y + 4}
                   textAnchor="middle"
-                  className="font-mono text-[10.5px] pointer-events-none"
+                  className="font-mono text-[12px] pointer-events-none"
                 >
                   <tspan className={`${isDark ? "fill-emerald-400" : "fill-emerald-600"} font-bold`}>
                     {metrics.available}
