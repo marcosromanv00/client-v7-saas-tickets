@@ -39,8 +39,8 @@ export const UsherBatchActionBar: React.FC<UsherBatchActionBarProps> = ({
       >
         <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-1.5 text-xs">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-teatro-blue dark:bg-blue-400 shrink-0" />
-            <span className="font-bold truncate text-teatro-blue dark:text-blue-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+            <span className="font-bold truncate text-emerald-700 dark:text-emerald-400">
               {count} {count === 1 ? "butaca seleccionada" : "butacas seleccionadas"}
             </span>
           </div>

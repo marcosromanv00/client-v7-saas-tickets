@@ -7,6 +7,9 @@
   --font-serif: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 
+  --text-2xs: 0.6875rem;
+  --text-3xs: 0.5625rem;
+
   /* Paleta Oficial Teatro Municipal de Alajuela & Municipalidad de Alajuela */
   --color-teatro-blue: #004ea2;
   --color-teatro-blue-hover: #003c80;
@@ -63,48 +66,46 @@
   box-shadow: 0 -4px 24px 3px rgba(56, 189, 248, 0.45);
 }
 
-/* Tactile Claymorph Seat Styles */
+/* Tactile Claymorph Seat Styles - Alta visibilidad & Contraste */
 .clay-seat-available {
   background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid #94a3b8;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), inset 0 1px 0 #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), inset 0 1px 0 #ffffff;
 }
 .dark .clay-seat-available {
-  background: linear-gradient(180deg, #0f223a 0%, #081628 100%);
-  border: 1px solid #1e3a63;
+  background: linear-gradient(180deg, #0b1a30 0%, #071324 100%);
+  border: 1px solid #203a60;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .clay-seat-available:hover {
   background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
-  border-color: #004ea2;
-  box-shadow: 0 2px 6px rgba(0, 78, 162, 0.25), inset 0 1px 0 #ffffff;
+  border-color: #059669;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25), inset 0 1px 0 #ffffff;
 }
 .dark .clay-seat-available:hover {
-  background: linear-gradient(180deg, #173358 0%, #0d1e34 100%);
-  border-color: #38bdf8;
-  box-shadow: 0 2px 6px rgba(56, 189, 248, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(180deg, #0f223d 0%, #0a1931 100%);
+  border-color: #10b981;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .clay-seat-selected {
-  background: linear-gradient(180deg, #0056b8 0%, #004ea2 100%);
-  border: 1px solid #003c80;
-  box-shadow: 0 3px 8px rgba(0, 78, 162, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border: 1px solid #047857;
+  box-shadow: 0 3px 8px rgba(5, 150, 105, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 .dark .clay-seat-selected {
-  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-  border: 1px solid #60a5fa;
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+  border: 1px solid #34d399;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 .clay-seat-occupied {
-  background: #f1f5f9;
-  border: 1px dashed #cbd5e1;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-  opacity: 0.6;
+  background: linear-gradient(180deg, #0056b8 0%, #004ea2 100%);
+  border: 1px solid #003c80;
+  box-shadow: 0 2px 6px rgba(0, 78, 162, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 .dark .clay-seat-occupied {
-  background: #060e1a;
-  border: 1px dashed #14243a;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
-  opacity: 0.5;
+  background: linear-gradient(180deg, #1d4ed8 0%, #1e40af 100%);
+  border: 1px solid #3b82f6;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 .clay-seat-vip {
   background: linear-gradient(180deg, #fef9ee 0%, #fef0d2 100%);
