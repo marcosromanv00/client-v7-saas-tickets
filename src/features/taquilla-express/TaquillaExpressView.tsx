@@ -6,6 +6,7 @@ import { BraceletCounterSection } from "../bracelet-counter/BraceletCounterSecti
 import { BraceletColorPickerModal } from "../bracelet-counter/BraceletColorPickerModal";
 import { EventConfigModal } from "../admin/EventConfigModal";
 import { BraceletHistoryModal } from "../bracelet-counter/BraceletHistoryModal";
+import { AttendanceReportModal } from "../tickets/AttendanceReportModal";
 import { CitizenSearchForm } from "./CitizenSearchForm";
 import { QuickRegisterModal } from "./QuickRegisterModal";
 import { SearchResultCard } from "./SearchResultCard";
@@ -14,13 +15,11 @@ import { BraceletColor, Ticket, ZoneId } from "../tickets/types";
 import {
   getDefaultActiveEventId,
   findActiveEventForDate,
-  getUpcomingActiveEvents,
 } from "../tickets/event-date-utils";
 import { toast } from "sonner";
 
 export function TaquillaExpressView() {
   const store = useTheaterStore();
-  const upcomingEvents = getUpcomingActiveEvents(store.events, 4);
   const [selectedEventId, setSelectedEventId] = useState(() => getDefaultActiveEventId(store.events));
   const [activeSubView, setActiveSubView] = useState<"brazaletes" | "cortesias">("brazaletes");
   const [searchedTicket, setSearchedTicket] = useState<Ticket | null>(null);
@@ -29,6 +28,7 @@ export function TaquillaExpressView() {
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const [isQuickRegisterOpen, setIsQuickRegisterOpen] = useState(false);
 
   const currentEvent =
@@ -92,7 +92,7 @@ export function TaquillaExpressView() {
       {/* 1. ZONA SUPERIOR: Información de Evento, Botones Utils y Pestañas */}
       <TaquillaHeaderPanel
         currentEvent={currentEvent}
-        upcomingEvents={upcomingEvents}
+        upcomingEvents={store.events}
         selectedEventId={selectedEventId}
         onSelectEventId={(id) => {
           setSelectedEventId(id);
@@ -105,6 +105,7 @@ export function TaquillaExpressView() {
         onOpenHistory={() => setIsHistoryOpen(true)}
         onOpenConfig={() => setIsConfigOpen(true)}
         onOpenColorPicker={() => setIsColorPickerOpen(true)}
+        onOpenReport={() => setIsReportOpen(true)}
       />
 
       {/* 2. ZONAS MEDIA E INFERIOR: Telemetría Radial y Botonera Ergonómica */}
@@ -157,6 +158,13 @@ export function TaquillaExpressView() {
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
         history={counterData.history || []}
+      />
+
+      <AttendanceReportModal
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+        events={store.events}
+        onSelectEvent={(eventId) => setSelectedEventId(eventId)}
       />
 
       <QuickRegisterModal

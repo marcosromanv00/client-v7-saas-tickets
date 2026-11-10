@@ -4,6 +4,7 @@ import { TheaterEvent } from "../tickets/types";
 import { useAuthStore } from "../auth/useAuthStore";
 import { useTheaterStore } from "../tickets/useTheaterStore";
 import { EventConfigModal } from "../admin/EventConfigModal";
+import { EventSelect } from "../../components/ui/EventSelect";
 
 interface TaquillaExpressHeaderProps {
   currentEvent: TheaterEvent;
@@ -90,17 +91,13 @@ export const TaquillaExpressHeader: React.FC<TaquillaExpressHeaderProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 max-w-full">
-          <select
-            value={selectedEventId}
-            onChange={(e) => onSelectEventId(e.target.value)}
-            className="w-full sm:w-auto min-w-0 max-w-full sm:max-w-xs truncate text-ellipsis overflow-hidden px-3 py-2 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-xl text-xs text-slate-900 dark:text-white focus:outline-none cursor-pointer"
-          >
-            {upcomingEvents.map((evt) => (
-              <option key={evt.id} value={evt.id}>
-                {evt.title.length > 32 ? `${evt.title.slice(0, 30)}...` : evt.title} ({evt.time} hrs)
-              </option>
-            ))}
-          </select>
+          <div className="w-full sm:w-64">
+            <EventSelect
+              events={upcomingEvents}
+              selectedEventId={selectedEventId}
+              onSelectEventId={onSelectEventId}
+            />
+          </div>
           {onOpenGroupModal && (
             <button
               type="button"
