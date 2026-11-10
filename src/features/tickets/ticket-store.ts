@@ -41,7 +41,8 @@ if (typeof window !== "undefined") {
     const cur = state.braceletCountersByEvent?.[eventId];
     if (!cur) return;
     const timeSinceLocal = Date.now() - (lastLocalCounterUpdate[eventId] || 0);
-    if (timeSinceLocal < 4000 && count < cur.deliveredCount) {
+    // Si hubo una actualización local reciente (menor a 4 seg), ignorar ecos remotos desfasados
+    if (timeSinceLocal < 4000) {
       return;
     }
     if (cur.deliveredCount !== count) {
@@ -49,7 +50,7 @@ if (typeof window !== "undefined") {
         ...state,
         braceletCountersByEvent: { ...state.braceletCountersByEvent, [eventId]: { ...cur, deliveredCount: count } },
       };
-      notify();
+      notify(undefined, true);
     }
   });
 }
@@ -180,7 +181,7 @@ export const theaterStore = {
     lastLocalCounterUpdate[eventId] = Date.now();
     const res = executeUpdateBraceletCount(state, eventId, delta, notes);
     state = res.updatedState;
-    notify("BRACELET_COUNT_UPDATED");
+    notify("BRACELET_COUNT_UPDATED", true);
     dispatchAttendancePush({ eventId, delta, newTotal: res.count, entryType: "BRACELET", notes });
     return res;
   },

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Ticket as TicketIcon, Search, MoreVertical, Sliders, History, Palette } from "lucide-react";
+import { Ticket as TicketIcon, Search, MoreVertical, Sliders, History, Palette, BarChart3 } from "lucide-react";
 import { TheaterEvent } from "../tickets/types";
 import { useAuthStore } from "../auth/useAuthStore";
+import { EventSelect } from "../../components/ui/EventSelect";
 
 interface TaquillaHeaderPanelProps {
   currentEvent: TheaterEvent;
@@ -14,6 +15,7 @@ interface TaquillaHeaderPanelProps {
   onOpenHistory: () => void;
   onOpenConfig: () => void;
   onOpenColorPicker: () => void;
+  onOpenReport?: () => void;
 }
 
 export const TaquillaHeaderPanel: React.FC<TaquillaHeaderPanelProps> = ({
@@ -27,6 +29,7 @@ export const TaquillaHeaderPanel: React.FC<TaquillaHeaderPanelProps> = ({
   onOpenHistory,
   onOpenConfig,
   onOpenColorPicker,
+  onOpenReport,
 }) => {
   const { isSuperAdmin, isProducer, isStaff, isAdminStaff } = useAuthStore();
   const canManage = isSuperAdmin || isProducer || isStaff || isAdminStaff;
@@ -48,22 +51,13 @@ export const TaquillaHeaderPanel: React.FC<TaquillaHeaderPanelProps> = ({
 
   return (
     <div className="w-full p-3 sm:p-3.5 bg-white dark:bg-[#0b1a30] rounded-2xl border border-slate-200/80 dark:border-[#142844] shadow-2xs space-y-2.5 select-none transition-all">
-      {/* Fila 1: Selector de Función */}
-      <div className="flex items-center gap-2 w-full min-w-0">
-        <span className="text-2xs font-mono font-medium text-slate-400 dark:text-slate-500 shrink-0">
-          Función:
-        </span>
-        <select
-          value={selectedEventId}
-          onChange={(e) => onSelectEventId(e.target.value)}
-          className="flex-1 truncate min-w-0 px-2.5 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200/80 dark:border-[#1a3357] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 cursor-pointer outline-none hover:border-teatro-blue/40 transition-colors"
-        >
-          {upcomingEvents.map((evt) => (
-            <option key={evt.id} value={evt.id}>
-              {evt.title.length > 28 ? `${evt.title.slice(0, 26)}...` : evt.title} ({evt.time})
-            </option>
-          ))}
-        </select>
+      {/* Fila 1: Selector de Función Estilizado Custom Shadcn/Tailwind */}
+      <div className="w-full min-w-0">
+        <EventSelect
+          events={upcomingEvents}
+          selectedEventId={selectedEventId}
+          onSelectEventId={onSelectEventId}
+        />
       </div>
 
       {/* Fila 2: Sub-vistas y Menú Unificado de Opciones en una Sola Línea */}
@@ -172,6 +166,26 @@ export const TaquillaHeaderPanel: React.FC<TaquillaHeaderPanelProps> = ({
                   {historyCount}
                 </span>
               </button>
+
+              {/* Opción 4: Reporte Consolidado de Asistencia */}
+              {onOpenReport && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    onOpenReport();
+                  }}
+                  className="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs text-teatro-blue dark:text-blue-300 bg-teatro-blue/5 hover:bg-teatro-blue/15 transition-colors cursor-pointer font-semibold"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <BarChart3 className="w-3.5 h-3.5 text-teatro-blue dark:text-blue-400 shrink-0" />
+                    <span className="truncate">Reporte de Asistencia</span>
+                  </div>
+                  <span className="text-3xs uppercase font-mono px-1 rounded bg-teatro-blue/20">
+                    Ver
+                  </span>
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -184,3 +184,24 @@ export async function pushEventCapacityToSupabase(
     return false;
   }
 }
+
+/**
+ * Consulta todos los contadores de asistencia registrados en Supabase Postgres
+ */
+export async function fetchAllAttendanceCountersFromSupabase(): Promise<TmAttendanceCounterRow[]> {
+  if (!isSupabaseConfigured() || !supabase) return [];
+  try {
+    const { data, error } = await supabase
+      .from("tm_attendance_counters")
+      .select("*")
+      .order("last_entry_at", { ascending: false });
+    if (error) {
+      console.warn("[Supabase Attendance] Error fetching all counters:", error.message);
+      return [];
+    }
+    return (data as TmAttendanceCounterRow[]) || [];
+  } catch (err) {
+    console.warn("[Supabase Attendance] Error fetching all counters exception:", err);
+    return [];
+  }
+}

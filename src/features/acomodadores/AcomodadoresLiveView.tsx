@@ -12,6 +12,7 @@ import { UsherSectorDetailView } from "./UsherSectorDetailView";
 import { UsherBatchActionBar } from "./UsherBatchActionBar";
 import { UsherSectorId } from "./usher-sectors.config";
 import { Seat } from "../tickets/types";
+import { EventSelect } from "../../components/ui/EventSelect";
 import {
   getDefaultActiveEventId,
   findActiveEventForDate,
@@ -64,21 +65,17 @@ export const AcomodadoresLiveView: React.FC = () => {
     <div className="w-full max-w-2xl mx-auto px-2 sm:px-4 py-2 sm:py-3 pb-36 sm:pb-40 space-y-3 text-slate-900 dark:text-slate-100 select-none overflow-x-hidden min-w-0">
       {/* 1. HUD Ribbon de Acomodador */}
       <header className="bg-white dark:bg-[#0b1a30] px-3 py-2 rounded-xl border border-slate-200 dark:border-teatro-navy-border shadow-2xs flex items-center justify-between gap-2 min-w-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <select
-            value={selectedEventId}
-            onChange={(e) => {
-              setSelectedEventId(e.target.value);
-              setSelectedSeatIds([]);
-            }}
-            className="w-40 sm:w-60 truncate min-w-0 px-2.5 py-1.5 bg-slate-50 dark:bg-[#071324] border border-slate-200 dark:border-[#1a3357] rounded-lg text-xs font-bold text-slate-900 dark:text-white cursor-pointer outline-none"
-          >
-            {upcomingEvents.map((evt) => (
-              <option key={evt.id} value={evt.id}>
-                {evt.title.length > 24 ? `${evt.title.slice(0, 22)}...` : evt.title} ({evt.time})
-              </option>
-            ))}
-          </select>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <div className="w-full sm:w-64">
+            <EventSelect
+              events={store.events}
+              selectedEventId={selectedEventId}
+              onSelectEventId={(id) => {
+                setSelectedEventId(id);
+                setSelectedSeatIds([]);
+              }}
+            />
+          </div>
 
           <span
             className="w-3.5 h-3.5 rounded-full ring-1 ring-slate-300 dark:ring-slate-700 shrink-0"

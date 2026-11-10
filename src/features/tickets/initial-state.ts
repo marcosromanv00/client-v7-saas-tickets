@@ -4,8 +4,8 @@ import { generateInitialSeats } from "./theater-layout";
 import { DEFAULT_BRACELET_COLORS } from "./bracelet-utils";
 import { Seat, TheaterEvent, Ticket } from "./types";
 
-export const STORAGE_KEY = "tm_theater_state_v5_multishow";
-export const LEGACY_STORAGE_KEY = "tm_theater_state_v4_agenda";
+export const STORAGE_KEY = "tm_theater_state_v6_consolidado";
+export const LEGACY_STORAGE_KEY = "tm_theater_state_v5_multishow";
 
 export function loadInitialState(): TheaterState {
   if (typeof localStorage !== "undefined") {

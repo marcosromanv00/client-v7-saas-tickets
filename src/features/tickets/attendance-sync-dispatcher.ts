@@ -34,10 +34,10 @@ export function setupRealtimeAttendanceListener(
   const cleanups: (() => void)[] = [];
 
   eventIds.forEach((eventId) => {
-    // 1. Hidratación inicial desde Supabase si existe
+    // 1. Hidratación inicial desde Supabase si existe y tiene conteo registrado
     fetchAttendanceHistoryFromSupabase(eventId)
       .then((data) => {
-        if (data && typeof data.deliveredCount === "number") {
+        if (data && typeof data.deliveredCount === "number" && data.deliveredCount > 0) {
           onRemoteUpdate(eventId, data.deliveredCount);
         }
       })
